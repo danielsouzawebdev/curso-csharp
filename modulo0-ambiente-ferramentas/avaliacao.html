@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Avaliação · Módulo 0 · Ambiente e Ferramentas</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="0" data-page="avaliacao"><header><nav><a class="logo" href="index.html">🎓 Módulo 0 · Ambiente e Ferramentas</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 0</a><span>›</span><strong>Avaliação</strong></div><h1>Avaliação e verificação</h1><div class="assessment-contract"><span class="callout-title">🧠 Como usar esta avaliação</span>Faça primeiro sem consultar a teoria. Marque as questões em que teve dúvida, volte ao conteúdo apenas depois da primeira tentativa e corrija suas respostas explicando <i>por que</i> a solução correta funciona. A rubrica serve para autoavaliação e para feedback do professor.</div><div class="uc-box assessment-note"><span class="callout-title">✅ Evidência de aprendizagem</span>Resolva sem copiar a resposta dos exemplos. Quando houver código, execute e teste. O objetivo é demonstrar que você consegue explicar, aplicar e diagnosticar os conceitos deste módulo.</div>
+<h2>1. Checklist de verificação do ambiente</h2><table><tr><th>#</th><th>Item</th><th>Como verificar</th><th>Resultado esperado</th><th>OK?</th></tr>
+<tr><td>1</td><td>Windows 64 bits</td><td><code>Get-CimInstance Win32_OperatingSystem | Select OSArchitecture</code></td><td>64 bits</td><td></td></tr>
+<tr><td>2</td><td>Espaço livre em disco</td><td><code>(Get-PSDrive C).Free / 1GB</code></td><td>Maior que 20 GB (ideal: mais que 50 GB)</td><td></td></tr>
+<tr><td>3</td><td>Visual Studio abre</td><td>Abrir o programa</td><td>Abre sem erros</td><td></td></tr>
+<tr><td>4</td><td>Carga de trabalho instalada</td><td>Criar um projeto “Windows Forms”</td><td>Modelo aparece na lista</td><td></td></tr>
+<tr><td>5</td><td>SDK do .NET</td><td><code>dotnet --list-sdks</code></td><td>Pelo menos um SDK LTS listado</td><td></td></tr>
+<tr><td>6</td><td>Projeto de console</td><td><code>dotnet run</code></td><td>“Hello, World!”</td><td></td></tr>
+<tr><td>7</td><td>Windows Forms</td><td>F5 no projeto OlaMundo</td><td>Janela abre e o botão funciona</td><td></td></tr>
+<tr><td>8</td><td>Git instalado</td><td><code>git --version</code></td><td>Versão exibida</td><td></td></tr>
+<tr><td>9</td><td>Identidade local do Git</td><td><code>git config --local --list</code></td><td>Nome e e-mail corretos apenas no repositório</td><td></td></tr>
+<tr><td>10</td><td>Conta GitHub e autenticação</td><td><code>git push</code></td><td>Envia sem pedir senha de conta</td><td></td></tr>
+<tr><td>11</td><td>Histórico</td><td><code>git log --oneline</code></td><td>Pelo menos 3 commits com mensagens claras</td><td></td></tr>
+<tr><td>12</td><td><code>.gitignore</code></td><td>Ver o repositório no GitHub</td><td>Pastas <code>bin</code> e <code>obj</code> não aparecem</td><td></td></tr>
+<tr><td>13</td><td>Laragon e MySQL</td><td>Iniciar tudo</td><td>MySQL em execução na porta 3306</td><td></td></tr>
+<tr><td>14</td><td>HeidiSQL conecta</td><td><code>SELECT VERSION();</code></td><td>Versão do servidor exibida</td><td></td></tr>
+<tr><td>15</td><td>C# conecta ao MySQL</td><td>Programa VerificaAmbiente</td><td>“MySQL: conectado”</td><td></td></tr>
+<tr><td>16</td><td>Ambiente documentado</td><td>README com a ficha</td><td>Colega reproduz sem ajuda</td><td></td></tr></table>
+<h2>2. Ficha do ambiente (modelo)</h2><table><tr><th>Item</th><th>Versão / valor</th><th>Observação</th></tr>
+<tr><td>Computador / sistema operacional</td><td></td><td>Windows, 64 bits</td></tr>
+<tr><td>Processador / RAM / disco livre</td><td></td><td></td></tr>
+<tr><td>Visual Studio (edição e versão)</td><td></td><td>Cargas de trabalho instaladas</td></tr>
+<tr><td>SDK do .NET</td><td></td><td>Saída de <code>dotnet --version</code></td></tr>
+<tr><td>Git</td><td></td><td>Saída de <code>git --version</code></td></tr>
+<tr><td>Usuário do GitHub</td><td></td><td>Sem senhas ou tokens!</td></tr>
+<tr><td>Laragon e MySQL/MariaDB</td><td></td><td>Porta, usuário</td></tr>
+<tr><td>Pasta de projetos</td><td></td><td>Ex.: <code>C:\Projetos</code></td></tr>
+<tr><td>Problemas encontrados e soluções</td><td></td><td></td></tr></table>
+<h2>3. Exercícios</h2><ol>
+<li><b>Análise de requisitos.</b> Um laboratório tem computadores com 4 GB de RAM, HDD de 500 GB (com 80 GB livres) e Windows 10 64 bits. Eles atendem ao mínimo do Visual Studio? E ao recomendado? Que ações (e prioridades) você recomendaria, em ordem de custo-benefício?</li>
+<li><b>Planejamento para 20 máquinas.</b> A instalação baixa cerca de 6 GB por máquina. Calcule o total e o tempo se a internet for de 100 Mbps compartilhada. Proponha uma alternativa (layout offline, instalação em horários diferentes).</li>
+<li><b>Commits.</b> Reescreva estas mensagens ruins de forma clara: “mudei umas coisas”, “final”, “agora vai”, “arrumei o bug”.</li>
+<li><b>.gitignore.</b> Explique por que <code>bin/</code> e <code>obj/</code> não devem ser versionadas e o que aconteceria se um arquivo com senha fosse enviado ao GitHub (e como corrigir: revogar a senha, não apenas apagar o arquivo).</li>
+<li><b>Conflito de merge (em dupla).</b> (a) Duas pessoas clonam o mesmo repositório. (b) Cada uma altera a <b>mesma linha</b> do <code>README.md</code> e faz commit. (c) A primeira envia (<code>push</code>); a segunda tenta <code>push</code> e recebe erro. (d) A segunda faz <code>git pull</code> e verá marcas de conflito no arquivo. (e) Escolhem o texto final, apagam as marcas, <code>git add</code>, <code>git commit</code> e <code>git push</code>. Registre cada etapa.</li>
+<li><b>Pull request.</b> Crie uma branch, faça uma alteração no README, envie a branch e abra um <i>Pull Request</i> no GitHub para o colega revisar e aprovar.</li>
+<li><b>Diagnóstico.</b> Provoque de propósito: pare o MySQL do Laragon e rode o programa de verificação. Que mensagem aparece? Qual a causa e a solução?</li>
+<li><b>Reprodutibilidade.</b> Escreva, no README, o passo a passo para que alguém sem experiência instale seu ambiente. Peça a um colega para executar e anote o que faltou.</li></ol>
+<h2>4. Comandos do Git (resumo)</h2><table><tr><th>Objetivo</th><th>Comando</th></tr>
+<tr><td>Criar repositório</td><td><code>git init</code></td></tr>
+<tr><td>Copiar um repositório remoto</td><td><code>git clone &lt;endereço&gt;</code></td></tr>
+<tr><td>Ver mudanças</td><td><code>git status</code> · <code>git diff</code></td></tr>
+<tr><td>Preparar e registrar</td><td><code>git add .</code> · <code>git commit -m "mensagem"</code></td></tr>
+<tr><td>Enviar / trazer</td><td><code>git push</code> · <code>git pull</code></td></tr>
+<tr><td>Histórico</td><td><code>git log --oneline</code></td></tr>
+<tr><td>Branches</td><td><code>git switch -c nome</code> · <code>git switch main</code> · <code>git merge nome</code></td></tr>
+<tr><td>Desfazer mudança não commitada em um arquivo</td><td><code>git restore arquivo</code></td></tr>
+<tr><td>Ver o remoto</td><td><code>git remote -v</code></td></tr></table>
+<h2>5. Solução de problemas</h2><table><tr><th>Sintoma</th><th>Causa provável</th><th>O que fazer</th></tr>
+<tr><td>Instalador do Visual Studio pede mais espaço ou falha</td><td>Disco cheio ou unidade errada</td><td>Liberar espaço, escolher outra unidade em “Locais de instalação”, marcar menos componentes</td></tr>
+<tr><td>Instalador não baixa</td><td>Sem internet, proxy ou antivírus bloqueando</td><td>Testar a conexão, desativar o proxy, falar com o responsável pela rede</td></tr>
+<tr><td>Modelo “Windows Forms” não aparece</td><td>Carga de trabalho não instalada</td><td>Installer → Modificar → marcar “Desenvolvimento para desktop com .NET”</td></tr>
+<tr><td><code>dotnet</code> não é reconhecido</td><td>SDK ausente ou terminal aberto antes da instalação</td><td>Fechar e reabrir o terminal; reparar o Visual Studio</td></tr>
+<tr><td>“fatal: not a git repository”</td><td>Comando executado fora da pasta do projeto</td><td>Entrar na pasta certa (<code>cd</code>) ou rodar <code>git init</code></td></tr>
+<tr><td>“Authentication failed” no push</td><td>Credencial expirada ou incorreta</td><td>Refazer o login no navegador (Git Credential Manager) ou usar token pessoal</td></tr>
+<tr><td>“failed to push some refs” / “rejected”</td><td>O remoto tem commits que você não tem</td><td><code>git pull</code> e depois <code>git push</code></td></tr>
+<tr><td>Pastas <code>bin</code> e <code>obj</code> foram enviadas ao GitHub</td><td><code>.gitignore</code> ausente na hora do primeiro commit</td><td>Criar o <code>.gitignore</code> e remover do controle com <code>git rm -r --cached bin obj</code>, depois commit</td></tr>
+<tr><td>MySQL do Laragon não inicia</td><td>Porta 3306 ocupada ou outro MySQL instalado</td><td>Descobrir o processo (<code>netstat</code>), encerrar o outro serviço ou mudar a porta nas configurações do Laragon</td></tr>
+<tr><td>Janela de licença do Laragon</td><td>Versão que solicita licença</td><td>Ler os termos no site oficial; confirmar com o professor; alternativa: outro MySQL/MariaDB local</td></tr>
+<tr><td>“Access denied for user 'root'”</td><td>Senha do banco diferente da string de conexão</td><td>Conferir a senha no HeidiSQL e ajustar o texto de conexão</td></tr></table>
+<h2>6. Rubrica de avaliação</h2><table><tr><th>Critério</th><th>Insuficiente</th><th>Adequado</th><th>Excelente</th></tr>
+<tr><td>Requisitos e planejamento</td><td>Não confere a máquina</td><td>Compara com o mínimo</td><td>Compara mínimo e recomendado e propõe ações</td></tr>
+<tr><td>Instalação e configuração</td><td>Instalação incompleta</td><td>Tudo instalado e funcionando</td><td>Configurações ajustadas e justificadas, sem excesso de componentes</td></tr>
+<tr><td>Verificação</td><td>Sem testes</td><td>Executa Olá Mundo e Git</td><td>Programa de verificação com banco funcionando</td></tr>
+<tr><td>Git e GitHub</td><td>Poucos commits sem padrão</td><td>Ciclo completo com mensagens claras</td><td>Branch, merge, pull e conflito resolvidos</td></tr>
+<tr><td>Documentação</td><td>Sem ficha</td><td>Ficha preenchida</td><td>README que permite a outra pessoa reproduzir</td></tr>
+<tr><td>Diagnóstico</td><td>Desiste ao primeiro erro</td><td>Resolve com ajuda do roteiro</td><td>Registra problema, causa e solução</td></tr></table>
+<h2>7. Glossário</h2><table><tr><th>Termo</th><th>Significado</th></tr>
+<tr><td>IDE</td><td>Programa que reúne editor, compilador, depurador e outras ferramentas</td></tr>
+<tr><td>SDK</td><td>Kit com ferramentas para desenvolver aplicações</td></tr>
+<tr><td>Runtime</td><td>Ambiente que executa programas compilados</td></tr>
+<tr><td>LTS</td><td>Versão com suporte de longo prazo</td></tr>
+<tr><td>NuGet</td><td>Gerenciador de pacotes do .NET</td></tr>
+<tr><td>Carga de trabalho</td><td>Conjunto de componentes do Visual Studio para um tipo de projeto</td></tr>
+<tr><td>Repositório</td><td>Projeto com todo o seu histórico de versões</td></tr>
+<tr><td>Commit</td><td>Registro de um conjunto de mudanças no histórico</td></tr>
+<tr><td>Branch</td><td>Linha paralela de desenvolvimento</td></tr>
+<tr><td>Remoto (origin)</td><td>Cópia do repositório hospedada em um servidor, como o GitHub</td></tr>
+<tr><td>Reprodutibilidade</td><td>Capacidade de outra pessoa repetir o mesmo ambiente e resultado</td></tr></table><div class="pager"><a href="pratica.html">← Prática</a><a href="index.html">Início ↑</a></div></main><footer>Módulo 0 · Preparação do Ambiente de Desenvolvimento · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

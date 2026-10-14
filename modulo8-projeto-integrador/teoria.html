@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Teoria · Módulo 8 · Projeto Integrador</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="8" data-page="teoria"><header><nav><a class="logo" href="index.html">🎓 Módulo 8 · Projeto Integrador</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 8</a><span>›</span><strong>Teoria</strong></div><h1>Teoria</h1><div class="lesson-contract"><span class="callout-title">🧭 Objetivo desta etapa</span>Planejar a integração entre requisitos, domínio, banco, interface, testes, Git e documentação antes de implementar.<br/><b>Estratégia:</b> leia uma seção por vez, execute mentalmente os exemplos e anote uma dúvida ou exemplo próprio antes de avançar para a prática.</div>
+<h2>1. O que é um projeto integrador</h2><p>É um projeto em que você usa, de forma <b>combinada</b>, tudo o que aprendeu para resolver um problema realista, com requisitos, prazos, equipe e entrega. O foco não é só “fazer funcionar”, e sim mostrar <b>método, qualidade e colaboração</b>.</p>
+<h2>2. Organização da equipe e do trabalho</h2><p>Use um fluxo ágil simples, com <b>sprints de 1 semana</b>:</p><table><tr><th>Cerimônia</th><th>Quando</th><th>Para quê</th></tr>
+<tr><td>Planejamento (planning)</td><td>Início da sprint</td><td>Escolher o que será feito e quem faz</td></tr>
+<tr><td>Reunião diária (daily)</td><td>10 min por dia</td><td>O que fiz, o que farei, o que me trava</td></tr>
+<tr><td>Revisão (review)</td><td>Fim da sprint</td><td>Demonstrar o que ficou pronto</td></tr>
+<tr><td>Retrospectiva</td><td>Fim da sprint</td><td>Melhorar o processo (módulo de qualidade)</td></tr></table>
+<h3>Papéis sugeridos (podem rodiziar)</h3><div class="fish"><div><b>Líder de produto</b><br/>Cuida dos requisitos e conversa com o “cliente” (professor)</div><div><b>Líder técnico</b><br/>Arquitetura, revisão de código e Git</div><div><b>Qualidade (QA)</b><br/>Testes, registro de defeitos, indicadores</div><div><b>UX e documentação</b><br/>Telas, manual e README</div><div><b>Dados</b><br/>Banco de dados, scripts e DAOs</div></div>
+<h2>3. Requisitos</h2><table><tr><th>Tipo</th><th>Descrição</th><th>Exemplo</th></tr>
+<tr><td><b>RF</b> (funcional)</td><td>O que o sistema faz</td><td>“Emprestar um livro.”</td></tr>
+<tr><td><b>RNF</b> (não funcional)</td><td>Qualidades e restrições</td><td>“Acesso ao banco somente com parâmetros.”</td></tr>
+<tr><td><b>RN</b> (regra de negócio)</td><td>Política da organização</td><td>“Aluno pode ter até 3 empréstimos.”</td></tr></table>
+<p>Um bom requisito é <b>claro, único, mensurável e testável</b>. Escreva também <b>critérios de aceitação</b> no formato <i>Dado – Quando – Então</i>:</p>
+<table><tr><th>Dado</th><th>Quando</th><th>Então</th></tr><tr><td>um aluno que já tem 3 livros emprestados</td><td>ele tenta pegar um quarto livro</td><td>o sistema recusa e informa o limite</td></tr></table>
+<p><b>Priorização (MoSCoW):</b> <b>M</b>ust (obrigatório), <b>S</b>hould (importante), <b>C</b>ould (desejável), <b>W</b>on't (fica para depois). Garanta primeiro os obrigatórios.</p>
+<h2>4. Modelagem</h2><h3>Modelo entidade-relacionamento (MER)</h3><p>Identifique as <b>entidades</b> (coisas sobre as quais guardamos dados), seus <b>atributos</b> e as <b>cardinalidades</b>: um leitor faz vários empréstimos (1:N); um livro aparece em vários empréstimos (1:N). A tabela <code>emprestimos</code> liga as duas.</p>
+<h3>Diagrama de classes</h3><p>Mostra as classes, suas propriedades, métodos e relações:</p><table><tr><th>Relação</th><th>Significado</th><th>Exemplo</th></tr>
+<tr><td>Herança (é um)</td><td>Classe filha reaproveita a base</td><td><code>Aluno</code> é um <code>Leitor</code></td></tr>
+<tr><td>Associação / composição (tem um)</td><td>Uma classe usa ou contém outra</td><td><code>Emprestimo</code> tem um <code>Livro</code> e um <code>Leitor</code></td></tr></table>
+<h3>Do objeto para a tabela</h3><p>Banco relacional não tem herança. Uma solução simples é a <b>tabela única com coluna de tipo</b>: <code>leitores(id, nome, tipo)</code>, em que <code>tipo</code> vale <code>A</code> (aluno) ou <code>P</code> (professor). Ao ler, o DAO cria a classe certa conforme o tipo.</p>
+<h2>5. Arquitetura em camadas</h2><table><tr><th>Projeto da solução</th><th>Responsabilidade</th><th>Pode depender de</th></tr>
+<tr><td><b>Core</b> (domínio)</td><td>Classes e regras de negócio. Não conhece banco nem tela.</td><td>Nada</td></tr>
+<tr><td><b>Data</b></td><td>Acesso ao banco (DAO)</td><td>Core</td></tr>
+<tr><td><b>UI</b> (Windows Forms)</td><td>Telas e eventos</td><td>Core e Data</td></tr>
+<tr><td><b>Tests</b></td><td>Testes unitários do Core</td><td>Core</td></tr></table>
+<div class="tip">💡 <b>Regra de ouro:</b> as setas de dependência apontam sempre para o Core. Como o Core não depende de banco nem de tela, suas regras são <b>testadas sem MySQL e sem abrir formulário</b>: rápido e confiável.</div>
+<h3>Fonte da verdade</h3><p>O <b>serviço</b> valida e decide (regras); o <b>DAO</b> grava. Após gravar, a tela <b>recarrega do banco</b>, porque o banco é a fonte da verdade e outros usuários podem ter alterado os dados.</p>
+<h3>Transações</h3><p>Quando duas gravações dependem uma da outra (registrar o empréstimo <b>e</b> baixar o estoque), ou as duas acontecem ou nenhuma: é a <b>transação</b> (<code>BeginTransaction</code>, <code>Commit</code>, <code>Rollback</code>). Sem ela, uma falha no meio deixa dados inconsistentes.</p>
+<h2>6. Git em equipe</h2><table><tr><th>Prática</th><th>Como</th></tr>
+<tr><td><b>main</b> sempre funcionando</td><td>Ninguém commita direto nela</td></tr>
+<tr><td>Uma <b>branch por tarefa</b></td><td><code>feature/dominio</code>, <code>feature/tela-emprestimo</code>, <code>fix/multa</code></td></tr>
+<tr><td>Commits pequenos e rastreáveis</td><td><code>RF07: calcula multa por dia de atraso</code></td></tr>
+<tr><td><b>Pull Request</b> (PR)</td><td>Pede a revisão de um colega antes de juntar à main</td></tr>
+<tr><td>Resolver conflitos</td><td>Atualizar a branch com a main, abrir os arquivos em conflito, escolher o resultado correto e testar</td></tr>
+<tr><td><b>Tags</b> / releases</td><td>Marcar versões entregues (<code>v1.0</code>)</td></tr>
+<tr><td><code>.gitignore</code></td><td>Não versionar <code>bin/</code>, <code>obj/</code> nem senhas</td></tr></table><div class="uc-box"><span class="callout-title">Fluxo recomendado</span><code>issue/tarefa → branch → commits → push → Pull Request → revisão → merge → atualizar main</code>. Depois que o Pull Request for integrado no GitHub, volte à <code>main</code> local e execute <code>git pull</code>. Evite fazer um segundo merge local da mesma branch.</div>
+<h2>7. Definição de pronto e plano de testes</h2><p>Uma tarefa só está <b>pronta</b> quando cumpre a <b>Definição de Pronto (DoD)</b> combinada pela equipe. Sugestão:</p><ul><li>☐ Atende aos critérios de aceitação do requisito.</li><li>☐ Possui testes unitários (quando for regra de negócio) e todos passam.</li><li>☐ Código revisado por outro integrante (PR).</li><li>☐ Membros públicos documentados com <code>///</code>.</li><li>☐ Sem avisos relevantes e sem código repetido ou comentado.</li><li>☐ Tela segue o checklist de usabilidade.</li><li>☐ Commit com ID do requisito.</li></ul>
+<table><tr><th>Nível de teste</th><th>O que verifica</th><th>No projeto</th></tr>
+<tr><td>Unitário</td><td>Regras do Core isoladas</td><td>xUnit</td></tr>
+<tr><td>Integração (manual)</td><td>Código + banco</td><td>Casos de teste executados na tela</td></tr>
+<tr><td>Aceitação</td><td>O requisito foi atendido para o usuário</td><td>Demonstração com roteiro</td></tr></table>
+<h2>8. Documentação do projeto</h2><table><tr><th>Documento</th><th>Conteúdo</th></tr>
+<tr><td><b>README.md</b></td><td>O que é, como instalar e rodar, tecnologias, equipe, como testar</td></tr>
+<tr><td>Documento de requisitos</td><td>RF, RNF, RN e critérios de aceitação</td></tr>
+<tr><td>Dicionário de dados</td><td>Tabelas, colunas, tipos e regras</td></tr>
+<tr><td>Documentação de código</td><td>Comentários <code>///</code></td></tr>
+<tr><td>Registro de defeitos e indicadores</td><td>Histórico de qualidade</td></tr>
+<tr><td>Manual do usuário</td><td>Passo a passo das telas, com imagens</td></tr></table>
+<h2>9. Riscos</h2><p>Todo projeto tem riscos: prazo curto, integrante ausente, falta de domínio de uma tecnologia, conflito no código. Liste os principais, a <b>probabilidade</b>, o <b>impacto</b> e a <b>ação preventiva</b>; revise a lista a cada sprint.</p>
+<h2>10. Apresentação e demonstração</h2><p>Mostre o <b>problema</b>, a <b>solução</b>, a <b>arquitetura</b>, uma <b>demonstração</b> do fluxo principal e dos casos de erro, os <b>testes</b> e os <b>indicadores</b>, e as <b>lições aprendidas</b>. Ensaie: todos devem falar e saber responder sobre qualquer parte do código.</p><div class="pager"><a href="index.html">← Início</a><a href="pratica.html">Prática →</a></div></main><footer>Módulo 8 · Projeto Integrador · Programação de Aplicativos · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

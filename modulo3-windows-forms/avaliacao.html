@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Avaliação · Módulo 3 · Windows Forms</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="3" data-page="avaliacao"><header><nav><a class="logo" href="index.html">🎓 Módulo 3 · Windows Forms</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 3</a><span>›</span><strong>Avaliação</strong></div><h1>Avaliação e verificação</h1><div class="assessment-contract"><span class="callout-title">🧠 Como usar esta avaliação</span>Faça primeiro sem consultar a teoria. Marque as questões em que teve dúvida, volte ao conteúdo apenas depois da primeira tentativa e corrija suas respostas explicando <i>por que</i> a solução correta funciona. A rubrica serve para autoavaliação e para feedback do professor.</div><div class="uc-box assessment-note"><span class="callout-title">✅ Evidência de aprendizagem</span>Resolva sem copiar a resposta dos exemplos. Quando houver código, execute e teste. O objetivo é demonstrar que você consegue explicar, aplicar e diagnosticar os conceitos deste módulo.</div>
+<h2>1. Desafios por projeto</h2><table><tr><th>Projeto</th><th>Desafio</th><th>Conceito</th><th>Nível</th></tr>
+<tr><td>1</td><td>Mostrar a data de nascimento aproximada em um <code>DateTimePicker</code> em vez de pedir a idade</td><td>Controle adequado</td><td>★</td></tr>
+<tr><td>2</td><td>Limpar o aviso do <code>ErrorProvider</code> assim que o usuário voltar a digitar</td><td><code>TextChanged</code></td><td>★★</td></tr>
+<tr><td>3</td><td>Acrescentar Kelvin ↔ Celsius e um botão “Inverter” que troca origem e destino</td><td>Reaproveitamento</td><td>★★</td></tr>
+<tr><td>4</td><td>Salvar e carregar as tarefas em arquivo JSON ao fechar e abrir o programa</td><td>Arquivos, <code>FormClosing</code></td><td>★★★</td></tr>
+<tr><td>5</td><td>“Remover produto” com confirmação e ordenação por coluna</td><td>DataGridView</td><td>★★</td></tr>
+<tr><td>6</td><td>Transferência entre contas (formulário modal que devolve conta destino e valor)</td><td>Formulários e <code>DialogResult</code></td><td>★★★</td></tr>
+<tr><td>7</td><td>Quebra de linha no desenho e nova classe <code>Triangulo</code></td><td>Polimorfismo, GDI+</td><td>★★★</td></tr>
+<tr><td>8</td><td>Edição de contato e atalho Ctrl+S</td><td>Menus e estado</td><td>★★★</td></tr>
+<tr><td>9</td><td>Pontuação (tentativas e tempo) com ranking salvo em arquivo</td><td>Timer, arquivos</td><td>★★★</td></tr>
+<tr><td>10</td><td>Gráfico de pizza de situações e linhas coloridas por situação</td><td>Chart, <code>CellFormatting</code></td><td>★★★</td></tr></table>
+<h2>2. Checklist de qualidade da interface</h2><table><tr><th>#</th><th>Critério</th><th>OK?</th></tr>
+<tr><td>1</td><td>Controles com <code>Name</code> padronizado (prefixos) e <code>Text</code> claros?</td><td></td></tr>
+<tr><td>2</td><td>Ordem de Tab lógica e foco inicial no primeiro campo?</td><td></td></tr>
+<tr><td>3</td><td><code>AcceptButton</code> (Enter) e <code>CancelButton</code> (Esc) definidos?</td><td></td></tr>
+<tr><td>4</td><td>Campos alinhados, agrupados e com espaçamento consistente?</td><td></td></tr>
+<tr><td>5</td><td>Layout se adapta ao redimensionar (<code>Anchor</code>/<code>Dock</code>/<code>TableLayoutPanel</code>) e há <code>MinimumSize</code>?</td><td></td></tr>
+<tr><td>6</td><td>Controles que previnem erro (<code>ComboBox</code>, <code>NumericUpDown</code>, máscara)?</td><td></td></tr>
+<tr><td>7</td><td>Validação com mensagens que dizem como corrigir?</td><td></td></tr>
+<tr><td>8</td><td>Feedback visível (barra de status) e confirmação antes de excluir?</td><td></td></tr>
+<tr><td>9</td><td>Regras de negócio nas classes, e não nos eventos?</td><td></td></tr>
+<tr><td>10</td><td>Nenhum evento duplicado, órfão ou sem uso; sem código repetido?</td><td></td></tr>
+<tr><td>11</td><td>Operações demoradas usam <code>async/await</code> e a janela não congela?</td><td></td></tr>
+<tr><td>12</td><td>Código comentado e commit com mensagem clara?</td><td></td></tr></table>
+<h2>3. Perguntas conceituais</h2><ol>
+<li>O que é um evento? Qual a diferença entre o evento e o manipulador?</li>
+<li>Para que servem <code>Form1.cs</code> e <code>Form1.Designer.cs</code>? Por que não se edita o segundo?</li>
+<li>Qual a diferença entre <code>Show()</code> e <code>ShowDialog()</code>?</li>
+<li>Por que <code>Thread.Sleep</code> congela a janela e <code>await Task.Delay</code> não?</li>
+<li>Por que não se deve alterar um controle de dentro de <code>Task.Run</code>?</li>
+<li>Quando usar <code>Anchor</code> e quando usar <code>Dock</code>?</li>
+<li>Como o <code>FormClosing</code> pode impedir que a janela feche?</li>
+<li>Por que o <code>DataGridView</code> atualiza ao <code>Add</code> em uma <code>BindingList</code>, mas não ao mudar uma propriedade?</li>
+<li>Qual a vantagem de a classe <code>Pessoa</code> validar os dados, mesmo que a tela também valide?</li>
+<li>Qual a diferença entre publicar “dependente de framework” e “autocontido”?</li></ol>
+<h2>4. Erros comuns e como resolver</h2><table><tr><th>Sintoma</th><th>Causa provável</th><th>Correção</th></tr>
+<tr><td>“The designer cannot process the code”/designer não abre</td><td>Erro de compilação no projeto ou código manual no <code>InitializeComponent</code></td><td>Compilar (Ctrl+Shift+B), corrigir os erros; nunca editar o <code>Designer.cs</code> à mão</td></tr>
+<tr><td>Clico no botão e nada acontece</td><td>Evento não ligado ao controle</td><td>Ícone ⚡ → conferir se <code>Click</code> aponta para o método</td></tr>
+<tr><td>O método executa duas vezes</td><td>Evento assinado duas vezes (designer e código com <code>+=</code>)</td><td>Remover uma das assinaturas</td></tr>
+<tr><td><b>CS0103</b>: o nome do controle não existe</td><td>Controle renomeado, apagado ou com <code>Name</code> diferente</td><td>Conferir o <code>Name</code> na janela Propriedades</td></tr>
+<tr><td>Erro ao apagar um controle (método de evento sobrou)</td><td>Método órfão no código</td><td>Apagar também o método; conferir referências com Shift+F12</td></tr>
+<tr><td><code>InvalidOperationException</code>: operação entre threads</td><td>Alterar controle fora da thread da interface</td><td>Atualizar após o <code>await</code> ou usar <code>Invoke</code></td></tr>
+<tr><td>Janela “Não está respondendo”</td><td>Operação demorada na thread da interface</td><td><code>async/await</code> e <code>Task.Run</code></td></tr>
+<tr><td><code>NullReferenceException</code> no <code>Load</code></td><td>Lista ou controle ainda não inicializado; <code>SelectedItem</code> nulo</td><td>Inicializar campos; verificar <code>is</code>/<code>null</code> antes de usar</td></tr>
+<tr><td>Grade ou lista não atualiza</td><td><code>List&lt;T&gt;</code> em vez de <code>BindingList&lt;T&gt;</code>; propriedade alterada sem <code>Refresh</code></td><td>Usar <code>BindingList</code>; chamar <code>dgv.Refresh()</code></td></tr>
+<tr><td>Colunas indesejadas na grade (ex.: listas, propriedades técnicas)</td><td>Auto-geração a partir de todas as propriedades públicas</td><td><code>Columns["x"].Visible = false</code></td></tr>
+<tr><td><code>ComboBox.SelectedValue</code> nulo ou estranho</td><td><code>DataSource</code> definido antes de <code>DisplayMember</code>/<code>ValueMember</code></td><td>Definir <code>DisplayMember</code>/<code>ValueMember</code> primeiro</td></tr>
+<tr><td>Texto “7.5” ou “7,5” não é aceito</td><td>Separador decimal diferente da configuração regional</td><td>Usar o separador do Windows; ou <code>CultureInfo</code> explícito</td></tr>
+<tr><td>Interface “borrada” ou controles cortados em outro computador</td><td>Escala de DPI diferente</td><td><code>AutoScaleMode = Dpi</code>; usar <code>TableLayoutPanel</code> e <code>Anchor</code></td></tr>
+<tr><td>O executável publicado não abre em outro PC</td><td>Falta o .NET Desktop Runtime</td><td>Instalar o runtime ou publicar autocontido</td></tr>
+<tr><td>Janela abre atrás de outra / fora da tela</td><td><code>StartPosition</code> manual ou <code>Location</code> salvo</td><td><code>StartPosition = CenterScreen</code> ou <code>CenterParent</code></td></tr></table>
+<h2>5. Atalhos úteis do Visual Studio no Windows Forms</h2><table><tr><th>Ação</th><th>Atalho</th></tr>
+<tr><td>Alternar designer ↔ código</td><td>Shift+F7 / F7</td></tr>
+<tr><td>Janela Propriedades · Caixa de Ferramentas</td><td>F4 · Ctrl+Alt+X</td></tr>
+<tr><td>Ordem de tabulação</td><td>Exibir → Ordem de Tabulação</td></tr>
+<tr><td>Alinhar / igualar espaçamento</td><td>Menu Formatar</td></tr>
+<tr><td>Duplicar controle</td><td>Ctrl+C, Ctrl+V (mantém as propriedades)</td></tr>
+<tr><td>Mover controle em pequenos passos</td><td>Setas (Ctrl+setas = 1 px)</td></tr>
+<tr><td>Executar com / sem depuração</td><td>F5 / Ctrl+F5</td></tr>
+<tr><td>Ponto de interrupção · passo a passo</td><td>F9 · F10 / F11</td></tr>
+<tr><td>Renomear · Localizar referências</td><td>F2 · Shift+F12</td></tr></table>
+<h2>6. Rubrica de avaliação</h2><table><tr><th>Critério</th><th>Insuficiente</th><th>Adequado</th><th>Excelente</th></tr>
+<tr><td>Interface e usabilidade</td><td>Controles soltos, sem padrão</td><td>Layout organizado e legível</td><td>Heurísticas aplicadas, adaptação ao redimensionar, atalhos</td></tr>
+<tr><td>Eventos e controles</td><td>Eventos incorretos ou duplicados</td><td>Uso correto dos principais controles e eventos</td><td>Escolha adequada, reaproveitamento de manipuladores</td></tr>
+<tr><td>Separação de responsabilidades</td><td>Regras dentro dos eventos</td><td>Regras em classes</td><td>Camadas claras, classes reutilizáveis</td></tr>
+<tr><td>Validação e erros</td><td>Programa fecha com entrada inválida</td><td>Valida e informa</td><td>Prevenção, mensagens claras e tratamento global</td></tr>
+<tr><td>Dados e coleções</td><td>Listas manuais sem sincronia</td><td>Grades e listas ligadas aos dados</td><td>Formatação, destaque, busca e arquivos</td></tr>
+<tr><td>Responsividade e robustez</td><td>Janela congela</td><td>Evita congelamento nas operações simples</td><td><code>async/await</code> correto, sem acesso entre threads</td></tr>
+<tr><td>Publicação e documentação</td><td>Não publica</td><td>Publica e testa</td><td>Testa em outra máquina, comentários e README</td></tr></table>
+<h2>7. Glossário</h2><table><tr><th>Termo</th><th>Significado</th></tr>
+<tr><td>Evento</td><td>Algo que acontece e que o programa pode tratar (clique, tecla, fechamento)</td></tr>
+<tr><td>Manipulador (handler)</td><td>Método que responde a um evento</td></tr>
+<tr><td>Designer</td><td>Editor visual de formulários do Visual Studio</td></tr>
+<tr><td>Controle</td><td>Elemento de interface (botão, caixa de texto, grade)</td></tr>
+<tr><td>Modal</td><td>Janela que bloqueia a de trás até ser fechada</td></tr>
+<tr><td>Thread da interface</td><td>Linha de execução única que desenha e atende a janela</td></tr>
+<tr><td><code>async</code>/<code>await</code></td><td>Recurso para esperar operações demoradas sem travar a interface</td></tr>
+<tr><td>DataSource / Binding</td><td>Ligação de um controle a uma coleção de dados</td></tr>
+<tr><td>GDI+</td><td>API de desenho 2D usada no <code>Graphics</code></td></tr>
+<tr><td>DPI</td><td>Densidade de pixels da tela; afeta a escala da interface</td></tr>
+<tr><td>Publicação</td><td>Geração da pasta com o aplicativo pronto para distribuir</td></tr></table><div class="pager"><a href="pratica.html">← Prática</a><a href="index.html">Início ↑</a></div></main><footer>Módulo 3 · Interfaces Windows Forms com C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

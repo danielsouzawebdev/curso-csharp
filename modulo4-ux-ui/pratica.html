@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Prática · Módulo 4 · UX e UI</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="4" data-page="pratica"><header><nav><a class="logo" href="index.html">🎓 Módulo 4 · UX e UI</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 4</a><span>›</span><strong>Prática guiada</strong></div><h1>Prática guiada · Cadastro de Clientes</h1><div class="tip practice-contract"><span class="callout-title">🧭 Como executar esta prática</span>Digite o código, execute a cada etapa e compare o comportamento com o resultado descrito. Se houver erro, leia a mensagem antes de alterar o código e use o depurador quando indicado.</div>
+<p><b>Meta:</b> construir uma tela de cadastro com boa usabilidade: validação clara, feedback, atalhos, confirmação de exclusão e visual consistente. Faça as etapas na ordem e <b>digite o código</b> lendo cada comentário.</p>
+<div class="tip">💡 O código desta prática foi escrito para .NET 6 ou superior. Se aparecer erro de <code>namespace</code>, use o mesmo nome do seu projeto (<code>CadastroClientes</code>) no início de cada arquivo.</div>
+<h2>Etapa 0 · Diagnóstico: o que há de errado na tela “antes”?</h2>
+<p>Imagine uma tela com: título “Form1”, campos sem rótulo claro, todos os controles com tamanhos diferentes, botões “OK” e “Button2”, ordem de Tab bagunçada, mensagem “Erro!”, exclusão sem confirmação e nenhuma indicação de campos obrigatórios. Anote no caderno <b>quais heurísticas e princípios</b> ela viola (use a <a href="teoria.html">Teoria</a>). Ao final do módulo, compare com sua lista.</p>
+<div class="steps"><div class="step"><h3>Crie o projeto e configure o formulário</h3><p>Visual Studio → <b>Criar um projeto</b> → <b>Aplicativo do Windows Forms</b> (C#) → nome <code>CadastroClientes</code>. Renomeie <code>Form1.cs</code> para <code>FrmClientes.cs</code> (clique direito → Renomear; confirme a atualização das referências). No designer, selecione o formulário e defina:</p><table><tr><th>Propriedade</th><th>Valor</th><th>Motivo</th></tr>
+<tr><td><code>Name</code></td><td>FrmClientes</td><td>Nome claro no código</td></tr>
+<tr><td><code>Text</code></td><td>Cadastro de Clientes</td><td>Título que descreve a tarefa</td></tr>
+<tr><td><code>StartPosition</code></td><td>CenterScreen</td><td>Abre no centro</td></tr>
+<tr><td><code>Font</code></td><td>Segoe UI, 10pt</td><td>Fonte legível e padrão do Windows</td></tr>
+<tr><td><code>FormBorderStyle</code></td><td>FixedSingle</td><td>Tamanho fixo, layout não se desmonta</td></tr>
+<tr><td><code>MaximizeBox</code></td><td>False</td><td>Coerente com o tamanho fixo</td></tr>
+<tr><td><code>AcceptButton</code></td><td>btnSalvar (definir depois de criar o botão)</td><td>Enter salva</td></tr>
+<tr><td><code>CancelButton</code></td><td>btnLimpar (idem)</td><td>Esc limpa</td></tr>
+<tr><td><code>Size</code></td><td>Aprox. 720 × 640</td><td>Cabe em telas pequenas</td></tr></table></div><div class="step"><h3>Planeje o layout</h3><p>Use uma grade simples: <b>margem de 16 px</b> nas bordas, rótulo acima do campo, <b>8 px</b> entre rótulo e campo e <b>16 px</b> entre um campo e o próximo. Todos os campos com o mesmo <code>Left</code> (ex.: 16) e a mesma largura (ex.: 320). Organização:</p><ul><li>Parte de cima: <code>GroupBox</code> com os dados.</li><li>Meio: linha de botões (Salvar à esquerda como principal, Limpar ao lado, Excluir afastado).</li><li>Embaixo: grade de clientes e a barra de status.</li></ul></div><div class="step"><h3>Adicione os controles</h3><p>Arraste e configure cada controle conforme a tabela. Dica: para alinhar, selecione vários controles e use <b>Formatar → Alinhar → Esquerdas</b> e <b>Espaçamento vertical → Igualar</b>.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades principais</th></tr>
+<tr><td>GroupBox</td><td>grpDados</td><td><code>Text</code> = “Dados do cliente”</td></tr>
+<tr><td>Label + TextBox</td><td>lblNome / txtNome</td><td>Label: “Nome completo *”. Label <b>acima</b> do campo.</td></tr>
+<tr><td>Label + MaskedTextBox</td><td>lblTelefone / mskTelefone</td><td>Label: “Telefone *”. <code>Mask</code> = <code>(00) 00000-0000</code></td></tr>
+<tr><td>Label + TextBox</td><td>lblEmail / txtEmail</td><td>Label: “E-mail *”</td></tr>
+<tr><td>Label + DateTimePicker</td><td>lblNasc / dtpNascimento</td><td>Label: “Data de nascimento”. <code>Format</code> = Short</td></tr>
+<tr><td>Label + ComboBox</td><td>lblTipo / cmbTipo</td><td>Label: “Tipo de cliente”. <code>DropDownStyle</code> = DropDownList</td></tr>
+<tr><td>CheckBox</td><td>chkOfertas</td><td><code>Text</code> = “Desejo receber ofertas por e-mail”</td></tr>
+<tr><td>Button</td><td>btnSalvar</td><td><code>Text</code> = “&amp;Salvar” (atalho Alt+S)</td></tr>
+<tr><td>Button</td><td>btnLimpar</td><td><code>Text</code> = “&amp;Limpar”</td></tr>
+<tr><td>Button</td><td>btnExcluir</td><td><code>Text</code> = “&amp;Excluir”</td></tr>
+<tr><td>DataGridView</td><td>dgvClientes</td><td><code>ReadOnly</code>=True, <code>AllowUserToAddRows</code>=False, <code>SelectionMode</code>=FullRowSelect, <code>MultiSelect</code>=False</td></tr>
+<tr><td>StatusStrip + ToolStripStatusLabel</td><td>statusBar / tslStatus</td><td>Rodapé que mostra mensagens ao usuário</td></tr></table></div><div class="step"><h3>Defina a ordem de Tab e os botões padrão</h3><p>Menu <b>Exibir → Ordem de Tabulação</b>: clique nos controles na ordem em que o usuário preenche (nome → telefone → e-mail → nascimento → tipo → ofertas → salvar). Depois, nas propriedades do formulário, defina <code>AcceptButton</code> = <code>btnSalvar</code> e <code>CancelButton</code> = <code>btnLimpar</code>. Teste com F5 só usando o teclado.</p></div><div class="step"><h3>Crie o modelo <code>Cliente</code></h3><p>Clique direito no projeto → <b>Adicionar → Classe</b> → <code>Cliente.cs</code>.</p><pre><code>namespace CadastroClientes;                    // agrupa as classes do projeto; deve ter o nome do projeto
+
+public class Cliente                           // modelo: guarda os dados de UM cliente
+{
+    public string Nome { get; set; } = "";     // nome completo; = "" evita valor nulo
+    public string Telefone { get; set; } = ""; // telefone já formatado pela máscara
+    public string Email { get; set; } = "";    // e-mail digitado
+    public DateTime Nascimento { get; set; }   // DateTime guarda data e hora; usaremos só a data
+    public string Tipo { get; set; } = "";     // "Pessoa Física" ou "Pessoa Jurídica"
+    public bool ReceberOfertas { get; set; }   // bool: true = marcou o CheckBox
+}</code></pre></div><div class="step"><h3>Crie a classe <code>Tema</code> (reutilização de código)</h3><p>Em vez de repetir cores e estilos em cada tela, centralizamos tudo em um único lugar. Se a cor mudar, altera-se só aqui. Adicione <code>Tema.cs</code>:</p><pre><code>namespace CadastroClientes;                                    // mesmo namespace do projeto
+
+public static class Tema                                       // static: usamos direto como Tema.Primaria, sem new
+{
+    // readonly: o valor é definido uma vez e não muda mais.
+    // Color.FromArgb(R, G, B) cria uma cor pelos componentes vermelho, verde e azul (0 a 255).
+    public static readonly Color Primaria = Color.FromArgb(15, 118, 110);  // verde-azulado: ação principal
+    public static readonly Color Perigo   = Color.FromArgb(185, 28, 28);   // vermelho: ação destrutiva
+    public static readonly Color Fundo    = Color.FromArgb(244, 247, 246); // fundo claro do formulário
+    public static readonly Color Texto    = Color.FromArgb(31, 45, 43);    // texto escuro: bom contraste com o fundo
+
+    public static void BotaoPrincipal(Button b)                // aplica o estilo do botão de ação principal
+    {
+        Estilizar(b, Primaria, Color.White);                   // fundo colorido e texto branco
+    }
+
+    public static void BotaoPerigo(Button b)                   // aplica o estilo de ações destrutivas
+    {
+        Estilizar(b, Perigo, Color.White);                     // vermelho com texto branco
+    }
+
+    public static void BotaoNeutro(Button b)                   // botões secundários, de menor destaque
+    {
+        Estilizar(b, Color.White, Texto);                      // fundo branco e texto escuro
+        b.FlatAppearance.BorderColor = Color.Gray;             // borda cinza para o botão não "sumir" no fundo
+    }
+
+    private static void Estilizar(Button b, Color fundo, Color texto) // método auxiliar: só a classe usa (private)
+    {
+        b.FlatStyle = FlatStyle.Flat;                          // visual plano e moderno (sem o 3D antigo)
+        b.FlatAppearance.BorderSize = 1;                       // borda fina de 1 pixel
+        b.BackColor = fundo;                                   // cor de fundo recebida por parâmetro
+        b.ForeColor = texto;                                   // cor do texto recebida por parâmetro
+        b.Cursor = Cursors.Hand;                               // cursor de "mãozinha" indica que é clicável
+        b.Height = 34;                                         // altura padrão para todos os botões
+    }
+}</code></pre></div><div class="step"><h3>Programe o carregamento do formulário</h3><p>Abra <code>FrmClientes.cs</code> (tecla <b>F7</b>). Dê clique duplo no formulário no designer para criar o evento <code>Load</code>. Antes dele, declare os campos da classe. Em <code>using</code>, acrescente <code>using System.ComponentModel;</code> e <code>using System.Net.Mail;</code> no topo.</p><pre><code>// Campos da classe: existem enquanto o formulário estiver aberto.
+private readonly BindingList&lt;Cliente&gt; clientes = new();   // lista que avisa a grade quando muda (atualiza sozinha)
+private readonly ErrorProvider erros = new();             // mostra o ícone de erro ao lado do campo
+private readonly ToolTip dicas = new();                   // balão de ajuda que aparece ao passar o mouse
+
+private void FrmClientes_Load(object sender, EventArgs e) // roda uma vez, quando o formulário abre
+{
+    BackColor = Tema.Fundo;                               // aplica a cor de fundo do tema ao formulário
+    Tema.BotaoPrincipal(btnSalvar);                       // Salvar = destaque (ação principal)
+    Tema.BotaoNeutro(btnLimpar);                          // Limpar = discreto (ação secundária)
+    Tema.BotaoPerigo(btnExcluir);                         // Excluir = vermelho (ação perigosa)
+
+    cmbTipo.Items.AddRange(new object[] { "Pessoa Física", "Pessoa Jurídica" }); // opções permitidas
+    cmbTipo.SelectedIndex = 0;                            // já deixa a primeira opção selecionada (menos cliques)
+
+    dtpNascimento.MaxDate = DateTime.Today;               // impede escolher uma data de nascimento no futuro
+    dgvClientes.DataSource = clientes;                    // liga a grade à lista: o que entrar na lista aparece na tela
+    btnExcluir.Enabled = false;                           // sem cliente selecionado, excluir não faz sentido (prevenção de erro)
+
+    dicas.SetToolTip(mskTelefone, "Informe DDD e número. Ex.: (11) 91234-5678"); // dica de preenchimento
+    dicas.SetToolTip(txtEmail, "Ex.: nome@dominio.com");  // dica com exemplo de e-mail
+
+    MostrarStatus("Pronto. Preencha os dados e pressione Enter para salvar.", false); // orienta o usuário
+    txtNome.Focus();                                      // cursor já no primeiro campo
+}</code></pre></div><div class="step"><h3>Crie o método de feedback na barra de status</h3><p>Esse método será usado em todo o formulário para falar com o usuário.</p><pre><code>private void MostrarStatus(string mensagem, bool ehErro)  // mensagem: o texto; ehErro: define a cor
+{
+    tslStatus.Text = mensagem;                            // escreve o texto na barra de status
+    tslStatus.ForeColor = ehErro ? Tema.Perigo : Tema.Texto; // ? : é um if curto: erro = vermelho, normal = texto escuro
+}</code></pre></div><div class="step"><h3>Programe a validação com ErrorProvider</h3><p>Validamos <b>ao salvar</b> e mostramos o erro <b>ao lado do campo</b>, com mensagem que explica como corrigir. O foco vai para o primeiro campo com problema.</p><pre><code>private bool Validar()                                    // devolve true se está tudo certo, false se há erro
+{
+    erros.Clear();                                        // apaga os ícones de erro da tentativa anterior
+    Control? primeiroErro = null;                         // guarda o primeiro campo com erro (para dar foco); null = nenhum
+
+    if (txtNome.Text.Trim().Length &lt; 3)                   // Trim remove espaços das pontas; exige pelo menos 3 letras
+    {
+        erros.SetError(txtNome, "Informe o nome completo (mínimo de 3 letras)."); // ícone + mensagem ao lado do campo
+        primeiroErro ??= txtNome;                         // ??= só atribui se ainda for null (mantém o PRIMEIRO erro)
+    }
+
+    if (!mskTelefone.MaskCompleted)                       // MaskCompleted: true só se todos os dígitos da máscara foram preenchidos
+    {
+        erros.SetError(mskTelefone, "Complete o telefone com DDD. Ex.: (11) 91234-5678.");
+        primeiroErro ??= mskTelefone;
+    }
+
+    if (!EmailValido(txtEmail.Text))                      // usa o método auxiliar abaixo
+    {
+        erros.SetError(txtEmail, "Informe um e-mail válido. Ex.: nome@dominio.com.");
+        primeiroErro ??= txtEmail;
+    }
+
+    primeiroErro?.Focus();                                // ?. só executa se não for null: leva o cursor ao 1º erro
+    return primeiroErro == null;                          // se não houve nenhum erro, a validação passou
+}
+
+private static bool EmailValido(string email)             // static: não usa nenhum dado do formulário
+{
+    try                                                   // tenta executar; se der exceção, cai no catch
+    {
+        var endereco = new MailAddress(email);            // a classe MailAddress verifica o formato; lança erro se inválido
+        return endereco.Address == email.Trim();          // garante que não veio "Nome &lt;email&gt;" ou texto extra
+    }
+    catch                                                 // qualquer erro de formato (inclusive texto vazio)
+    {
+        return false;                                     // e-mail considerado inválido
+    }
+}</code></pre></div><div class="step"><h3>Programe Salvar, Limpar e Excluir</h3><p>Dê clique duplo em cada botão no designer para criar os eventos e escreva:</p><pre><code>private void btnSalvar_Click(object sender, EventArgs e)  // clique em Salvar (ou tecla Enter, pois é o AcceptButton)
+{
+    if (!Validar())                                       // se a validação falhar...
+    {
+        MostrarStatus("Corrija os campos marcados em vermelho.", true); // ...avisa o que fazer
+        return;                                           // ...e interrompe: nada é salvo
+    }
+
+    clientes.Add(new Cliente                              // cria um objeto Cliente e coloca na lista
+    {
+        Nome = txtNome.Text.Trim(),                       // guarda o nome sem espaços sobrando
+        Telefone = mskTelefone.Text,                      // telefone já com a máscara aplicada
+        Email = txtEmail.Text.Trim(),                     // e-mail sem espaços sobrando
+        Nascimento = dtpNascimento.Value.Date,            // .Date descarta a hora, mantém só o dia
+        Tipo = cmbTipo.Text,                              // texto da opção escolhida no ComboBox
+        ReceberOfertas = chkOfertas.Checked               // true se o CheckBox está marcado
+    });
+
+    MostrarStatus($"Cliente {txtNome.Text.Trim()} salvo com sucesso!", false); // feedback de sucesso (ANTES de limpar!)
+    LimparCampos();                                       // deixa a tela pronta para o próximo cadastro
+}
+
+private void btnLimpar_Click(object sender, EventArgs e)  // clique em Limpar (ou tecla Esc, pois é o CancelButton)
+{
+    LimparCampos();                                       // reaproveita o método (evita repetir código)
+    MostrarStatus("Formulário limpo.", false);            // informa o que aconteceu
+}
+
+private void LimparCampos()                               // método reutilizado por Salvar e Limpar
+{
+    erros.Clear();                                        // remove os ícones de erro
+    txtNome.Clear();                                      // esvazia o nome
+    mskTelefone.Clear();                                  // esvazia o telefone (mantém a máscara)
+    txtEmail.Clear();                                     // esvazia o e-mail
+    dtpNascimento.Value = DateTime.Today;                 // volta a data para hoje
+    cmbTipo.SelectedIndex = 0;                            // volta para a primeira opção
+    chkOfertas.Checked = false;                           // desmarca o CheckBox
+    txtNome.Focus();                                      // cursor volta ao primeiro campo
+}
+
+private void dgvClientes_SelectionChanged(object sender, EventArgs e) // dispara quando a seleção da grade muda
+{
+    btnExcluir.Enabled = dgvClientes.CurrentRow != null;  // habilita Excluir só se há uma linha selecionada
+}
+
+private void btnExcluir_Click(object sender, EventArgs e)
+{
+    var cliente = dgvClientes.CurrentRow?.DataBoundItem as Cliente; // pega o objeto da linha; "as" converte e devolve null se falhar
+    if (cliente == null) return;                          // segurança: sem cliente, não faz nada
+
+    var resposta = MessageBox.Show(                       // abre a janela de confirmação
+        $"Excluir o cliente \"{cliente.Nome}\"? Esta ação não pode ser desfeita.", // mensagem clara e específica
+        "Confirmar exclusão",                             // título da janela
+        MessageBoxButtons.YesNo,                          // botões Sim e Não
+        MessageBoxIcon.Warning,                           // ícone de alerta
+        MessageBoxDefaultButton.Button2);                 // botão padrão = "Não": o caminho seguro
+
+    if (resposta == DialogResult.Yes)                     // só exclui se o usuário confirmou
+    {
+        clientes.Remove(cliente);                         // remove da lista; a grade atualiza sozinha
+        MostrarStatus("Cliente excluído.", false);        // feedback da ação
+    }
+}</code></pre></div><div class="step"><h3>Conecte os eventos e rode</h3><p>Confira no designer (ícone ⚡ nas propriedades) que o evento <code>SelectionChanged</code> da grade aponta para <code>dgvClientes_SelectionChanged</code>. Rode com <b>F5</b> e teste: salvar com campos vazios (veja os ícones e o foco), salvar com dados corretos, usar só o teclado (Tab, Enter, Esc) e excluir confirmando e cancelando.</p></div><div class="step"><h3>Compare e refine</h3><p>Volte à lista da Etapa 0 e marque o que foi resolvido. Em seguida, siga para a <a href="avaliacao.html">Avaliação</a> e faça o teste de usabilidade com um colega.</p></div></div><div class="common-error"><span class="callout-title">🐞 Antes de pedir ajuda</span>Confira o nome do arquivo, o namespace, o <code>Name</code> dos controles, referências do projeto, pacotes NuGet e a mensagem completa do erro. Use <code>Ctrl+Shift+B</code> para compilar e identifique a primeira mensagem de erro da lista.</div><div class="pager"><a href="teoria.html">← Teoria</a><a href="avaliacao.html">Avaliação →</a></div></main><footer>Módulo 4 · UX e UI em Windows Forms · Programação de Aplicativos · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

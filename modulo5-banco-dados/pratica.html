@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Prática · Módulo 5 · Banco de Dados</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="5" data-page="pratica"><header><nav><a class="logo" href="index.html">🎓 Módulo 5 · Banco de Dados</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 5</a><span>›</span><strong>Prática guiada</strong></div><h1>Prática guiada · Controle de Estoque</h1><div class="tip practice-contract"><span class="callout-title">🧭 Como executar esta prática</span>Digite o código, execute a cada etapa e compare o comportamento com o resultado descrito. Se houver erro, leia a mensagem antes de alterar o código e use o depurador quando indicado.</div>
+<p><b>Meta:</b> criar um sistema com dois relacionamentos (categorias e produtos) que permite <b>cadastrar, listar, buscar, editar e excluir</b> produtos, gravando tudo no MySQL do Laragon. Faça as etapas em ordem e digite o código lendo cada comentário.</p>
+<div class="tip">💡 Os códigos valem para .NET 6 ou superior (<code>namespace ControleEstoque;</code> deve ter o nome do seu projeto). Cada arquivo de código usa <code>using MySqlConnector;</code> quando acessa o banco.</div>
+<div class="steps"><div class="step"><h3>Instale e inicie o Laragon</h3><p>Baixe o Laragon (versão Full) no site oficial e instale. Abra o programa e clique em <b>Iniciar tudo</b>. Confira se o <b>MySQL</b> (ou MariaDB) aparece em execução. Se o Windows pedir permissão de firewall, permita para redes privadas.</p><p><b>Licença:</b> versões recentes do Laragon podem exibir avisos pedindo chave de licença. Leia os termos no site oficial; o professor deve confirmar se o uso na escola está de acordo com eles. Para os exercícios deste módulo, qualquer servidor MySQL ou MariaDB local funciona (basta ajustar a connection string).</p></div><div class="step"><h3>Abra o HeidiSQL</h3><p>No Laragon, clique em <b>Banco de dados</b>. O HeidiSQL abre com uma sessão já configurada (ou crie uma: tipo MySQL, host <code>127.0.0.1</code>, usuário <code>root</code>, senha vazia, porta <code>3306</code>) e clique em <b>Abrir</b>. Se conectar, você verá bancos como <code>mysql</code> e <code>information_schema</code>.</p></div><div class="step"><h3>Crie o banco, as tabelas e os dados</h3><p>No HeidiSQL, abra uma aba de consulta (<b>Ctrl+T</b>), cole o script abaixo e execute tudo com <b>F9</b>. Atualize a lista (F5) e confira o banco <code>estoque</code>. Guarde o script em um arquivo <code>estoque.sql</code>: ele é um dos entregáveis.</p><pre><code>-- Cria o banco de dados "estoque" (só se ainda não existir), com suporte a acentos
+CREATE DATABASE IF NOT EXISTS estoque CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- Diz ao MySQL que os próximos comandos valem para o banco "estoque"
+USE estoque;
+
+-- Tabela de categorias (lado "1" do relacionamento 1:N)
+CREATE TABLE categorias (
+    id   INT AUTO_INCREMENT PRIMARY KEY,   -- número gerado automaticamente; identifica a categoria
+    nome VARCHAR(60) NOT NULL UNIQUE       -- obrigatório e sem repetição
+);
+
+-- Tabela de produtos (lado "N" do relacionamento)
+CREATE TABLE produtos (
+    id           INT AUTO_INCREMENT PRIMARY KEY,         -- identificador único do produto
+    nome         VARCHAR(100) NOT NULL UNIQUE,           -- nome obrigatório e único
+    preco        DECIMAL(10,2) NOT NULL DEFAULT 0,       -- dinheiro com 2 casas decimais
+    quantidade   INT NOT NULL DEFAULT 0,                 -- quantidade em estoque
+    categoria_id INT NOT NULL,                           -- guarda o id da categoria (chave estrangeira)
+    criado_em    DATETIME DEFAULT CURRENT_TIMESTAMP,     -- data e hora preenchidas automaticamente
+    CONSTRAINT fk_produto_categoria                      -- nome da regra (útil em mensagens de erro)
+        FOREIGN KEY (categoria_id) REFERENCES categorias(id) -- só aceita ids que existem em categorias
+);
+
+-- Dados iniciais para testar
+INSERT INTO categorias (nome) VALUES ('Alimentos'), ('Bebidas'), ('Limpeza'), ('Higiene');
+
+INSERT INTO produtos (nome, preco, quantidade, categoria_id) VALUES
+    ('Arroz 5kg',        28.90,  40, 1),   -- categoria 1 = Alimentos
+    ('Suco de Uva 1L',    9.50,  25, 2),   -- categoria 2 = Bebidas
+    ('Detergente 500ml',  2.99, 100, 3);   -- categoria 3 = Limpeza</code></pre></div><div class="step"><h3>Treine SQL antes de programar</h3><p>Execute uma consulta por vez (selecione o comando e pressione <b>Ctrl+Enter</b>) e observe o resultado. Entender o SQL antes de usá-lo no C# facilita muito encontrar erros depois.</p><pre><code>-- 1) Todos os produtos
+SELECT * FROM produtos;
+
+-- 2) Só nome e preço, do mais caro ao mais barato
+SELECT nome, preco FROM produtos ORDER BY preco DESC;
+
+-- 3) Produtos com menos de 30 unidades
+SELECT nome, quantidade FROM produtos WHERE quantidade &lt; 30;
+
+-- 4) Buscar pelo pedaço do nome (% = qualquer texto)
+SELECT * FROM produtos WHERE nome LIKE '%arroz%';
+
+-- 5) JOIN: mostra o NOME da categoria em vez do número
+SELECT p.nome AS produto, c.nome AS categoria, p.preco
+FROM produtos p
+INNER JOIN categorias c ON c.id = p.categoria_id;
+
+-- 6) Valor total em estoque (preço x quantidade de cada produto, somado)
+SELECT SUM(preco * quantidade) AS valor_total FROM produtos;</code></pre></div><div class="step"><h3>Crie o projeto e instale o driver</h3><p>Visual Studio → <b>Aplicativo do Windows Forms</b> → <code>ControleEstoque</code>. Renomeie <code>Form1.cs</code> para <code>FrmProdutos.cs</code>. Depois: clique direito no projeto → <b>Gerenciar Pacotes do NuGet</b> → aba <b>Procurar</b> → <code>MySqlConnector</code> → <b>Instalar</b>.</p></div><div class="step"><h3>Crie os modelos</h3><p>Crie uma pasta <code>Modelos</code> (clique direito no projeto → Adicionar → Nova Pasta) e, dentro dela, as classes <code>Categoria.cs</code> e <code>Produto.cs</code>.</p><pre><code>namespace ControleEstoque;                          // namespace do projeto
+
+public class Categoria                              // representa UMA linha da tabela "categorias"
+{
+    public int Id { get; set; }                     // espelha a coluna "id"
+    public string Nome { get; set; } = "";          // espelha a coluna "nome"; = "" evita nulo
+}
+
+public class Produto                                // representa UMA linha da tabela "produtos"
+{
+    public int Id { get; set; }                     // 0 significa "ainda não foi salvo no banco"
+    public string Nome { get; set; } = "";          // nome do produto
+    public decimal Preco { get; set; }              // decimal combina com DECIMAL(10,2) do banco
+    public int Quantidade { get; set; }             // quantidade em estoque
+    public int CategoriaId { get; set; }            // chave estrangeira: id da categoria
+    public string CategoriaNome { get; set; } = ""; // só para EXIBIR na grade (vem do JOIN, não existe em "produtos")
+}</code></pre></div><div class="step"><h3>Crie a classe de conexão</h3><p>Clique direito no projeto → Adicionar → Classe → <code>Conexao.cs</code>. Ela é o <b>único lugar</b> que conhece a connection string.</p><pre><code>using MySqlConnector;                                              // traz as classes do driver do MySQL
+
+namespace ControleEstoque;
+
+public static class Conexao                                        // static: usamos direto, sem "new"
+{
+    // const: valor fixo. Server = onde está o banco; Port = porta; Database = qual banco; User ID/Password = acesso.
+    private const string Texto =
+        "Server=localhost;Port=3306;Database=estoque;User ID=root;Password=;";
+    // Se aparecer erro de SSL em ambiente local de estudo, acrescente ";SslMode=None" ao final do texto acima.
+
+    public static MySqlConnection Criar()                          // devolve uma conexão NOVA (ainda fechada)
+    {
+        return new MySqlConnection(Texto);                         // cada operação cria e fecha a sua própria conexão
+    }
+
+    public static bool Testar(out string mensagem)                 // out: devolve um segundo resultado (a mensagem)
+    {
+        try                                                        // tenta conectar
+        {
+            using var con = Criar();                               // using var: fecha a conexão ao fim do método
+            con.Open();                                            // abre de fato o canal com o banco
+            mensagem = "Conectado ao MySQL, versão " + con.ServerVersion; // ServerVersion: versão do servidor
+            return true;                                           // deu certo
+        }
+        catch (MySqlException ex)                                  // erro específico do MySQL
+        {
+            mensagem = ErroBanco.Traduzir(ex);                     // converte o erro técnico em texto amigável
+            return false;                                          // falhou
+        }
+    }
+}</code></pre><div class="warning db-lab-warning"><span class="callout-title">🔐 Configuração didática</span>O usuário <code>root</code> com senha vazia é usado aqui apenas para simplificar um servidor local de laboratório. Em um sistema real, crie um usuário específico, use senha forte, conceda somente as permissões necessárias e não mantenha credenciais diretamente no código-fonte.</div></div><div class="step"><h3>Crie o tradutor de erros</h3><p>Nova classe <code>ErroBanco.cs</code>. Ela transforma números de erro do MySQL em mensagens que o usuário entende (veja a tabela na Teoria).</p><pre><code>using MySqlConnector;
+
+namespace ControleEstoque;
+
+public static class ErroBanco
+{
+    public static string Traduzir(MySqlException ex)               // recebe a exceção e devolve o texto para o usuário
+    {
+        return ex.Number switch                                    // switch: escolhe uma resposta conforme o número do erro
+        {
+            1062 =&gt; "Já existe um registro com esse valor. Use outro nome.",              // campo UNIQUE repetido
+            1451 =&gt; "Não é possível excluir: existem registros vinculados a este item.",  // proteção da chave estrangeira
+            1452 =&gt; "A categoria informada não existe.",                                  // FK inválida
+            1045 =&gt; "Usuário ou senha do banco incorretos.",                              // login do banco negado
+            1049 =&gt; "O banco de dados não foi encontrado. Execute o script estoque.sql.", // banco não criado
+            _    =&gt; "Não foi possível acessar o banco. Verifique se o MySQL do Laragon está iniciado." // _ = qualquer outro caso
+        };
+    }
+}</code></pre></div><div class="step"><h3>Crie o <code>CategoriaDAO</code></h3><p>DAO (<i>Data Access Object</i>) é a classe que sabe ler e gravar uma entidade no banco. Esta é simples: só lista categorias.</p><pre><code>using MySqlConnector;
+
+namespace ControleEstoque;
+
+public class CategoriaDAO
+{
+    public List&lt;Categoria&gt; Listar()                                // devolve todas as categorias em uma lista
+    {
+        var lista = new List&lt;Categoria&gt;();                         // lista vazia que será preenchida
+
+        using var con = Conexao.Criar();                           // cria a conexão (fecha sozinha ao sair do método)
+        con.Open();                                                // abre a conexão
+
+        using var cmd = new MySqlCommand(                          // prepara o comando SQL
+            "SELECT id, nome FROM categorias ORDER BY nome", con); // ordena por nome para facilitar a escolha
+
+        using var leitor = cmd.ExecuteReader();                    // executa e devolve um leitor das linhas
+        int colId = leitor.GetOrdinal("id");                       // descobre a posição da coluna "id" (uma vez só)
+        int colNome = leitor.GetOrdinal("nome");                   // posição da coluna "nome"
+
+        while (leitor.Read())                                      // Read() avança uma linha; false quando acabam
+        {
+            lista.Add(new Categoria                                // cria um objeto para cada linha lida
+            {
+                Id = leitor.GetInt32(colId),                       // lê a coluna id como int
+                Nome = leitor.GetString(colNome)                   // lê a coluna nome como string
+            });
+        }
+        return lista;                                              // devolve todas as categorias encontradas
+    }
+}</code></pre></div><div class="step"><h3>Crie o <code>ProdutoDAO</code> (CRUD)</h3><p>Esta é a classe mais importante do módulo. Leia os comentários com calma: repare que <b>todo valor digitado vai por parâmetro</b> e que o método <code>Parametros</code> evita repetir código.</p><pre><code>using MySqlConnector;
+
+namespace ControleEstoque;
+
+public class ProdutoDAO
+{
+    // ---------- CREATE ----------
+    public void Inserir(Produto p)
+    {
+        using var con = Conexao.Criar();                           // nova conexão
+        con.Open();                                                // abre
+        using var cmd = new MySqlCommand(                          // comando INSERT com parâmetros (@...)
+            "INSERT INTO produtos (nome, preco, quantidade, categoria_id) " +
+            "VALUES (@nome, @preco, @qtd, @cat)", con);
+        Parametros(cmd, p);                                        // preenche os @ com os valores do produto
+        cmd.ExecuteNonQuery();                                     // executa (INSERT não devolve linhas)
+        p.Id = (int)cmd.LastInsertedId;                            // pega o id que o AUTO_INCREMENT acabou de gerar
+    }
+
+    // ---------- READ ----------
+    public List&lt;Produto&gt; Listar(string busca)                      // busca vazia = traz todos
+    {
+        var lista = new List&lt;Produto&gt;();                           // resultado
+        using var con = Conexao.Criar();
+        con.Open();
+        using var cmd = new MySqlCommand(
+            "SELECT p.id, p.nome, p.preco, p.quantidade, p.categoria_id, c.nome AS categoria " + // colunas desejadas
+            "FROM produtos p " +                                   // tabela principal (apelido p)
+            "INNER JOIN categorias c ON c.id = p.categoria_id " +  // junta com a categoria pelo id
+            "WHERE p.nome LIKE @busca " +                          // filtra pelo texto digitado
+            "ORDER BY p.nome", con);                               // ordem alfabética
+        cmd.Parameters.AddWithValue("@busca", "%" + busca + "%");  // % antes e depois = "contém o texto" (ainda como parâmetro!)
+
+        using var leitor = cmd.ExecuteReader();
+        int iId = leitor.GetOrdinal("id");                         // posições das colunas
+        int iNome = leitor.GetOrdinal("nome");
+        int iPreco = leitor.GetOrdinal("preco");
+        int iQtd = leitor.GetOrdinal("quantidade");
+        int iCatId = leitor.GetOrdinal("categoria_id");
+        int iCatNome = leitor.GetOrdinal("categoria");             // o apelido "categoria" definido no SELECT
+
+        while (leitor.Read())                                      // uma volta para cada produto encontrado
+        {
+            lista.Add(new Produto
+            {
+                Id = leitor.GetInt32(iId),                         // int
+                Nome = leitor.GetString(iNome),                    // string
+                Preco = leitor.GetDecimal(iPreco),                 // decimal
+                Quantidade = leitor.GetInt32(iQtd),                // int
+                CategoriaId = leitor.GetInt32(iCatId),             // int
+                CategoriaNome = leitor.GetString(iCatNome)         // nome vindo do JOIN
+            });
+        }
+        return lista;
+    }
+
+    // ---------- UPDATE ----------
+    public void Atualizar(Produto p)
+    {
+        using var con = Conexao.Criar();
+        con.Open();
+        using var cmd = new MySqlCommand(
+            "UPDATE produtos SET nome=@nome, preco=@preco, quantidade=@qtd, categoria_id=@cat " +
+            "WHERE id=@id", con);                                  // WHERE id: altera SÓ este produto
+        Parametros(cmd, p);                                        // mesmos parâmetros do INSERT
+        cmd.Parameters.AddWithValue("@id", p.Id);                  // parâmetro extra, usado só no UPDATE
+        cmd.ExecuteNonQuery();
+    }
+
+    // ---------- DELETE ----------
+    public void Excluir(int id)
+    {
+        using var con = Conexao.Criar();
+        con.Open();
+        using var cmd = new MySqlCommand("DELETE FROM produtos WHERE id=@id", con); // sem WHERE apagaria tudo!
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.ExecuteNonQuery();
+    }
+
+    // ---------- método auxiliar (reutilização) ----------
+    private static void Parametros(MySqlCommand cmd, Produto p)    // private: uso interno da classe
+    {
+        cmd.Parameters.AddWithValue("@nome", p.Nome);              // texto do nome
+        cmd.Parameters.AddWithValue("@preco", p.Preco);            // decimal do preço
+        cmd.Parameters.AddWithValue("@qtd", p.Quantidade);         // quantidade
+        cmd.Parameters.AddWithValue("@cat", p.CategoriaId);        // id da categoria
+    }
+}</code></pre></div><div class="step"><h3>Monte a tela</h3><p>No designer de <code>FrmProdutos</code>, adicione os controles da tabela. Siga as boas práticas do Módulo 4: rótulos acima dos campos, alinhamento, ordem de Tab lógica e botão principal em destaque. Defina <code>AcceptButton</code> = <code>btnSalvar</code> e <code>CancelButton</code> = <code>btnNovo</code>.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr>
+<tr><td>Form</td><td>FrmProdutos</td><td><code>Text</code>=“Controle de Estoque”, <code>StartPosition</code>=CenterScreen, <code>Font</code>=Segoe UI 10pt</td></tr>
+<tr><td>Label</td><td>lblModo</td><td><code>Text</code>=“Novo produto”, negrito (mostra se está cadastrando ou editando)</td></tr>
+<tr><td>Label + TextBox</td><td>lblNome / txtNome</td><td>Label “Nome do produto *”</td></tr>
+<tr><td>Label + NumericUpDown</td><td>lblPreco / nudPreco</td><td>Label “Preço (R$) *”. <code>DecimalPlaces</code>=2, <code>Maximum</code>=1000000</td></tr>
+<tr><td>Label + NumericUpDown</td><td>lblQtd / nudQuantidade</td><td>Label “Quantidade”. <code>Maximum</code>=1000000</td></tr>
+<tr><td>Label + ComboBox</td><td>lblCategoria / cmbCategoria</td><td>Label “Categoria *”. <code>DropDownStyle</code>=DropDownList</td></tr>
+<tr><td>Button</td><td>btnSalvar</td><td><code>Text</code>=“&amp;Salvar”. <code>AcceptButton</code> do formulário</td></tr>
+<tr><td>Button</td><td>btnNovo</td><td><code>Text</code>=“&amp;Novo”. <code>CancelButton</code> do formulário</td></tr>
+<tr><td>Button</td><td>btnExcluir</td><td><code>Text</code>=“&amp;Excluir”</td></tr>
+<tr><td>Label + TextBox</td><td>lblBusca / txtBusca</td><td>Label “Buscar por nome”</td></tr>
+<tr><td>DataGridView</td><td>dgvProdutos</td><td><code>ReadOnly</code>=True, <code>AllowUserToAddRows</code>=False, <code>SelectionMode</code>=FullRowSelect, <code>MultiSelect</code>=False</td></tr>
+<tr><td>StatusStrip + ToolStripStatusLabel</td><td>statusBar / tslStatus</td><td>Mensagens ao usuário</td></tr></table></div><div class="step"><h3>Programe o formulário · parte 1: carregar e exibir</h3><p>Abra o código (F7). Dê clique duplo no formulário para criar o <code>Load</code>. No topo do arquivo, acrescente <code>using MySqlConnector;</code>.</p><pre><code>// ----- campos da classe: vivem enquanto o formulário estiver aberto -----
+private readonly ProdutoDAO produtoDAO = new();     // objeto que cuida dos produtos no banco
+private readonly CategoriaDAO categoriaDAO = new(); // objeto que cuida das categorias no banco
+private int idSelecionado = 0;                      // 0 = cadastrando novo; maior que 0 = editando esse id
+
+private void FrmProdutos_Load(object sender, EventArgs e) // roda quando a tela abre
+{
+    if (!Conexao.Testar(out string mensagem))       // testa o banco; "out" devolve o texto do resultado
+    {
+        tslStatus.Text = mensagem;                  // mostra o problema na barra de status
+        MessageBox.Show(mensagem, "Banco de dados", MessageBoxButtons.OK, MessageBoxIcon.Error); // e em uma janela
+        Enabled = false;                            // desabilita a tela inteira: sem banco, nada funciona
+        return;                                     // sai do método
+    }
+
+    Executar(CarregarCategorias);                   // preenche o ComboBox (dentro do tratamento de erros)
+    Executar(CarregarGrade);                        // preenche a grade de produtos
+    PrepararNovo();                                 // deixa a tela pronta para um novo cadastro
+    tslStatus.Text = "Pronto.";                     // feedback inicial
+}
+
+// Executar recebe um "Action" (um método sem retorno) e o roda dentro de try/catch.
+// Assim não repetimos try/catch em todo evento.
+private void Executar(Action acao)
+{
+    try
+    {
+        acao();                                     // roda o método recebido
+    }
+    catch (MySqlException ex)                       // se o banco der erro...
+    {
+        string msg = ErroBanco.Traduzir(ex);        // ...converte para texto amigável
+        tslStatus.Text = msg;                       // mostra na barra de status
+        MessageBox.Show(msg, "Erro no banco de dados", MessageBoxButtons.OK, MessageBoxIcon.Error); // e avisa
+    }
+}
+
+private void CarregarCategorias()
+{
+    cmbCategoria.DisplayMember = "Nome";            // propriedade que será MOSTRADA no ComboBox
+    cmbCategoria.ValueMember = "Id";                // propriedade que será o VALOR de cada item
+    cmbCategoria.DataSource = categoriaDAO.Listar(); // lista vinda do banco (defina Display/Value ANTES do DataSource)
+}
+
+private void CarregarGrade()
+{
+    dgvProdutos.DataSource = produtoDAO.Listar(txtBusca.Text.Trim()); // busca no banco e exibe na grade
+    dgvProdutos.Columns["Id"].HeaderText = "Código";           // títulos mais amigáveis nas colunas
+    dgvProdutos.Columns["Nome"].HeaderText = "Produto";
+    dgvProdutos.Columns["Preco"].HeaderText = "Preço";
+    dgvProdutos.Columns["Preco"].DefaultCellStyle.Format = "C2"; // C2 = moeda com 2 casas (R$ 9,50)
+    dgvProdutos.Columns["Quantidade"].HeaderText = "Qtd.";
+    dgvProdutos.Columns["CategoriaNome"].HeaderText = "Categoria";
+    dgvProdutos.Columns["CategoriaId"].Visible = false;        // o usuário não precisa ver o id da categoria
+    dgvProdutos.ClearSelection();                              // nenhuma linha selecionada ao carregar
+}</code></pre></div><div class="step"><h3>Programe o formulário · parte 2: novo, validar e salvar</h3><pre><code>private void PrepararNovo()                         // volta a tela ao estado "cadastrar novo"
+{
+    idSelecionado = 0;                              // 0 = nenhum produto em edição
+    txtNome.Clear();                                // limpa o nome
+    nudPreco.Value = 0;                             // zera o preço
+    nudQuantidade.Value = 0;                        // zera a quantidade
+    if (cmbCategoria.Items.Count &gt; 0)               // se existem categorias...
+        cmbCategoria.SelectedIndex = 0;             // ...seleciona a primeira
+    lblModo.Text = "Novo produto";                  // informa o modo atual ao usuário
+    btnExcluir.Enabled = false;                     // não há o que excluir em um cadastro novo
+    dgvProdutos.ClearSelection();                   // tira a seleção da grade
+    txtNome.Focus();                                // cursor no primeiro campo
+}
+
+private bool Validar()                              // confere os dados ANTES de ir ao banco
+{
+    if (txtNome.Text.Trim().Length &lt; 2)             // nome com pelo menos 2 letras
+    {
+        Avisar("Informe o nome do produto (mínimo de 2 letras).", txtNome);
+        return false;                               // para na primeira falha
+    }
+    if (nudPreco.Value &lt;= 0)                        // preço precisa ser positivo
+    {
+        Avisar("O preço deve ser maior que zero.", nudPreco);
+        return false;
+    }
+    if (cmbCategoria.SelectedValue == null)         // nenhuma categoria escolhida
+    {
+        Avisar("Escolha uma categoria.", cmbCategoria);
+        return false;
+    }
+    return true;                                    // tudo certo
+}
+
+private void Avisar(string mensagem, Control campo) // mostra o aviso e leva o cursor ao campo com problema
+{
+    tslStatus.Text = mensagem;                      // texto na barra de status
+    campo.Focus();                                  // foco no campo
+}
+
+private void btnSalvar_Click(object sender, EventArgs e)
+{
+    if (!Validar()) return;                         // se inválido, não faz mais nada
+
+    var produto = new Produto                       // monta o objeto com o que está na tela
+    {
+        Id = idSelecionado,                         // 0 = novo; outro valor = edição
+        Nome = txtNome.Text.Trim(),                 // nome sem espaços nas pontas
+        Preco = nudPreco.Value,                     // NumericUpDown.Value já é decimal
+        Quantidade = (int)nudQuantidade.Value,      // converte decimal para int
+        CategoriaId = (int)cmbCategoria.SelectedValue! // ValueMember = Id; "!" garante que não é nulo (já validamos)
+    };
+
+    Executar(() =&gt;                                  // () =&gt; { } é uma função anônima passada para Executar
+    {
+        if (idSelecionado == 0)                     // novo produto
+        {
+            produtoDAO.Inserir(produto);            // INSERT
+            tslStatus.Text = $"Produto \"{produto.Nome}\" cadastrado com sucesso!";
+        }
+        else                                        // produto existente
+        {
+            produtoDAO.Atualizar(produto);          // UPDATE
+            tslStatus.Text = $"Produto \"{produto.Nome}\" atualizado com sucesso!";
+        }
+        CarregarGrade();                            // recarrega a lista para mostrar a mudança
+        PrepararNovo();                             // limpa para o próximo cadastro
+    });
+}</code></pre></div><div class="step"><h3>Programe o formulário · parte 3: editar, excluir e buscar</h3><pre><code>private void dgvProdutos_CellClick(object sender, DataGridViewCellEventArgs e) // clique em uma célula da grade
+{
+    if (e.RowIndex &lt; 0) return;                     // -1 = clicou no cabeçalho; ignora
+    if (dgvProdutos.Rows[e.RowIndex].DataBoundItem is not Produto p) return; // pega o objeto Produto daquela linha
+
+    idSelecionado = p.Id;                           // guarda qual produto está em edição
+    txtNome.Text = p.Nome;                          // preenche os campos com os dados dele
+    nudPreco.Value = p.Preco;
+    nudQuantidade.Value = p.Quantidade;
+    cmbCategoria.SelectedValue = p.CategoriaId;     // seleciona a categoria pelo valor (Id)
+    lblModo.Text = $"Editando o produto #{p.Id}";   // avisa que está em modo de edição
+    btnExcluir.Enabled = true;                      // agora existe um item que pode ser excluído
+}
+
+private void btnNovo_Click(object sender, EventArgs e) // botão Novo (e tecla Esc)
+{
+    PrepararNovo();                                 // reaproveita o método
+    tslStatus.Text = "Pronto para um novo cadastro.";
+}
+
+private void btnExcluir_Click(object sender, EventArgs e)
+{
+    if (idSelecionado == 0) return;                 // segurança: nada selecionado
+
+    var resposta = MessageBox.Show(                 // confirmação (heurística de controle e liberdade)
+        $"Excluir o produto \"{txtNome.Text}\"? Esta ação não pode ser desfeita.",
+        "Confirmar exclusão",
+        MessageBoxButtons.YesNo,
+        MessageBoxIcon.Warning,
+        MessageBoxDefaultButton.Button2);           // "Não" é o botão padrão: caminho seguro
+    if (resposta != DialogResult.Yes) return;       // se não confirmou, cancela
+
+    Executar(() =&gt;
+    {
+        produtoDAO.Excluir(idSelecionado);          // DELETE ... WHERE id = @id
+        tslStatus.Text = "Produto excluído.";
+        CarregarGrade();                            // atualiza a lista
+        PrepararNovo();                             // limpa a tela
+    });
+}
+
+private void txtBusca_TextChanged(object sender, EventArgs e) // dispara a cada letra digitada na busca
+{
+    Executar(CarregarGrade);                        // refaz a consulta com o novo texto (LIKE)
+}</code></pre></div><div class="step"><h3>Conecte os eventos e teste</h3><p>No designer, selecione cada controle e confira no ícone ⚡ (eventos) se estão ligados: <code>btnSalvar_Click</code>, <code>btnNovo_Click</code>, <code>btnExcluir_Click</code>, <code>txtBusca_TextChanged</code> e <code>dgvProdutos_CellClick</code>. Rode com <b>F5</b> e faça: cadastrar, buscar, clicar na linha para editar, salvar a edição e excluir. Depois confira os dados no HeidiSQL (<code>SELECT * FROM produtos;</code>): eles estão realmente no banco.</p></div><div class="step"><h3>Simule erros de propósito</h3><p>Um sistema de qualidade é testado nas situações ruins também. Faça e anote o que acontece:</p><ul><li>Cadastre dois produtos com o <b>mesmo nome</b> (erro 1062 traduzido).</li><li>No HeidiSQL, tente <code>DELETE FROM categorias WHERE id = 1;</code> (erro 1451: há produtos ligados).</li><li>Pare o MySQL no Laragon e clique em Salvar (mensagem de falha de conexão).</li><li>Digite <code>' OR '1'='1</code> na busca e veja que nada de estranho acontece (graças aos parâmetros).</li></ul></div><div class="step"><h3>Boas práticas de segurança (opcional)</h3><p>Crie um usuário só para o sistema, com permissões limitadas, no HeidiSQL, e troque a connection string:</p><pre><code>-- Cria o usuário "estoque_app" que só pode se conectar da própria máquina
+CREATE USER 'estoque_app'@'localhost' IDENTIFIED BY 'Troque#Esta#Senha1';
+
+-- Permite apenas ler e gravar DADOS no banco estoque (sem apagar tabelas nem mexer em outros bancos)
+GRANT SELECT, INSERT, UPDATE, DELETE ON estoque.* TO 'estoque_app'@'localhost';
+
+-- Aplica as permissões
+FLUSH PRIVILEGES;
+
+-- Depois, na classe Conexao, use:
+-- "Server=localhost;Port=3306;Database=estoque;User ID=estoque_app;Password=Troque#Esta#Senha1;"</code></pre></div></div><div class="common-error"><span class="callout-title">🐞 Antes de pedir ajuda</span>Confira o nome do arquivo, o namespace, o <code>Name</code> dos controles, referências do projeto, pacotes NuGet e a mensagem completa do erro. Use <code>Ctrl+Shift+B</code> para compilar e identifique a primeira mensagem de erro da lista.</div><div class="pager"><a href="teoria.html">← Teoria</a><a href="avaliacao.html">Avaliação →</a></div></main><footer>Módulo 5 · Banco de Dados com C# e Laragon · Programação de Aplicativos</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Prática · Módulo 1 · Lógica Estruturada</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="1" data-page="pratica"><header><nav><a class="logo" href="index.html">🎓 Módulo 1 · Lógica Estruturada</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 1</a><span>›</span><strong>Prática guiada</strong></div><h1>Prática guiada · 8 projetos de console</h1><div class="tip practice-contract"><span class="callout-title">🧭 Como executar esta prática</span>Digite o código, execute a cada etapa e compare o comportamento com o resultado descrito. Se houver erro, leia a mensagem antes de alterar o código e use o depurador quando indicado.</div>
+<p>Faça os projetos <b>na ordem</b>. Cada um é um novo <b>Aplicativo de Console</b>. <b>Digite o código</b> (não copie e cole), leia cada comentário, execute, faça os testes sugeridos e responda às perguntas. Quando o programa for “quebrado de propósito”, observe a mensagem de erro: ela ensina muito.</p>
+<div class="tip">💡 Códigos para .NET 6 ou superior (modelo com instruções de nível superior no <code>Program.cs</code>). Se o seu modelo mostrar <code>class Program</code> e <code>Main</code>, coloque o código dentro de <code>static void Main()</code>.</div>
+<div class="steps"><div class="step"><h3>Prepare o ambiente de trabalho</h3><ol><li>Visual Studio → <b>Criar um projeto</b> → <b>Aplicativo de Console</b> (C#) → <b>Avançar</b>.</li><li>Nome: <code>Projeto01Ola</code>; local: <code>C:\Projetos\Modulo1</code> → <b>Avançar</b> → escolha o .NET LTS → <b>Criar</b>.</li><li>Abra o <code>Program.cs</code>, apague o conteúdo e digite o código do projeto.</li><li>Execute com <b>Ctrl+F5</b> (executa e mantém a janela aberta) ou <b>F5</b> (com depuração).</li><li>Dica: guarde tudo em <b>uma solução</b> com vários projetos (clique direito na solução → <b>Adicionar → Novo Projeto</b>). Para escolher qual roda, clique direito no projeto → <b>Definir como Projeto de Inicialização</b>.</li><li>Crie um repositório Git e faça um commit ao fim de cada projeto.</li></ol></div><div class="step"><h3>Projeto 1 · Olá, entrada e saída (variáveis e tipos)</h3><p><b>Objetivo:</b> ler dados, guardar em variáveis, fazer cálculos e exibir com interpolação.</p><pre><code>Console.OutputEncoding = System.Text.Encoding.UTF8;   // permite mostrar acentos e símbolos (como R$) corretamente
+
+Console.Write("Digite seu nome: ");                   // Write NÃO pula de linha: o cursor fica ao lado da pergunta
+string nome = Console.ReadLine() ?? "";               // lê o texto; ?? "" troca um possível null por texto vazio
+
+Console.Write("Digite sua idade: ");                  // pergunta a idade
+string textoIdade = Console.ReadLine() ?? "";         // tudo que vem do teclado é TEXTO
+int idade = int.Parse(textoIdade);                    // converte o texto em número inteiro (quebra se for inválido!)
+
+int anoNascimento = DateTime.Now.Year - idade;        // DateTime.Now.Year = ano atual; subtraímos a idade (aproximação)
+int idadeFutura = idade + 10;                         // cálculo simples com inteiros
+
+Console.WriteLine();                                  // linha em branco para separar
+Console.WriteLine($"Olá, {nome}!");                   // $"..." interpola: {nome} vira o valor da variável
+Console.WriteLine($"Você nasceu por volta de {anoNascimento}.");
+Console.WriteLine($"Daqui a 10 anos você terá {idadeFutura} anos.");
+
+Console.WriteLine("Pressione qualquer tecla para sair...");
+Console.ReadKey();                                    // segura a janela aberta até apertar uma tecla</code></pre></div><div class="step"><h3>Quebre o programa de propósito (leitura do erro)</h3><p>Execute o Projeto 1 e digite <code>abc</code> na idade. Aparece uma <b>FormatException</b> e o programa fecha. Leia a mensagem: ela informa o <b>tipo</b> do erro, o <b>motivo</b> e a <b>linha</b>. Agora corrija: troque <code>int.Parse(textoIdade)</code> por:</p><pre><code>if (!int.TryParse(textoIdade, out int idade))   // devolve false em vez de quebrar
+{
+    Console.WriteLine("Idade inválida.");       // explica o problema ao usuário
+    return;                                      // encerra o programa com educação
+}</code></pre><p>Perguntas: (1) por que <code>int idade</code> não precisa mais ser declarada antes? (2) o que acontece com a idade negativa? Acrescente uma validação.</p></div><div class="step"><h3>Projeto 2 · Situação do aluno (decisão)</h3><p><b>Objetivo:</b> usar <code>if / else if / else</code> e operadores lógicos, validando as entradas. Antes de codificar, desenhe o fluxograma da decisão. <b>Casos de teste:</b> (8, 6, 80) → Aprovado; (5, 5, 90) → Recuperação; (3, 4, 100) → Reprovado por nota; (10, 10, 70) → Reprovado por falta; (11, 5, 80) → erro de faixa; (abc, 5, 80) → erro de número.</p><pre><code>Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+Console.WriteLine("=== Situação do aluno ===");
+
+Console.Write("Nota 1 (0 a 10): ");
+bool ok1 = double.TryParse(Console.ReadLine(), out double nota1);   // TryParse devolve true/false e entrega o número em "nota1"
+Console.Write("Nota 2 (0 a 10): ");
+bool ok2 = double.TryParse(Console.ReadLine(), out double nota2);
+Console.Write("Frequência (%): ");
+bool ok3 = double.TryParse(Console.ReadLine(), out double frequencia);
+
+if (!ok1 || !ok2 || !ok3)                             // ! = NÃO; || = OU: se QUALQUER conversão falhou...
+{
+    Console.WriteLine("Digite apenas números.");      // ...avisa
+    return;                                           // return em Program.cs encerra o programa
+}
+
+if (nota1 &lt; 0 || nota1 &gt; 10 || nota2 &lt; 0 || nota2 &gt; 10)   // validação de faixa: notas fora de 0 a 10
+{
+    Console.WriteLine("As notas devem estar entre 0 e 10.");
+    return;
+}
+
+if (frequencia &lt; 0 || frequencia &gt; 100)               // frequência é uma porcentagem
+{
+    Console.WriteLine("A frequência deve estar entre 0 e 100.");
+    return;
+}
+
+double media = (nota1 + nota2) / 2;                   // parênteses garantem somar ANTES de dividir
+string situacao;                                      // declarada sem valor; será definida abaixo
+
+if (frequencia &lt; 75)                                  // a falta vem primeiro: reprova independentemente da nota
+{
+    situacao = "Reprovado por falta";
+}
+else if (media &gt;= 7)                                  // só chega aqui se frequencia &gt;= 75
+{
+    situacao = "Aprovado";
+}
+else if (media &gt;= 5)                                  // só chega aqui se media &lt; 7
+{
+    situacao = "Recuperação";
+}
+else                                                  // todo o resto: media &lt; 5
+{
+    situacao = "Reprovado por nota";
+}
+
+Console.WriteLine($"Média: {media:F1}");              // F1 = 1 casa decimal
+Console.WriteLine($"Frequência: {frequencia}%");
+Console.WriteLine($"Situação: {situacao}");</code></pre></div><div class="step"><h3>Projeto 3 · Tabuada, soma e asteriscos (repetição)</h3><p><b>Objetivo:</b> usar <code>for</code>, <code>do-while</code> com sentinela, contador, acumulador e laços aninhados. Faça o <b>teste de mesa</b> da Parte 2 com a entrada 4, 6, 0.</p><pre><code>Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+// ---------- PARTE 1: tabuada com FOR (sabemos que são 10 voltas) ----------
+Console.Write("Tabuada de qual número? ");
+if (!int.TryParse(Console.ReadLine(), out int n))     // valida a entrada
+{
+    Console.WriteLine("Número inválido.");
+    return;
+}
+
+for (int i = 1; i &lt;= 10; i++)                         // i começa em 1; repete enquanto i &lt;= 10; i++ soma 1 a cada volta
+{
+    Console.WriteLine($"{n} x {i,2} = {n * i,3}");    // ,2 e ,3 alinham os números à direita em colunas
+}
+
+// ---------- PARTE 2: soma com sentinela usando DO-WHILE ----------
+int soma = 0;                                         // ACUMULADOR: guarda o total
+int contador = 0;                                     // CONTADOR: guarda quantos números foram digitados
+int valor;                                            // vai receber cada número lido
+
+Console.WriteLine("\nDigite números inteiros (0 para terminar):");
+do                                                    // do-while executa pelo menos uma vez
+{
+    Console.Write("Número: ");
+    if (!int.TryParse(Console.ReadLine(), out valor)) // se não for número...
+    {
+        Console.WriteLine("Valor inválido.");
+        valor = -1;                                   // garante que o laço continue (não é zero)
+        continue;                                     // volta ao teste da condição, pulando o resto
+    }
+    if (valor != 0)                                   // o zero é só o sinal de fim: não entra na soma
+    {
+        soma += valor;                                // soma = soma + valor
+        contador++;                                   // contador = contador + 1
+    }
+} while (valor != 0);                                 // repete enquanto o usuário não digitar 0
+
+if (contador &gt; 0)                                     // evita dividir por zero se nada foi digitado
+{
+    double media = (double)soma / contador;           // (double) converte ANTES da divisão, para não perder os decimais
+    Console.WriteLine($"Soma: {soma} | Quantidade: {contador} | Média: {media:F2}");
+}
+else
+{
+    Console.WriteLine("Nenhum número foi informado.");
+}
+
+// ---------- PARTE 3: laços ANINHADOS (um dentro do outro) ----------
+Console.WriteLine();
+for (int linha = 1; linha &lt;= 5; linha++)              // laço de fora: controla as linhas
+{
+    for (int coluna = 1; coluna &lt;= linha; coluna++)   // laço de dentro: quantos asteriscos nesta linha
+    {
+        Console.Write("*");                           // escreve sem pular de linha
+    }
+    Console.WriteLine();                              // ao terminar a linha, pula para a próxima
+}</code></pre></div><div class="step"><h3>Projeto 4 · Calculadora com menu (switch e do-while)</h3><p><b>Objetivo:</b> criar um menu que se repete até o usuário sair, usando <code>switch</code>, <code>break</code> e <code>continue</code>. <b>Teste:</b> opção inválida, letras no lugar de números e divisão por zero.</p><pre><code>Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+string opcao;                                         // guarda a escolha do usuário
+
+do                                                    // o menu aparece pelo menos uma vez
+{
+    Console.WriteLine("\n=== CALCULADORA ===");
+    Console.WriteLine("1 - Somar");
+    Console.WriteLine("2 - Subtrair");
+    Console.WriteLine("3 - Multiplicar");
+    Console.WriteLine("4 - Dividir");
+    Console.WriteLine("0 - Sair");
+    Console.Write("Escolha: ");
+    opcao = Console.ReadLine() ?? "";                 // lê a opção como texto
+
+    if (opcao == "0")                                 // quer sair?
+    {
+        break;                                        // break sai do laço do-while
+    }
+
+    if (opcao != "1" &amp;&amp; opcao != "2" &amp;&amp; opcao != "3" &amp;&amp; opcao != "4")  // &amp;&amp; = E: nenhuma das opções válidas
+    {
+        Console.WriteLine("Opção inválida.");
+        continue;                                     // volta ao início do menu
+    }
+
+    Console.Write("Primeiro número: ");
+    bool okA = double.TryParse(Console.ReadLine(), out double a);
+    Console.Write("Segundo número: ");
+    bool okB = double.TryParse(Console.ReadLine(), out double b);
+
+    if (!okA || !okB)                                 // alguma conversão falhou
+    {
+        Console.WriteLine("Digite apenas números.");
+        continue;
+    }
+
+    switch (opcao)                                    // escolhe o cálculo conforme a opção
+    {
+        case "1":
+            Console.WriteLine($"{a} + {b} = {a + b}");
+            break;                                    // break sai do switch (não do laço)
+        case "2":
+            Console.WriteLine($"{a} - {b} = {a - b}");
+            break;
+        case "3":
+            Console.WriteLine($"{a} x {b} = {a * b}");
+            break;
+        case "4":
+            if (b == 0)                               // divisão por zero não é permitida
+            {
+                Console.WriteLine("Não é possível dividir por zero.");
+            }
+            else
+            {
+                Console.WriteLine($"{a} / {b} = {a / b:F2}");
+            }
+            break;
+    }
+} while (opcao != "0");                               // repete até o usuário escolher sair
+
+Console.WriteLine("Programa encerrado.");</code></pre></div><div class="step"><h3>Projeto 5 · Jogo de adivinhação (while e Random)</h3><p><b>Objetivo:</b> repetição com duas condições e uma “bandeira” booleana. <b>Perguntas:</b> por que a entrada inválida não gasta tentativa? O que muda se trocarmos <code>&amp;&amp;</code> por <code>||</code> na condição do <code>while</code>? (Teste!)</p><pre><code>Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+const int MaxTentativas = 7;                          // const: valor fixo, com nome (evita "número mágico")
+var sorteio = new Random();                           // objeto que gera números aleatórios
+int segredo = sorteio.Next(1, 101);                   // Next(1, 101) sorteia de 1 até 100 (o limite superior NÃO entra)
+int tentativas = 0;                                   // contador de tentativas usadas
+bool acertou = false;                                 // "bandeira": vira true quando o jogador acerta
+
+Console.WriteLine($"Adivinhe o número de 1 a 100. Você tem {MaxTentativas} tentativas.");
+
+while (tentativas &lt; MaxTentativas &amp;&amp; !acertou)        // continua enquanto restam tentativas E ainda não acertou
+{
+    Console.Write($"Tentativa {tentativas + 1}/{MaxTentativas}: ");
+
+    if (!int.TryParse(Console.ReadLine(), out int palpite) || palpite &lt; 1 || palpite &gt; 100)
+    {
+        Console.WriteLine("Digite um número inteiro de 1 a 100.");
+        continue;                                     // entrada inválida NÃO gasta tentativa
+    }
+
+    tentativas++;                                     // só conta tentativas válidas
+
+    if (palpite == segredo)                           // == compara (um = só atribui)
+    {
+        acertou = true;
+    }
+    else if (palpite &lt; segredo)
+    {
+        Console.WriteLine("Tente um número MAIOR.");
+    }
+    else
+    {
+        Console.WriteLine("Tente um número MENOR.");
+    }
+}
+
+if (acertou)                                          // resultado final
+{
+    Console.WriteLine($"Parabéns! Você acertou em {tentativas} tentativa(s).");
+}
+else
+{
+    Console.WriteLine($"Fim de jogo! O número era {segredo}.");
+}</code></pre></div><div class="step"><h3>Projeto 6 · Estatísticas de notas (vetores e matrizes)</h3><p><b>Objetivo:</b> guardar vários valores em um vetor, percorrer com <code>for</code> e <code>foreach</code>, calcular média, maior e menor, ordenar e usar uma matriz. <b>Teste</b> com notas 8, 6, 9, 4, 7.</p><pre><code>Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+const int Quantidade = 5;                             // quantidade de alunos
+double[] notas = new double[Quantidade];              // vetor de 5 posições, índices 0 a 4 (começam com 0.0)
+
+// ---------- leitura com validação ----------
+for (int i = 0; i &lt; notas.Length; i++)                // Length = tamanho do vetor (5)
+{
+    double valor;
+    Console.Write($"Nota do aluno {i + 1}: ");        // i + 1 porque as pessoas contam a partir de 1
+    while (!double.TryParse(Console.ReadLine(), out valor) || valor &lt; 0 || valor &gt; 10)
+    {
+        Console.Write("Inválido. Digite um número de 0 a 10: ");   // repete a pergunta até a resposta ser válida
+    }
+    notas[i] = valor;                                 // guarda na posição i
+}
+
+// ---------- estatísticas com FOREACH ----------
+double soma = 0;                                      // acumulador
+double maior = notas[0];                              // começa com o primeiro valor
+double menor = notas[0];
+int aprovados = 0;                                    // contador
+
+foreach (double nota in notas)                        // percorre cada item do vetor, do primeiro ao último
+{
+    soma += nota;
+    if (nota &gt; maior) maior = nota;                   // achou um maior: atualiza
+    if (nota &lt; menor) menor = nota;                   // achou um menor: atualiza
+    if (nota &gt;= 7) aprovados++;
+}
+
+double media = soma / notas.Length;
+int acimaDaMedia = 0;
+for (int i = 0; i &lt; notas.Length; i++)                // segunda passada: só pode comparar com a média depois de calculá-la
+{
+    if (notas[i] &gt; media) acimaDaMedia++;
+}
+
+Console.WriteLine($"\nMédia: {media:F2} | Maior: {maior:F1} | Menor: {menor:F1}");
+Console.WriteLine($"Aprovados: {aprovados} de {Quantidade} | Acima da média: {acimaDaMedia}");
+
+Array.Sort(notas);                                    // ordena o vetor do menor para o maior
+Console.WriteLine("Notas em ordem: " + string.Join(" | ", notas));   // Join une os itens em um texto
+
+// ---------- MATRIZ: tabela de multiplicação 3x3 ----------
+int[,] tabela = new int[3, 3];                        // 3 linhas e 3 colunas
+for (int linha = 0; linha &lt; tabela.GetLength(0); linha++)          // GetLength(0) = número de linhas
+{
+    for (int coluna = 0; coluna &lt; tabela.GetLength(1); coluna++)   // GetLength(1) = número de colunas
+    {
+        tabela[linha, coluna] = (linha + 1) * (coluna + 1);        // preenche cada célula
+        Console.Write($"{tabela[linha, coluna],4}");               // imprime alinhado em 4 colunas
+    }
+    Console.WriteLine();
+}</code></pre></div><div class="step"><h3>Projeto 7 · Biblioteca de funções</h3><p><b>Objetivo:</b> criar e reutilizar funções com parâmetros e retorno, recursão, sobrecarga e parâmetro opcional. Cada linha de saída traz o <b>valor esperado</b> em comentário: o programa funciona como um teste manual. Observe que <code>EhPalindromo</code> <b>reutiliza</b> <code>Inverter</code>.</p><pre><code>Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+// Program.cs: só CHAMA as funções. A biblioteca fica na classe abaixo.
+Console.WriteLine($"Fatorial de 5 (laço):       {Utilitarios.Fatorial(5)}");            // esperado: 120
+Console.WriteLine($"Fatorial de 5 (recursão):    {Utilitarios.FatorialRecursivo(5)}");   // esperado: 120
+Console.WriteLine($"7 é primo?                   {Utilitarios.EhPrimo(7)}");             // esperado: True
+Console.WriteLine($"9 é primo?                   {Utilitarios.EhPrimo(9)}");             // esperado: False
+Console.WriteLine($"Fibonacci(10):               {Utilitarios.Fibonacci(10)}");          // esperado: 55
+Console.WriteLine($"Inverter(\"C#\"):              {Utilitarios.Inverter("C#")}");        // esperado: #C
+Console.WriteLine($"\"Socorram-me, subi no ônibus em Marrocos\" é palíndromo? " +
+                  $"{Utilitarios.EhPalindromo("Socorram-me, subi no ônibus em Marrocos")}");   // esperado: True
+Console.WriteLine($"Área do círculo (raio 2):    {Utilitarios.Area(2):F2}");             // esperado: 12,57
+Console.WriteLine($"Área do retângulo (3 x 4):   {Utilitarios.Area(3, 4)}");             // esperado: 12
+Console.WriteLine($"Preço com 10% (padrão):      {Utilitarios.AplicarDesconto(200):F2}");     // esperado: 180,00
+Console.WriteLine($"Preço com 25%:               {Utilitarios.AplicarDesconto(200, 25):F2}"); // esperado: 150,00
+
+// Uma classe "static" agrupa funções que não guardam dados. Ela fica DEPOIS das instruções do Program.cs.
+static class Utilitarios
+{
+    public static long Fatorial(int n)                // public: pode ser chamada de fora; static: usada sem criar objeto
+    {
+        if (n &lt; 0)                                    // fatorial de negativo não existe
+            throw new ArgumentException("n deve ser maior ou igual a zero.");
+        long resultado = 1;                           // elemento neutro da multiplicação
+        for (int i = 2; i &lt;= n; i++)                  // multiplica 2 x 3 x ... x n
+        {
+            resultado *= i;                           // resultado = resultado * i
+        }
+        return resultado;                             // devolve o valor calculado
+    }
+
+    public static long FatorialRecursivo(int n)       // mesma ideia, usando RECURSÃO
+    {
+        if (n &lt;= 1) return 1;                         // CONDIÇÃO DE PARADA: sem ela, a função chamaria a si mesma para sempre
+        return n * FatorialRecursivo(n - 1);          // n! = n x (n-1)!
+    }
+
+    public static bool EhPrimo(int n)
+    {
+        if (n &lt; 2) return false;                      // 0, 1 e negativos não são primos
+        for (int i = 2; i * i &lt;= n; i++)              // basta testar divisores até a raiz quadrada de n
+        {
+            if (n % i == 0) return false;             // % é o resto: se divide exatamente, não é primo; sai logo
+        }
+        return true;                                  // ninguém dividiu: é primo
+    }
+
+    public static int Fibonacci(int n)                // 0, 1, 1, 2, 3, 5, 8, ... (versão iterativa)
+    {
+        int anterior = 0, atual = 1;                  // os dois primeiros termos
+        for (int i = 0; i &lt; n; i++)                   // avança n posições
+        {
+            int proximo = anterior + atual;           // próximo termo = soma dos dois últimos
+            anterior = atual;                         // desliza a "janela" de dois termos
+            atual = proximo;
+        }
+        return anterior;                              // após n passos, "anterior" guarda Fibonacci(n)
+    }
+
+    public static string Inverter(string texto)
+    {
+        char[] letras = texto.ToCharArray();          // converte o texto em vetor de caracteres
+        Array.Reverse(letras);                        // inverte a ordem do vetor
+        return new string(letras);                    // monta um novo texto a partir do vetor
+    }
+
+    public static bool EhPalindromo(string texto)
+    {
+        string limpo = new string(                    // monta um texto só com letras e números, em minúsculas
+            texto.ToLower().Where(char.IsLetterOrDigit).ToArray());
+        return limpo == Inverter(limpo);              // reutiliza a função Inverter: igual ao contrário = palíndromo
+    }
+
+    // SOBRECARGA: mesmo nome "Area", parâmetros diferentes
+    public static double Area(double raio) =&gt; Math.PI * raio * raio;       // círculo
+    public static double Area(double b, double h) =&gt; b * h;                // retângulo
+
+    // PARÂMETRO OPCIONAL: se não informar o percentual, usa 10
+    public static double AplicarDesconto(double preco, double percentual = 10)
+    {
+        return preco - preco * percentual / 100;      // preço menos o valor do desconto
+    }
+}</code></pre></div><div class="step"><h3>Teste de mesa e depuração (erro de lógica)</h3><p><b>Parte A: teste de mesa.</b> Preencha a tabela <b>no papel</b> antes de executar o código abaixo e depois confira rodando.</p><pre><code>// Faça o TESTE DE MESA no papel ANTES de rodar. Qual será a saída?
+int soma = 0;
+for (int i = 1; i &lt;= 5; i++)
+{
+    if (i % 2 == 0)
+    {
+        soma += i;
+    }
+}
+Console.WriteLine(soma);</code></pre><table><tr><th>Passo</th><th>i</th><th>i % 2 == 0 ?</th><th>soma</th></tr><tr><td>Início</td><td>—</td><td>—</td><td>0</td></tr><tr><td>1</td><td></td><td></td><td></td></tr><tr><td>2</td><td></td><td></td><td></td></tr><tr><td>3</td><td></td><td></td><td></td></tr><tr><td>4</td><td></td><td></td><td></td></tr><tr><td>5</td><td></td><td></td><td></td></tr></table><details><summary>Ver a resposta</summary><p>i=1: falso, soma 0 · i=2: verdadeiro, soma 2 · i=3: falso, soma 2 · i=4: verdadeiro, soma 6 · i=5: falso, soma 6. Saída: <b>6</b> (soma dos pares de 1 a 5).</p></details><p><b>Parte B: caçando um defeito.</b> O programa abaixo deveria mostrar o maior de três números, mas tem um erro de lógica. Teste com <code>(5, 9, 7)</code>, <code>(5, 7, 9)</code> e <code>(9, 5, 7)</code>. Em qual caso falha?</p><pre><code>// Objetivo: mostrar o MAIOR de três números. Este código tem um defeito de lógica.
+int a = 5, b = 9, c = 7;       // troque estes valores para os casos de teste
+int maior = a;                 // começa supondo que "a" é o maior
+
+if (b &gt; maior) maior = b;      // b é maior que o maior atual?
+if (c &gt; b) maior = c;          // c é maior que... b?  (será que está certo?)
+
+Console.WriteLine($"O maior é {maior}");</code></pre><ol><li>Coloque um <b>ponto de interrupção (F9)</b> na linha <code>int maior = a;</code> e execute com <b>F5</b>.</li><li>Avance com <b>F10</b> e acompanhe <code>a</code>, <code>b</code>, <code>c</code> e <code>maior</code> nas janelas <b>Locais</b> e <b>Inspeção</b>.</li><li>Com <code>(9, 5, 7)</code>, observe o valor de <code>maior</code> após cada <code>if</code>. Em que momento ele fica errado? Por quê?</li><li>Corrija e teste com os três casos mais um caso de empate <code>(4, 4, 4)</code>.</li></ol><details><summary>Ver o defeito</summary><p>A linha <code>if (c &gt; b) maior = c;</code> compara <code>c</code> com <b>b</b> e não com <b>maior</b>. Com (9, 5, 7): <code>maior</code> vale 9, <code>c &gt; b</code> (7 &gt; 5) é verdadeiro e <code>maior</code> passa a ser 7 (errado). Correção: <code>if (c &gt; maior) maior = c;</code>.</p></details></div><div class="step"><h3>Projeto 8 · Controle de Gastos (projeto integrador do módulo)</h3><p><b>Objetivo:</b> reunir tudo: menu, decisão, repetição, listas, funções reutilizáveis, validação e formatação. Repare no padrão de <b>modularização</b>: o código principal só decide <b>o que</b> chamar; cada função faz <b>uma coisa</b>.</p><pre><code>Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+var descricoes = new List&lt;string&gt;();                  // lista PARALELA: descricoes[i] combina com valores[i]
+var valores = new List&lt;decimal&gt;();                    // decimal: o tipo certo para dinheiro
+int opcao;
+
+do
+{
+    MostrarMenu();
+    opcao = LerInteiro("Escolha: ");
+
+    switch (opcao)
+    {
+        case 1: Adicionar(descricoes, valores); break;
+        case 2: Listar(descricoes, valores); break;
+        case 3: MostrarResumo(descricoes, valores); break;
+        case 4: Remover(descricoes, valores); break;
+        case 0: Console.WriteLine("Até logo!"); break;
+        default: Console.WriteLine("Opção inválida."); break;
+    }
+} while (opcao != 0);
+
+// ---------- FUNÇÕES (ficam depois do código principal; "static" = não usam variáveis de fora) ----------
+
+static void MostrarMenu()                             // void: só mostra, não devolve nada
+{
+    Console.WriteLine("\n=== CONTROLE DE GASTOS ===");
+    Console.WriteLine("1 - Adicionar gasto");
+    Console.WriteLine("2 - Listar gastos");
+    Console.WriteLine("3 - Resumo");
+    Console.WriteLine("4 - Remover gasto");
+    Console.WriteLine("0 - Sair");
+}
+
+static int LerInteiro(string mensagem)                // função reutilizável: lê um inteiro válido
+{
+    int valor;
+    Console.Write(mensagem);
+    while (!int.TryParse(Console.ReadLine(), out valor))   // repete até digitar um inteiro
+    {
+        Console.Write("Valor inválido. " + mensagem);
+    }
+    return valor;                                     // devolve o número lido
+}
+
+static decimal LerDecimal(string mensagem)            // mesma ideia para valores em dinheiro
+{
+    decimal valor;
+    Console.Write(mensagem);
+    while (!decimal.TryParse(Console.ReadLine(), out valor))
+    {
+        Console.Write("Valor inválido. " + mensagem);
+    }
+    return valor;
+}
+
+static void Adicionar(List&lt;string&gt; descricoes, List&lt;decimal&gt; valores)   // listas passadas como PARÂMETROS
+{
+    Console.Write("Descrição: ");
+    string descricao = (Console.ReadLine() ?? "").Trim();
+    if (descricao == "")                              // validação
+    {
+        Console.WriteLine("A descrição não pode ficar vazia.");
+        return;                                       // return em função void: sai da função
+    }
+
+    decimal valor = LerDecimal("Valor (R$): ");
+    if (valor &lt;= 0)                                   // validação de regra
+    {
+        Console.WriteLine("O valor deve ser maior que zero.");
+        return;
+    }
+
+    descricoes.Add(descricao);                        // Add coloca no fim da lista
+    valores.Add(valor);                               // as duas listas crescem JUNTAS para manter a correspondência
+    Console.WriteLine("Gasto registrado!");
+}
+
+static void Listar(List&lt;string&gt; descricoes, List&lt;decimal&gt; valores)
+{
+    if (valores.Count == 0)                           // Count = quantidade de itens da lista
+    {
+        Console.WriteLine("Nenhum gasto registrado.");
+        return;
+    }
+
+    Console.WriteLine();
+    for (int i = 0; i &lt; valores.Count; i++)           // percorre pelo índice para usar as duas listas
+    {
+        Console.WriteLine($"{i + 1,2}. {descricoes[i],-25} {valores[i],12:C2}");   // alinha em colunas; C2 = moeda
+    }
+}
+
+static void MostrarResumo(List&lt;string&gt; descricoes, List&lt;decimal&gt; valores)
+{
+    if (valores.Count == 0)
+    {
+        Console.WriteLine("Nenhum gasto registrado.");
+        return;
+    }
+
+    decimal total = valores.Sum();                    // LINQ: soma todos os valores
+    decimal media = total / valores.Count;            // média = total / quantidade
+    decimal maior = valores.Max();                    // LINQ: maior valor
+    int indice = valores.IndexOf(maior);              // posição do maior, para achar a descrição correspondente
+
+    Console.WriteLine($"\nTotal gasto:   {total:C2}");
+    Console.WriteLine($"Média por gasto: {media:C2}");
+    Console.WriteLine($"Maior gasto:   {descricoes[indice]} ({maior:C2})");
+}
+
+static void Remover(List&lt;string&gt; descricoes, List&lt;decimal&gt; valores)
+{
+    if (valores.Count == 0)
+    {
+        Console.WriteLine("Nenhum gasto para remover.");
+        return;
+    }
+
+    Listar(descricoes, valores);                      // reutiliza a função Listar
+    int numero = LerInteiro("Número do gasto a remover (0 cancela): ");
+
+    if (numero == 0) return;                          // cancelou
+    if (numero &lt; 1 || numero &gt; valores.Count)         // índice válido?
+    {
+        Console.WriteLine("Número inexistente.");
+        return;
+    }
+
+    descricoes.RemoveAt(numero - 1);                  // RemoveAt usa o ÍNDICE (começa em 0); por isso numero - 1
+    valores.RemoveAt(numero - 1);                     // remove das DUAS listas, mantendo-as alinhadas
+    Console.WriteLine("Gasto removido.");
+}</code></pre></div><div class="step"><h3>Revise o seu código</h3><p>Para cada projeto, confira o checklist: nomes claros em <code>camelCase</code>; indentação (<b>Ctrl+K, Ctrl+D</b>); comentários que explicam o <b>porquê</b>; nenhum trecho repetido (virou função ou laço?); entradas validadas; números “mágicos” trocados por <code>const</code>. Faça um commit com mensagem clara e envie ao GitHub.</p></div></div><div class="common-error"><span class="callout-title">🐞 Antes de pedir ajuda</span>Confira o nome do arquivo, o namespace, o <code>Name</code> dos controles, referências do projeto, pacotes NuGet e a mensagem completa do erro. Use <code>Ctrl+Shift+B</code> para compilar e identifique a primeira mensagem de erro da lista.</div><div class="pager"><a href="teoria.html">← Teoria</a><a href="avaliacao.html">Avaliação →</a></div></main><footer>Módulo 1 · Lógica de Programação Estruturada · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

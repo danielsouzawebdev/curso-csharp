@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Teoria · Módulo 1 · Lógica Estruturada</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="1" data-page="teoria"><header><nav><a class="logo" href="index.html">🎓 Módulo 1 · Lógica Estruturada</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 1</a><span>›</span><strong>Teoria</strong></div><h1>Teoria</h1><div class="lesson-contract"><span class="callout-title">🧭 Objetivo desta etapa</span>Construir o modelo mental das estruturas básicas da programação e reconhecer quando usar cada uma.<br/><b>Estratégia:</b> leia uma seção por vez, execute mentalmente os exemplos e anote uma dúvida ou exemplo próprio antes de avançar para a prática.</div>
+<h2>1. Algoritmos e lógica de programação</h2><p><b>Algoritmo</b> é uma sequência <b>finita</b> e <b>ordenada</b> de passos <b>claros</b> que resolve um problema. Uma receita de bolo e as instruções de um caixa eletrônico são algoritmos. <b>Lógica de programação</b> é a técnica de encadear esses passos de forma correta.</p>
+<p>Um bom algoritmo é <b>preciso</b> (sem ambiguidade), <b>finito</b> (termina) e <b>correto</b> (resolve o problema para todas as entradas válidas).</p>
+<h3>Três formas de representar</h3><table><tr><th>Forma</th><th>Descrição</th></tr>
+<tr><td>Descrição narrativa</td><td>Texto em português: “peça dois números, some e mostre.”</td></tr>
+<tr><td>Fluxograma</td><td>Desenho com símbolos e setas</td></tr>
+<tr><td>Pseudocódigo</td><td>Texto estruturado parecido com código, sem a sintaxe de uma linguagem</td></tr></table>
+<table><tr><th>Símbolo do fluxograma</th><th>Significado</th></tr>
+<tr><td>Retângulo com cantos arredondados</td><td>Início e fim</td></tr>
+<tr><td>Retângulo</td><td>Processamento (cálculo, atribuição)</td></tr>
+<tr><td>Paralelogramo</td><td>Entrada ou saída de dados</td></tr>
+<tr><td>Losango</td><td>Decisão (sim ou não)</td></tr>
+<tr><td>Seta</td><td>Fluxo de execução</td></tr></table>
+<p><b>Exemplo:</b> somar os números de 1 a 5.</p><pre><code>ALGORITMO SomaAteCinco
+  soma ← 0
+  i ← 1
+  ENQUANTO i ≤ 5 FAÇA
+      soma ← soma + i
+      i ← i + 1
+  FIM ENQUANTO
+  ESCREVER soma
+FIM ALGORITMO</code></pre><figure><svg aria-label="Fluxograma da soma de 1 a 5" role="img" style="font-family:system-ui,sans-serif;font-size:13px" viewbox="0 0 560 420" xmlns="http://www.w3.org/2000/svg"><defs><marker id="seta" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink)"></path></marker></defs><rect height="36" rx="18" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="120" x="140" y="12"></rect><text style="fill:var(--ink)" text-anchor="middle" x="200" y="35">Início</text><rect height="48" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="190" x="105" y="76"></rect><text style="fill:var(--ink)" text-anchor="middle" x="200" y="97">soma ← 0</text><text style="fill:var(--ink)" text-anchor="middle" x="200" y="114">i ← 1</text><polygon points="200,166 285,200 200,234 115,200" style="fill:var(--card);stroke:var(--p);stroke-width:2"></polygon><text style="fill:var(--ink)" text-anchor="middle" x="200" y="205">i ≤ 5 ?</text><rect height="48" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="190" x="105" y="286"></rect><text style="fill:var(--ink)" text-anchor="middle" x="200" y="307">soma ← soma + i</text><text style="fill:var(--ink)" text-anchor="middle" x="200" y="324">i ← i + 1</text><polygon points="355,222 375,178 535,178 515,222" style="fill:var(--card);stroke:var(--p);stroke-width:2"></polygon><text style="fill:var(--ink)" text-anchor="middle" x="445" y="205">Escrever soma</text><rect height="36" rx="18" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="120" x="380" y="312"></rect><text style="fill:var(--ink)" text-anchor="middle" x="440" y="335">Fim</text><path d="M200,48 L200,76" marker-end="url(#seta)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><path d="M200,124 L200,166" marker-end="url(#seta)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><path d="M200,234 L200,286" marker-end="url(#seta)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><text style="fill:var(--p);font-weight:700" x="212" y="262">Sim</text><path d="M105,310 L40,310 L40,200 L115,200" marker-end="url(#seta)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><path d="M285,200 L355,200" marker-end="url(#seta)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><text style="fill:var(--p);font-weight:700" x="300" y="192">Não</text><path d="M440,222 L440,312" marker-end="url(#seta)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path></svg><figcaption>Fluxograma da soma de 1 a 5: o laço volta à decisão até a condição ficar falsa.</figcaption></figure>
+<h2>2. Paradigmas de programação</h2><table><tr><th>Paradigma</th><th>Ideia</th><th>Exemplo</th></tr>
+<tr><td><b>Estruturado</b></td><td>Programas construídos com <b>sequência, decisão e repetição</b>, sem desvios desordenados</td><td>Este módulo</td></tr>
+<tr><td><b>Procedural</b></td><td>Programa dividido em <b>procedimentos/funções</b> reutilizáveis</td><td>Funções em C</td></tr>
+<tr><td><b>Orientado a objetos</b></td><td>Dados e comportamentos reunidos em <b>objetos</b></td><td>Módulos 2 e 3</td></tr>
+<tr><td><b>Orientado a eventos</b></td><td>O programa reage a ações do usuário</td><td>Windows Forms</td></tr>
+<tr><td><b>Funcional</b></td><td>Funções puras e dados imutáveis</td><td>LINQ (em parte)</td></tr></table>
+<p>O <b>C#</b> é uma linguagem <b>multiparadigma</b>: você usa o estilo estruturado dentro dos métodos de qualquer programa orientado a objetos. Por isso este módulo é a base de tudo o que vem depois.</p>
+<h3>As três estruturas básicas</h3><ul><li><b>Sequência:</b> as instruções executam uma após a outra, de cima para baixo.</li><li><b>Decisão (seleção):</b> o programa escolhe um caminho conforme uma condição (<code>if</code>, <code>switch</code>).</li><li><b>Repetição (iteração):</b> um trecho executa várias vezes (<code>for</code>, <code>while</code>...).</li></ul>
+<h2>3. Anatomia de um programa de console em C#</h2><p>Em um projeto novo (.NET 6 ou superior), o arquivo <code>Program.cs</code> pode ter só as instruções (<b>instruções de nível superior</b>); o compilador cria o método <code>Main</code> por baixo dos panos.</p><pre><code>// Isto é um comentário de uma linha: o compilador ignora.
+Console.WriteLine("Olá, mundo!");   // escreve o texto e pula de linha
+
+/* Comentário
+   de várias linhas */</code></pre>
+<table><tr><th>Elemento</th><th>Função</th></tr>
+<tr><td><code>Console.WriteLine(x)</code></td><td>Escreve e pula de linha</td></tr>
+<tr><td><code>Console.Write(x)</code></td><td>Escreve sem pular de linha</td></tr>
+<tr><td><code>Console.ReadLine()</code></td><td>Lê uma linha digitada (sempre devolve texto)</td></tr>
+<tr><td><code>Console.ReadKey()</code></td><td>Espera o usuário apertar uma tecla</td></tr>
+<tr><td><code>;</code></td><td>Termina cada instrução</td></tr>
+<tr><td><code>{ }</code></td><td>Delimitam um bloco de instruções</td></tr>
+<tr><td><code>//</code> · <code>/* */</code> · <code>///</code></td><td>Comentários: linha, bloco e documentação XML</td></tr></table>
+<p>O C# diferencia maiúsculas de minúsculas: <code>Console</code> é diferente de <code>console</code>.</p>
+<h2>4. Variáveis, tipos e constantes</h2><p><b>Variável</b> é um espaço na memória, com <b>nome</b> e <b>tipo</b>, que guarda um valor que pode mudar. <b>Constante</b> guarda um valor que nunca muda (<code>const</code>).</p>
+<table><tr><th>Tipo</th><th>Guarda</th><th>Exemplo</th><th>Observação</th></tr>
+<tr><td><code>int</code></td><td>Inteiros de 32 bits</td><td><code>int idade = 18;</code></td><td>−2.147.483.648 a 2.147.483.647</td></tr>
+<tr><td><code>long</code></td><td>Inteiros de 64 bits</td><td><code>long populacao = 8000000000;</code></td><td>Números muito grandes</td></tr>
+<tr><td><code>double</code></td><td>Decimais (ponto flutuante)</td><td><code>double altura = 1.75;</code></td><td>Cálculos científicos; pequenos erros de arredondamento</td></tr>
+<tr><td><code>decimal</code></td><td>Decimais exatos</td><td><code>decimal preco = 19.90m;</code></td><td><b>Dinheiro</b>; use o sufixo <code>m</code></td></tr>
+<tr><td><code>bool</code></td><td>Verdadeiro ou falso</td><td><code>bool ativo = true;</code></td><td><code>true</code> ou <code>false</code></td></tr>
+<tr><td><code>char</code></td><td>Um caractere</td><td><code>char letra = 'A';</code></td><td>Aspas simples</td></tr>
+<tr><td><code>string</code></td><td>Texto</td><td><code>string nome = "Ana";</code></td><td>Aspas duplas</td></tr></table>
+<ul><li><b>Declaração:</b> <code>int idade;</code> · <b>Atribuição:</b> <code>idade = 18;</code> · <b>Juntas:</b> <code>int idade = 18;</code></li><li><code>var</code> deixa o compilador descobrir o tipo: <code>var nome = "Ana";</code> (continua sendo <code>string</code>).</li><li>A variável precisa receber valor antes de ser usada (erro <b>CS0165</b> caso contrário).</li><li><b>Nomes:</b> <code>camelCase</code>, claros e sem acentos: <code>notaFinal</code>, <code>valorTotal</code>. Não comece com número nem use palavras reservadas.</li><li><b>Escopo:</b> uma variável só existe dentro do bloco <code>{ }</code> onde foi declarada.</li></ul>
+<h3>Conversão de tipos</h3><table><tr><th>Forma</th><th>Exemplo</th><th>Comportamento</th></tr>
+<tr><td><code>int.Parse(texto)</code></td><td><code>int.Parse("12")</code></td><td>Converte; <b>lança exceção</b> se o texto for inválido</td></tr>
+<tr><td><code>int.TryParse(texto, out n)</code></td><td><code>if (int.TryParse(t, out int n))</code></td><td><b>Seguro</b>: devolve <code>true</code> ou <code>false</code>; sem exceção</td></tr>
+<tr><td><code>Convert.ToInt32(x)</code></td><td><code>Convert.ToInt32("12")</code></td><td>Converte vários tipos; trata <code>null</code> como zero</td></tr>
+<tr><td>Cast <code>(int)</code></td><td><code>(int)3.9</code> resulta em 3</td><td>Converte número em número; <b>trunca</b> a parte decimal</td></tr>
+<tr><td><code>ToString()</code></td><td><code>idade.ToString()</code></td><td>Converte para texto</td></tr></table>
+<div class="tip">💡 Tudo o que vem do <code>ReadLine()</code> é <b>texto</b>. Para fazer contas, converta. Prefira sempre <code>TryParse</code> quando a entrada vem do usuário. O separador decimal depende da configuração regional do Windows: no Brasil, digite <code>7,5</code>.</div>
+<h2>5. Operadores</h2><table><tr><th>Tipo</th><th>Operadores</th><th>Observação</th></tr>
+<tr><td>Aritméticos</td><td><code>+ - * / %</code></td><td><code>%</code> é o resto da divisão. <b>Atenção:</b> <code>7 / 2</code> com inteiros dá <code>3</code>; use <code>7.0 / 2</code> para <code>3,5</code></td></tr>
+<tr><td>Atribuição</td><td><code>= += -= *= /= %=</code></td><td><code>x += 5</code> equivale a <code>x = x + 5</code></td></tr>
+<tr><td>Incremento</td><td><code>++ --</code></td><td><code>i++</code> soma 1</td></tr>
+<tr><td>Relacionais</td><td><code>== != &lt; &gt; &lt;= &gt;=</code></td><td>Resultam em <code>bool</code>. Cuidado: <code>=</code> atribui, <code>==</code> compara</td></tr>
+<tr><td>Lógicos</td><td><code>&amp;&amp; || !</code></td><td>E, OU, NÃO</td></tr></table>
+<table><tr><th>A</th><th>B</th><th>A &amp;&amp; B (E)</th><th>A || B (OU)</th><th>!A (NÃO)</th></tr>
+<tr><td>V</td><td>V</td><td>V</td><td>V</td><td>F</td></tr><tr><td>V</td><td>F</td><td>F</td><td>V</td><td>F</td></tr><tr><td>F</td><td>V</td><td>F</td><td>V</td><td>V</td></tr><tr><td>F</td><td>F</td><td>F</td><td>F</td><td>V</td></tr></table>
+<p><b>Curto-circuito:</b> em <code>A &amp;&amp; B</code>, se A é falso, B nem é avaliado. <b>Precedência</b> (da maior para a menor): parênteses, <code>!</code>, <code>* / %</code>, <code>+ -</code>, relacionais, <code>==</code> e <code>!=</code>, <code>&amp;&amp;</code>, <code>||</code>, atribuição. Na dúvida, <b>use parênteses</b>.</p>
+<h3>Texto: interpolação e formatação</h3><table><tr><th>Recurso</th><th>Exemplo</th><th>Resultado</th></tr>
+<tr><td>Interpolação</td><td><code>$"Olá, {nome}!"</code></td><td>Olá, Ana!</td></tr>
+<tr><td>Casas decimais</td><td><code>$"{media:F1}"</code></td><td>7,5</td></tr>
+<tr><td>Moeda</td><td><code>$"{preco:C2}"</code></td><td>R$ 19,90</td></tr>
+<tr><td>Porcentagem</td><td><code>$"{0.256:P1}"</code></td><td>25,6%</td></tr>
+<tr><td>Alinhamento</td><td><code>$"{nome,-10}|{valor,8:F2}"</code></td><td>Nome alinhado à esquerda e número à direita</td></tr>
+<tr><td>Quebra de linha / tabulação</td><td><code>"\n"</code> · <code>"\t"</code></td><td>Nova linha · tabulação</td></tr></table>
+<h2>6. Estruturas de decisão</h2><ul><li><code>if</code>: executa o bloco se a condição for verdadeira.</li><li><code>if ... else</code>: escolhe entre dois caminhos.</li><li><code>else if</code>: encadeia várias condições (a <b>primeira verdadeira</b> vence; o resto é ignorado).</li><li><b>Operador ternário:</b> <code>texto = nota &gt;= 7 ? "Aprovado" : "Reprovado";</code></li><li><code>switch</code>: escolhe entre valores exatos de uma variável (precisa de <code>break</code> em cada <code>case</code>; <code>default</code> trata o restante).</li></ul><pre><code>// if / else if / else
+if (media &gt;= 7)
+{
+    Console.WriteLine("Aprovado");
+}
+else if (media &gt;= 5)
+{
+    Console.WriteLine("Recuperação");
+}
+else
+{
+    Console.WriteLine("Reprovado");
+}
+
+// switch clássico
+switch (opcao)
+{
+    case 1:
+        Console.WriteLine("Somar");
+        break;
+    case 2:
+        Console.WriteLine("Subtrair");
+        break;
+    default:
+        Console.WriteLine("Opção inválida");
+        break;
+}
+
+// switch expression (forma moderna e curta, devolve um valor)
+string nomeDia = dia switch
+{
+    1 =&gt; "Domingo",
+    2 =&gt; "Segunda",
+    _ =&gt; "Outro"      // _ = qualquer outro valor
+};</code></pre>
+<h2>7. Estruturas de repetição</h2><table><tr><th>Laço</th><th>Quando usar</th><th>Característica</th></tr>
+<tr><td><code>for</code></td><td>Sabe-se <b>quantas vezes</b> repetir</td><td>Inicialização; condição; passo</td></tr>
+<tr><td><code>while</code></td><td>Repete <b>enquanto</b> a condição for verdadeira</td><td>Testa antes; pode não executar nenhuma vez</td></tr>
+<tr><td><code>do ... while</code></td><td>Precisa executar <b>pelo menos uma vez</b> (menus, validação)</td><td>Testa depois</td></tr>
+<tr><td><code>foreach</code></td><td>Percorrer todos os itens de um vetor ou lista</td><td>Sem índice; só leitura dos itens</td></tr></table>
+<ul><li><code>break</code> sai do laço; <code>continue</code> pula para a próxima volta.</li><li><b>Laço infinito:</b> condição que nunca fica falsa (esquecer o <code>i++</code>). Para interromper, use <b>Ctrl+C</b> no console.</li><li><b>Laços aninhados:</b> um laço dentro de outro (tabelas e matrizes).</li></ul>
+<h3>Padrões clássicos com laços</h3><table><tr><th>Padrão</th><th>Ideia</th></tr>
+<tr><td><b>Contador</b></td><td>Variável que conta ocorrências: <code>contador++</code></td></tr>
+<tr><td><b>Acumulador</b></td><td>Variável que soma valores: <code>soma += valor</code></td></tr>
+<tr><td><b>Maior / menor</b></td><td>Começar com o primeiro valor e comparar com os demais</td></tr>
+<tr><td><b>Busca</b></td><td>Percorrer procurando um item e parar ao achar</td></tr>
+<tr><td><b>Sentinela</b></td><td>Valor especial que encerra a leitura (ex.: 0 para terminar)</td></tr>
+<tr><td><b>Validação</b></td><td>Repetir a pergunta enquanto a resposta for inválida</td></tr></table>
+<h2>8. Vetores, matrizes e listas</h2><ul><li><b>Vetor (array):</b> conjunto de itens do <b>mesmo tipo</b> e <b>tamanho fixo</b>, acessados por <b>índice que começa em 0</b>. <code>double[] notas = new double[5];</code> → índices 0 a 4. <code>notas.Length</code> devolve o tamanho.</li><li>Acessar índice inexistente causa <code>IndexOutOfRangeException</code>.</li><li><b>Matriz:</b> vetor de duas dimensões: <code>int[,] tabela = new int[3, 3];</code>, acessada por <code>tabela[linha, coluna]</code>.</li><li><b>Lista</b> <code>List&lt;T&gt;</code>: como um vetor que <b>cresce</b>: <code>Add</code>, <code>Remove</code>, <code>RemoveAt</code>, <code>Count</code>, <code>Contains</code>, <code>IndexOf</code>.</li></ul>
+<table><tr><th>Recurso</th><th>Exemplo</th></tr>
+<tr><td>Inicializar</td><td><code>int[] v = { 5, 3, 8 };</code></td></tr>
+<tr><td>Ordenar / inverter</td><td><code>Array.Sort(v);</code> · <code>Array.Reverse(v);</code></td></tr>
+<tr><td>Somar, maior, menor, média</td><td><code>v.Sum()</code> · <code>v.Max()</code> · <code>v.Min()</code> · <code>v.Average()</code> (LINQ)</td></tr>
+<tr><td>Juntar em texto</td><td><code>string.Join(", ", v)</code></td></tr></table>
+<h2>9. Funções (métodos)</h2><p>Uma <b>função</b> é um bloco de código com nome, que pode receber dados (<b>parâmetros</b>) e devolver um resultado (<b>retorno</b>). Benefícios: <b>reutilização</b>, <b>legibilidade</b>, facilidade de <b>testar</b> e de corrigir (divisão em partes menores).</p><pre><code>// Tipo de retorno, nome, parâmetros entre parênteses
+static double CalcularMedia(double nota1, double nota2)
+{
+    return (nota1 + nota2) / 2;    // return devolve o valor e encerra a função
+}
+
+static void MostrarLinha()         // void = não devolve nada
+{
+    Console.WriteLine("----------");
+}
+
+double m = CalcularMedia(8, 6);    // chamada: 8 e 6 são os ARGUMENTOS</code></pre>
+<ul><li><b>Parâmetro</b> é a variável da declaração; <b>argumento</b> é o valor passado na chamada.</li><li><b>Escopo local:</b> variáveis criadas dentro da função não existem fora dela.</li><li><b>Parâmetro opcional:</b> <code>double desconto = 10</code>.</li><li><b>Sobrecarga:</b> funções com o <b>mesmo nome</b> e parâmetros diferentes (<code>Area(raio)</code> e <code>Area(base, altura)</code>).</li><li><b>Recursão:</b> a função chama a si mesma, precisando de uma <b>condição de parada</b> (fatorial: <code>n * Fatorial(n - 1)</code>).</li><li><b>Boa prática:</b> cada função faz <b>uma única coisa</b>, com nome de verbo (<code>CalcularMedia</code>, <code>LerInteiro</code>).</li></ul>
+<h2>10. Textos (strings)</h2><table><tr><th>Operação</th><th>Exemplo</th></tr>
+<tr><td>Tamanho</td><td><code>nome.Length</code></td></tr>
+<tr><td>Maiúsculas / minúsculas</td><td><code>nome.ToUpper()</code> · <code>nome.ToLower()</code></td></tr>
+<tr><td>Remover espaços das pontas</td><td><code>nome.Trim()</code></td></tr>
+<tr><td>Pedaço</td><td><code>nome.Substring(0, 3)</code></td></tr>
+<tr><td>Procurar / substituir</td><td><code>nome.Contains("an")</code> · <code>nome.Replace("a", "o")</code></td></tr>
+<tr><td>Dividir em partes</td><td><code>"a;b;c".Split(';')</code></td></tr>
+<tr><td>Vazio</td><td><code>string.IsNullOrWhiteSpace(nome)</code></td></tr>
+<tr><td>Acessar um caractere</td><td><code>nome[0]</code></td></tr></table>
+<p>Textos são <b>imutáveis</b>: <code>ToUpper()</code> <b>devolve</b> um novo texto, não altera o original. Para montar textos grandes em laços, use <code>StringBuilder</code>.</p>
+<h2>11. Tratamento de erros e validação</h2><p>Quando algo dá errado em tempo de execução, o C# lança uma <b>exceção</b>. Se ninguém a tratar, o programa fecha.</p><pre><code>try                                   // tenta executar
+{
+    int idade = int.Parse(Console.ReadLine() ?? "");
+    Console.WriteLine(10 / idade);
+}
+catch (FormatException)               // o texto não era um número
+{
+    Console.WriteLine("Digite apenas números.");
+}
+catch (DivideByZeroException)         // divisão por zero
+{
+    Console.WriteLine("Idade zero não é permitida aqui.");
+}
+finally                               // roda SEMPRE, com ou sem erro
+{
+    Console.WriteLine("Fim do trecho.");
+}</code></pre>
+<p><b>Regra:</b> para entrada do usuário, <b>valide antes</b> (<code>TryParse</code>, <code>if</code>) em vez de apenas capturar o erro. Exceções são para situações realmente excepcionais.</p>
+<table><tr><th>Exceção comum</th><th>Causa</th></tr>
+<tr><td><code>FormatException</code></td><td>Texto não é um número válido</td></tr>
+<tr><td><code>DivideByZeroException</code></td><td>Divisão inteira por zero</td></tr>
+<tr><td><code>IndexOutOfRangeException</code></td><td>Índice fora do vetor</td></tr>
+<tr><td><code>NullReferenceException</code></td><td>Usar uma variável que está <code>null</code></td></tr>
+<tr><td><code>OverflowException</code></td><td>Número grande demais para o tipo</td></tr></table>
+<h2>12. Teste de mesa e depuração</h2><p><b>Teste de mesa</b> é executar o algoritmo <b>no papel</b>, linha por linha, anotando o valor das variáveis a cada passo. É a melhor forma de entender um laço ou achar um erro de lógica.</p>
+<table><tr><th>Passo</th><th>i</th><th>i % 2 == 0 ?</th><th>soma</th></tr><tr><td>Início</td><td>—</td><td>—</td><td>0</td></tr><tr><td>1</td><td>1</td><td>falso</td><td>0</td></tr><tr><td>2</td><td>2</td><td>verdadeiro</td><td>2</td></tr></table>
+<h3>Tipos de erro</h3><table><tr><th>Tipo</th><th>Quando</th><th>Exemplo</th></tr>
+<tr><td>Sintaxe</td><td>Ao compilar (o Visual Studio sublinha em vermelho)</td><td>Esquecer o <code>;</code> ou fechar a chave</td></tr>
+<tr><td>Execução</td><td>Com o programa rodando</td><td>Divisão por zero, texto no lugar de número</td></tr>
+<tr><td>Lógica</td><td>O programa roda, mas o resultado está errado</td><td><code>&gt;</code> no lugar de <code>&gt;=</code></td></tr></table>
+<h3>Depurador do Visual Studio</h3><table><tr><th>Ação</th><th>Atalho</th></tr><tr><td>Ponto de interrupção</td><td>F9 na linha</td></tr><tr><td>Executar com depuração</td><td>F5</td></tr><tr><td>Passo a passo (por cima / para dentro)</td><td>F10 / F11</td></tr><tr><td>Ver variáveis</td><td>Janela <b>Locais</b> e <b>Inspeção</b></td></tr><tr><td>Executar sem depurar</td><td>Ctrl+F5</td></tr></table>
+<h2>13. Estilo, formatação e comentários</h2><ul><li><b>Indentação</b> de 4 espaços e uma instrução por linha. No Visual Studio: <b>Ctrl+K, Ctrl+D</b> formata o arquivo.</li><li><b>Nomes</b> que dizem o que a coisa é ou faz.</li><li><b>Comentários</b> explicam o <b>porquê</b>, e não o óbvio; comentar/descomentar linhas: <b>Ctrl+K, Ctrl+C</b> / <b>Ctrl+K, Ctrl+U</b>.</li><li><b>Evite repetir código:</b> repetiu, vire função ou laço.</li><li>Evite “números mágicos”: use <code>const</code> com nome.</li></ul>
+<h2>14. Método para resolver problemas</h2><ol><li><b>Entender:</b> quais são as entradas, as saídas e as regras? Dê exemplos.</li><li><b>Planejar:</b> escreva o algoritmo (fluxograma ou pseudocódigo).</li><li><b>Codificar</b> em pequenos pedaços, testando cada um.</li><li><b>Testar</b> com valores normais, limites e inválidos.</li><li><b>Melhorar:</b> nomes, comentários, funções.</li></ol><div class="pager"><a href="index.html">← Início</a><a href="pratica.html">Prática →</a></div></main><footer>Módulo 1 · Lógica de Programação Estruturada · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Avaliação · Módulo 7 · Gestão da Qualidade</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="7" data-page="avaliacao"><header><nav><a class="logo" href="index.html">🎓 Módulo 7 · Gestão da Qualidade</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 7</a><span>›</span><strong>Avaliação</strong></div><h1>Avaliação e verificação</h1><div class="assessment-contract"><span class="callout-title">🧠 Como usar esta avaliação</span>Faça primeiro sem consultar a teoria. Marque as questões em que teve dúvida, volte ao conteúdo apenas depois da primeira tentativa e corrija suas respostas explicando <i>por que</i> a solução correta funciona. A rubrica serve para autoavaliação e para feedback do professor.</div><div class="uc-box assessment-note"><span class="callout-title">✅ Evidência de aprendizagem</span>Resolva sem copiar a resposta dos exemplos. Quando houver código, execute e teste. O objetivo é demonstrar que você consegue explicar, aplicar e diagnosticar os conceitos deste módulo.</div>
+<h2>1. Exercícios</h2><ol>
+<li><b>Pareto próprio.</b> Use os defeitos reais do seu projeto (mínimo de 15 registros). Classifique, construa o Pareto, identifique os tipos prioritários e justifique.</li>
+<li><b>Pareto em C#.</b> Adapte o programa para ler os defeitos de um arquivo de texto (<code>File.ReadAllLines</code>) em vez de um array fixo.</li>
+<li><b>Ishikawa e 5 Porquês.</b> Para o segundo tipo mais frequente, faça o diagrama completo (mínimo 3 causas por categoria) e chegue à causa raiz.</li>
+<li><b>Matriz GUT.</b> Liste 5 problemas do seu projeto e pontue Gravidade, Urgência e Tendência de 1 a 5. Multiplique e ordene pela prioridade.</li>
+<li><b>Indicadores.</b> Defina 4 indicadores para o seu projeto integrador (nome, fórmula, meta e frequência de medição) usando o GQM.</li>
+<li><b>Carta de controle.</b> Colete 10 semanas de dados do seu projeto (ou simule) e calcule os limites. Interprete qualquer ponto fora.</li>
+<li><b>Estudo de caso.</b> Um sistema foi entregue e o cliente reclamou de 12 defeitos em uma semana. A equipe respondeu “vamos testar mais”. Discuta por que essa resposta é fraca e proponha um plano seguindo o PDCA.</li></ol>
+<h2>2. Modelos prontos</h2>
+<h3>Registro de defeito</h3><table><tr><th>ID</th><th>Data</th><th>Descrição / como reproduzir</th><th>Tipo</th><th>Gravidade</th><th>Responsável</th><th>Status</th></tr><tr><td>D31</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+<h3>Plano de ação 5W2H</h3><table><tr><th>O quê</th><th>Por quê</th><th>Onde</th><th>Quando</th><th>Quem</th><th>Como</th><th>Quanto</th></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+<h3>Painel de indicadores</h3><table><tr><th>Indicador</th><th>Meta</th><th>Sem. 1</th><th>Sem. 2</th><th>Sem. 3</th><th>Sem. 4</th><th>Situação</th></tr><tr><td>Defeitos por semana</td><td>≤ 4</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Testes aprovados (%)</td><td>≥ 95%</td><td></td><td></td><td></td><td></td><td></td></tr></table>
+<h3>Ata de retrospectiva</h3><table><tr><th>Data</th><th>Participantes</th><th>O que foi bem</th><th>O que melhorar</th><th>Ações (responsável e prazo)</th></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></table>
+<h3>Checklist de revisão por pares</h3><table><tr><th>#</th><th>Item</th><th>OK?</th></tr>
+<tr><td>1</td><td>O código atende aos requisitos?</td><td></td></tr><tr><td>2</td><td>Entradas inválidas são tratadas?</td><td></td></tr><tr><td>3</td><td>Há testes para as regras de negócio?</td><td></td></tr><tr><td>4</td><td>Nomes e formatação seguem o padrão?</td><td></td></tr><tr><td>5</td><td>Mensagens de erro são claras?</td><td></td></tr><tr><td>6</td><td>Não há código repetido ou comentado?</td><td></td></tr><tr><td>7</td><td>Acesso ao banco usa parâmetros?</td><td></td></tr><tr><td>8</td><td>Commit descreve a mudança e cita o requisito?</td><td></td></tr></table>
+<h2>3. Erros comuns ao usar as ferramentas</h2><table><tr><th>Erro</th><th>Por que é um problema</th><th>Como evitar</th></tr>
+<tr><td>Pareto com categorias vagas (“Diversos” maior que a primeira)</td><td>Esconde a informação</td><td>Refinar a classificação; “Outros” deve ser pequeno</td></tr>
+<tr><td>Ishikawa feito sem dados</td><td>Vira opinião</td><td>Partir do Pareto e confirmar causas com evidência</td></tr>
+<tr><td>Parar no 2º “por quê”</td><td>Trata o sintoma</td><td>Continuar até uma causa que a equipe possa mudar</td></tr>
+<tr><td>5W2H sem responsável ou prazo</td><td>Ninguém executa</td><td>Todo item com “quem” e “quando”</td></tr>
+<tr><td>Reagir a cada oscilação da carta de controle</td><td>Gasta esforço com variação normal</td><td>Agir só sobre pontos fora dos limites ou padrões claros</td></tr>
+<tr><td>Medir pessoas em vez de processos</td><td>Gera medo e dados falsos</td><td>Medir o processo e discutir com a equipe</td></tr>
+<tr><td>Fazer melhorias e não padronizar</td><td>O problema volta</td><td>Fechar o PDCA com a etapa Act (norma, checklist, automação)</td></tr></table>
+<h2>4. Rubrica de avaliação</h2><table><tr><th>Critério</th><th>Insuficiente</th><th>Adequado</th><th>Excelente</th></tr>
+<tr><td>Coleta e análise de dados</td><td>Sem folha de verificação</td><td>Folha e Pareto corretos</td><td>Dados reais, Pareto e análise por programa</td></tr>
+<tr><td>Análise de causas</td><td>Causas por opinião</td><td>Ishikawa e 5 Porquês feitos</td><td>Causa raiz validada com evidência</td></tr>
+<tr><td>Plano e PDCA</td><td>Ações vagas</td><td>5W2H completo</td><td>PDCA fechado com padronização</td></tr>
+<tr><td>Indicadores e controle</td><td>Sem metas</td><td>Indicadores e meta definidos</td><td>Carta de controle interpretada corretamente</td></tr>
+<tr><td>Registros</td><td>Sem registro</td><td>Defeitos e atas registrados</td><td>Registros rastreáveis, com ID, data e responsável</td></tr>
+<tr><td>Melhoria contínua</td><td>Sem retrospectiva</td><td>Retrospectiva realizada</td><td>Ações da retrospectiva alimentam o próximo ciclo</td></tr></table>
+<h2>5. Glossário</h2><table><tr><th>Termo</th><th>Significado</th></tr>
+<tr><td>Qualidade total (TQM)</td><td>Gestão em que toda a organização busca qualidade centrada no cliente</td></tr>
+<tr><td>Garantia da qualidade</td><td>Atividades que previnem defeitos melhorando o processo</td></tr>
+<tr><td>Controle da qualidade</td><td>Atividades que detectam defeitos no produto</td></tr>
+<tr><td>Não conformidade</td><td>Requisito não atendido</td></tr>
+<tr><td>Causa raiz</td><td>Origem do problema, que, se eliminada, evita sua repetição</td></tr>
+<tr><td>Causa comum / especial</td><td>Variação normal do processo / evento anormal que deve ser investigado</td></tr>
+<tr><td>Indicador</td><td>Medida usada para acompanhar um resultado</td></tr>
+<tr><td>SMART</td><td>Meta específica, mensurável, atingível, relevante e com prazo</td></tr>
+<tr><td>PDCA</td><td>Ciclo Planejar, Fazer, Verificar, Agir</td></tr>
+<tr><td>Kaizen</td><td>Melhoria contínua por pequenos passos</td></tr>
+<tr><td>Retrospectiva</td><td>Reunião periódica para avaliar e melhorar o trabalho</td></tr>
+<tr><td>Padronização</td><td>Transformar a solução que funcionou em regra da equipe</td></tr></table><div class="pager"><a href="pratica.html">← Prática</a><a href="index.html">Início ↑</a></div></main><footer>Módulo 7 · Gestão da Qualidade em Desenvolvimento de Software</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

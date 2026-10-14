@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Teoria · Módulo 3 · Windows Forms</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="3" data-page="teoria"><header><nav><a class="logo" href="index.html">🎓 Módulo 3 · Windows Forms</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 3</a><span>›</span><strong>Teoria</strong></div><h1>Teoria</h1><div class="lesson-contract"><span class="callout-title">🧭 Objetivo desta etapa</span>Entender como uma aplicação Windows Forms reage a eventos e como evitar concentrar toda a lógica dentro dos formulários.<br/><b>Estratégia:</b> leia uma seção por vez, execute mentalmente os exemplos e anote uma dúvida ou exemplo próprio antes de avançar para a prática.</div>
+<h2>1. O que é o Windows Forms</h2><p><b>Windows Forms</b> (WinForms) é a biblioteca do .NET para criar aplicativos de <b>desktop para Windows</b> com interface gráfica. Você monta a tela <b>arrastando controles</b> no designer e programa o que acontece quando o usuário interage. Cada janela é um <b>objeto</b> da classe <code>Form</code>, e cada botão, caixa de texto etc. também é um objeto: tudo o que você aprendeu de POO se aplica.</p>
+<table><tr><th>Característica</th><th>Observação</th></tr>
+<tr><td>Plataforma</td><td>Somente Windows (no .NET moderno, a partir do .NET Core 3.0)</td></tr>
+<tr><td>Modelo de programação</td><td>Orientado a <b>eventos</b></td></tr>
+<tr><td>Ferramenta principal</td><td>Designer do Visual Studio</td></tr>
+<tr><td>Ótimo para</td><td>Sistemas de gestão, cadastros, ferramentas internas</td></tr></table>
+<h2>2. Programação orientada a eventos</h2><p>Em um programa de console, <b>você</b> controla a ordem (pergunta, lê, calcula). Em uma janela, é o <b>usuário</b> quem decide o que fazer: clicar, digitar, fechar. O programa fica <b>esperando</b> e <b>reage</b> a cada ação. Cada ação gera um <b>evento</b>; o método que responde a ele é o <b>manipulador de evento</b> (<i>event handler</i>).</p>
+<figure><svg aria-label="Fluxo de um evento no Windows Forms" role="img" style="font-family:system-ui,sans-serif;font-size:12px" viewbox="0 0 700 110" xmlns="http://www.w3.org/2000/svg"><defs><marker id="sa" markerheight="7" markerwidth="7" orient="auto" refx="9" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink)"></path></marker></defs><rect height="50" rx="8" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="116" x="8" y="30"></rect><text font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="66" y="52">Usuário</text><text style="fill:var(--ink)" text-anchor="middle" x="66" y="68">clica no botão</text><path d="M124,55 L144,55" marker-end="url(#sa)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><rect height="50" rx="8" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="116" x="146" y="30"></rect><text font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="204" y="52">Windows</text><text style="fill:var(--ink)" text-anchor="middle" x="204" y="68">gera uma mensagem</text><path d="M262,55 L282,55" marker-end="url(#sa)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><rect height="50" rx="8" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="116" x="284" y="30"></rect><text font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="342" y="52">Application.Run</text><text style="fill:var(--ink)" text-anchor="middle" x="342" y="68">loop de mensagens</text><path d="M400,55 L420,55" marker-end="url(#sa)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><rect height="50" rx="8" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="116" x="422" y="30"></rect><text font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="480" y="52">Evento Click</text><text style="fill:var(--ink)" text-anchor="middle" x="480" y="68">do botão</text><path d="M538,55 L558,55" marker-end="url(#sa)" style="stroke:var(--ink);stroke-width:1.6;fill:none"></path><rect height="50" rx="8" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="116" x="560" y="30"></rect><text font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="618" y="52">btnSalvar_Click</text><text style="fill:var(--ink)" text-anchor="middle" x="618" y="68">seu código executa</text></svg><figcaption>O caminho de um clique: do usuário até o seu método.</figcaption></figure>
+<ul><li><code>Application.Run(form)</code> inicia o <b>loop de mensagens</b>: o programa fica em repouso até chegar uma mensagem do Windows.</li><li>Toda a interface roda em <b>uma única thread</b> (a thread da interface). Se um método demorar, <b>a janela congela</b> (veja a seção 11).</li></ul>
+<h2>3. Anatomia de um projeto Windows Forms</h2><table><tr><th>Arquivo</th><th>Função</th><th>Edita?</th></tr>
+<tr><td><code>Program.cs</code></td><td>Ponto de entrada: cria e executa o primeiro formulário</td><td>Raramente</td></tr>
+<tr><td><code>Form1.cs</code> (código)</td><td><b>Seu código</b>: eventos e lógica (<i>code-behind</i>)</td><td><b>Sim</b> (tecla F7)</td></tr>
+<tr><td><code>Form1.Designer.cs</code></td><td>Código <b>gerado</b> pelo designer: cria e configura cada controle</td><td><b>Não</b></td></tr>
+<tr><td><code>Form1.resx</code></td><td>Recursos (imagens, textos) do formulário</td><td>Pelo designer</td></tr></table><pre><code>// Program.cs
+static class Program
+{
+    [STAThread]                                   // exigido pelo Windows Forms (modelo de threads da interface)
+    static void Main()
+    {
+        ApplicationConfiguration.Initialize();    // configura estilos visuais, fonte padrão e DPI
+        Application.Run(new Form1());             // cria o formulário e inicia o loop de mensagens
+    }
+}
+
+// Form1.cs (parte SUA)                           // "partial": a classe é dividida em dois arquivos
+public partial class Form1 : Form
+{
+    public Form1()
+    {
+        InitializeComponent();                    // método GERADO no Designer.cs: cria e posiciona os controles
+    }
+}</code></pre>
+<p>Quando você arrasta um botão, o designer escreve em <code>Form1.Designer.cs</code> algo como <code>this.btnSalvar = new Button(); this.btnSalvar.Text = "Salvar"; this.btnSalvar.Click += new EventHandler(this.btnSalvar_Click);</code>. Você <b>nunca precisa escrever isso à mão</b>, mas precisa entender: <b>controles são objetos criados em código</b>.</p>
+<div class="tip">💡 <b>Alterne</b> entre o designer e o código com <b>F7</b> (código) e <b>Shift+F7</b> (designer). Se o designer mostrar erro, compile (<b>Ctrl+Shift+B</b>) e corrija o erro de compilação antes.</div>
+<h2>4. O formulário (Form)</h2><table><tr><th>Propriedade</th><th>Para quê</th></tr>
+<tr><td><code>Text</code></td><td>Título da janela</td></tr>
+<tr><td><code>Size</code> · <code>MinimumSize</code></td><td>Tamanho e tamanho mínimo</td></tr>
+<tr><td><code>StartPosition</code></td><td><code>CenterScreen</code> abre no centro; <code>CenterParent</code> centraliza sobre o formulário pai</td></tr>
+<tr><td><code>FormBorderStyle</code></td><td><code>Sizable</code> (padrão), <code>FixedSingle</code> (tamanho fixo), <code>FixedDialog</code> (caixas de diálogo)</td></tr>
+<tr><td><code>MaximizeBox</code> · <code>MinimizeBox</code></td><td>Mostra ou oculta os botões de maximizar e minimizar</td></tr>
+<tr><td><code>AcceptButton</code> · <code>CancelButton</code></td><td>Botões acionados por <b>Enter</b> e <b>Esc</b></td></tr>
+<tr><td><code>KeyPreview</code></td><td>O formulário recebe as teclas antes dos controles (atalhos globais)</td></tr>
+<tr><td><code>Icon</code> · <code>ShowInTaskbar</code> · <code>TopMost</code></td><td>Aparência e comportamento da janela</td></tr></table>
+<table><tr><th>Evento</th><th>Quando ocorre</th></tr>
+<tr><td><code>Load</code></td><td>Antes de a janela aparecer pela primeira vez (inicializar dados)</td></tr>
+<tr><td><code>Shown</code></td><td>Depois de a janela aparecer</td></tr>
+<tr><td><code>FormClosing</code></td><td>Quando vai fechar: permite <b>cancelar</b> (<code>e.Cancel = true</code>)</td></tr>
+<tr><td><code>FormClosed</code></td><td>Depois de fechar</td></tr>
+<tr><td><code>Resize</code></td><td>Quando o tamanho muda</td></tr></table>
+<h3>Vários formulários</h3><table><tr><th>Método</th><th>Comportamento</th></tr>
+<tr><td><code>Show()</code></td><td><b>Não modal</b>: o usuário pode usar as duas janelas</td></tr>
+<tr><td><code>ShowDialog()</code></td><td><b>Modal</b>: bloqueia a janela de trás até fechar; devolve um <code>DialogResult</code> (OK, Cancel, Yes, No)</td></tr>
+<tr><td><code>Close()</code> · <code>Hide()</code></td><td>Fecha (libera) · esconde</td></tr></table>
+<p>Para <b>passar dados</b> a outra janela, use o <b>construtor</b> ou propriedades públicas dela; para <b>receber</b>, use uma propriedade e o <code>DialogResult</code>. Use <code>using var frm = new FrmX(); frm.ShowDialog(this);</code> para descartar o formulário modal corretamente.</p>
+<h2>5. Controles essenciais</h2><table><tr><th>Controle</th><th>Uso</th><th>Propriedades e eventos principais</th></tr>
+<tr><td><code>Label</code></td><td>Texto de apoio e resultados</td><td><code>Text</code>, <code>ForeColor</code>, <code>AutoSize</code></td></tr>
+<tr><td><code>TextBox</code></td><td>Texto livre</td><td><code>Text</code>, <code>MaxLength</code>, <code>Multiline</code>, <code>PasswordChar</code>, <code>ReadOnly</code>; <code>TextChanged</code>, <code>KeyPress</code></td></tr>
+<tr><td><code>MaskedTextBox</code></td><td>Dado com formato fixo (telefone, CEP)</td><td><code>Mask</code>, <code>MaskCompleted</code></td></tr>
+<tr><td><code>Button</code></td><td>Executar uma ação</td><td><code>Text</code>, <code>Enabled</code>, <code>DialogResult</code>; <code>Click</code></td></tr>
+<tr><td><code>CheckBox</code> · <code>RadioButton</code></td><td>Sim/não · uma opção entre poucas</td><td><code>Checked</code>; <code>CheckedChanged</code></td></tr>
+<tr><td><code>ComboBox</code></td><td>Uma opção entre várias</td><td><code>DropDownStyle</code> (<code>DropDownList</code>), <code>Items</code>, <code>SelectedItem</code>, <code>SelectedIndex</code>, <code>DataSource</code>; <code>SelectedIndexChanged</code></td></tr>
+<tr><td><code>ListBox</code> · <code>CheckedListBox</code></td><td>Lista de itens</td><td><code>Items</code>, <code>SelectedItem</code>, <code>SelectionMode</code></td></tr>
+<tr><td><code>NumericUpDown</code></td><td>Número em intervalo</td><td><code>Minimum</code>, <code>Maximum</code>, <code>DecimalPlaces</code>, <code>Value</code> (<code>decimal</code>)</td></tr>
+<tr><td><code>DateTimePicker</code></td><td>Data e hora</td><td><code>Value</code>, <code>Format</code>, <code>MinDate</code>, <code>MaxDate</code></td></tr>
+<tr><td><code>DataGridView</code></td><td>Tabela de dados</td><td><code>DataSource</code>, <code>Columns</code>, <code>CurrentRow</code>, <code>ReadOnly</code>, <code>SelectionMode</code>; <code>CellClick</code>, <code>CellFormatting</code></td></tr>
+<tr><td><code>ListView</code></td><td>Lista com colunas e ícones</td><td><code>View</code>, <code>Columns</code>, <code>Items</code>, <code>SelectedItems</code></td></tr>
+<tr><td><code>GroupBox</code> · <code>Panel</code> · <code>TabControl</code></td><td>Agrupar e organizar</td><td><code>Text</code>, <code>TabPages</code>, <code>SelectedIndexChanged</code></td></tr>
+<tr><td><code>MenuStrip</code> · <code>ContextMenuStrip</code> · <code>ToolStrip</code> · <code>StatusStrip</code></td><td>Menu, menu de contexto, barra de ferramentas, barra de status</td><td><code>Items</code>; <code>Click</code> de cada item</td></tr>
+<tr><td><code>PictureBox</code></td><td>Imagem e desenho</td><td><code>Image</code>, <code>SizeMode</code>; <code>Paint</code></td></tr>
+<tr><td><code>ProgressBar</code> · <code>Timer</code></td><td>Progresso · executar algo a cada intervalo</td><td><code>Value</code>, <code>Maximum</code> · <code>Interval</code>, <code>Start()</code>, <code>Stop()</code>; <code>Tick</code></td></tr>
+<tr><td><code>ErrorProvider</code> · <code>ToolTip</code></td><td>Aviso de erro ao lado do campo · dica ao passar o mouse</td><td><code>SetError</code> · <code>SetToolTip</code></td></tr>
+<tr><td><code>OpenFileDialog</code> · <code>SaveFileDialog</code></td><td>Escolher arquivo para abrir ou salvar</td><td><code>Filter</code>, <code>FileName</code>, <code>ShowDialog()</code></td></tr>
+<tr><td><code>MessageBox</code></td><td>Janela de aviso, erro ou confirmação</td><td><code>MessageBox.Show(texto, título, botões, ícone)</code></td></tr></table>
+<h3>Convenção de nomes (prefixos)</h3><p><code>txt</code> (TextBox), <code>lbl</code> (Label), <code>btn</code> (Button), <code>cmb</code> (ComboBox), <code>lst</code> (ListBox), <code>lv</code> (ListView), <code>dgv</code> (DataGridView), <code>nud</code> (NumericUpDown), <code>chk</code> (CheckBox), <code>rdo</code> (RadioButton), <code>pic</code> (PictureBox), <code>pgb</code> (ProgressBar), <code>tmr</code> (Timer), <code>tsl</code> (ToolStripStatusLabel), <code>frm</code>/<code>Frm</code> (formulários). <b>Defina o <code>Name</code> antes de criar o evento.</b></p>
+<h2>6. Eventos na prática</h2><p>Um manipulador tem sempre dois parâmetros:</p><pre><code>private void btnSalvar_Click(object sender, EventArgs e)
+{
+    // sender = o objeto que gerou o evento (o botão que foi clicado)
+    // e      = dados do evento (EventArgs vazio no Click; outros eventos trazem informações)
+}</code></pre>
+<table><tr><th>Evento</th><th>Controle</th><th>Parâmetro <code>e</code> útil</th></tr>
+<tr><td><code>Click</code> · <code>DoubleClick</code></td><td>Quase todos</td><td>—</td></tr>
+<tr><td><code>TextChanged</code></td><td><code>TextBox</code></td><td>—</td></tr>
+<tr><td><code>KeyPress</code></td><td><code>TextBox</code></td><td><code>KeyPressEventArgs</code>: <code>e.KeyChar</code>, <code>e.Handled</code></td></tr>
+<tr><td><code>KeyDown</code></td><td>Qualquer controle</td><td><code>KeyEventArgs</code>: <code>e.KeyCode</code>, <code>e.Control</code></td></tr>
+<tr><td><code>SelectedIndexChanged</code></td><td><code>ComboBox</code>, <code>ListBox</code>, <code>TabControl</code></td><td>—</td></tr>
+<tr><td><code>CheckedChanged</code></td><td><code>CheckBox</code>, <code>RadioButton</code></td><td>—</td></tr>
+<tr><td><code>CellClick</code> · <code>CellFormatting</code></td><td><code>DataGridView</code></td><td><code>e.RowIndex</code>, <code>e.ColumnIndex</code></td></tr>
+<tr><td><code>Validating</code></td><td>Controles de entrada</td><td><code>CancelEventArgs</code>: <code>e.Cancel</code></td></tr>
+<tr><td><code>FormClosing</code></td><td><code>Form</code></td><td><code>FormClosingEventArgs</code>: <code>e.Cancel</code>, <code>e.CloseReason</code></td></tr>
+<tr><td><code>Paint</code></td><td>Controles e formulários</td><td><code>PaintEventArgs</code>: <code>e.Graphics</code></td></tr>
+<tr><td><code>Tick</code></td><td><code>Timer</code></td><td>—</td></tr></table>
+<h3>Como ligar um evento</h3><ol><li><b>Designer:</b> clique duplo no controle (evento padrão) ou selecione o controle, clique no ícone de raio ⚡ na janela Propriedades e dê clique duplo no evento.</li><li><b>Código:</b> <code>btn.Click += MeuManipulador;</code> (útil para controles criados em código e para <b>vários controles com o mesmo manipulador</b>).</li></ol>
+<p>Para usar o <b>mesmo manipulador</b> em vários controles, use o <code>sender</code>: <code>if (sender is Button b) { MessageBox.Show(b.Text); }</code>. Para <b>impedir uma tecla</b> no <code>KeyPress</code>, faça <code>e.Handled = true;</code>.</p>
+<div class="desafio">⚠️ <b>Cuidado:</b> se você <b>apagar um controle</b>, o método do evento continua no código (apague também). Se <b>renomear</b> um controle depois de criar o evento, o método mantém o nome antigo: o ideal é renomear o controle <b>antes</b>, ou usar Renomear (<b>F2</b>) no código.</div>
+<h2>7. Layout e experiência do usuário</h2><table><tr><th>Recurso</th><th>Efeito</th></tr>
+<tr><td><code>Anchor</code></td><td>“Ancora” o controle às bordas: quando a janela cresce, o controle acompanha (<code>Top, Left, Right</code> estica na horizontal)</td></tr>
+<tr><td><code>Dock</code></td><td>Cola o controle em uma borda ou preenche o espaço (<code>Fill</code>)</td></tr>
+<tr><td><code>TableLayoutPanel</code></td><td>Grade de linhas e colunas: ótima para formulários alinhados</td></tr>
+<tr><td><code>FlowLayoutPanel</code></td><td>Distribui os controles em fluxo</td></tr>
+<tr><td><code>SplitContainer</code></td><td>Dois painéis redimensionáveis</td></tr>
+<tr><td><code>Padding</code> · <code>Margin</code></td><td>Espaço interno e externo</td></tr>
+<tr><td><code>TabIndex</code></td><td>Ordem do <b>Tab</b> (menu Exibir → Ordem de Tabulação)</td></tr>
+<tr><td><code>AutoScaleMode = Dpi</code></td><td>Escala a interface em telas de alta resolução (padrão nos modelos atuais)</td></tr></table>
+<p><b>Princípios de UX no Windows Forms:</b> rótulos claros acima dos campos; campos obrigatórios com <b>*</b>; ordem de Tab lógica; botão principal destacado e ligado ao <b>Enter</b> (<code>AcceptButton</code>); <b>Esc</b> para cancelar; foco inicial no primeiro campo; feedback visível (barra de status); mensagens de erro que explicam a solução; confirmação antes de excluir; tamanho mínimo da janela (<code>MinimumSize</code>) para o layout não quebrar.</p>
+<h2>8. Validação de dados</h2><table><tr><th>Estratégia</th><th>Como</th></tr>
+<tr><td><b>Prevenir</b></td><td>Controle certo: <code>ComboBox</code> (<code>DropDownList</code>), <code>NumericUpDown</code>, <code>DateTimePicker</code>, <code>MaskedTextBox</code>; desabilitar botões que não fazem sentido</td></tr>
+<tr><td><b>Filtrar a digitação</b></td><td><code>KeyPress</code> com <code>e.Handled = true</code> para teclas indesejadas</td></tr>
+<tr><td><b>Validar ao salvar</b></td><td>Método <code>Validar()</code> com <code>ErrorProvider.SetError</code> e foco no primeiro erro</td></tr>
+<tr><td><b>Validar ao sair do campo</b></td><td>Evento <code>Validating</code> (<code>e.Cancel = true</code> mantém o foco)</td></tr>
+<tr><td><b>Proteger a regra</b></td><td>A <b>classe</b> valida e lança exceção; a tela captura e mostra a mensagem</td></tr></table>
+<p><code>MessageBox.Show(texto, titulo, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)</code> compõe uma confirmação com o “Não” como padrão. Ícones: <code>Information</code>, <code>Warning</code>, <code>Error</code>, <code>Question</code>.</p>
+<h2>9. Dados nos controles</h2><ul><li><b>Itens simples:</b> <code>listBox.Items.Add(objeto)</code>: o controle mostra o <code>ToString()</code> do objeto; <code>SelectedItem</code> devolve o objeto de volta.</li><li><b><code>DataSource</code>:</b> liga o controle a uma lista. No <code>ComboBox</code>/<code>ListBox</code>, defina <code>DisplayMember</code> (o que mostrar) e <code>ValueMember</code> (o valor) <b>antes</b> do <code>DataSource</code>.</li><li><b><code>BindingList&lt;T&gt;</code></b> (<code>using System.ComponentModel;</code>): quando você adiciona ou remove itens da lista, a grade <b>atualiza sozinha</b>. Se você alterar uma <b>propriedade</b> de um item, chame <code>dgv.Refresh()</code> (ou implemente <code>INotifyPropertyChanged</code>).</li><li><b><code>DataGridView</code>:</b> colunas automáticas a partir das propriedades públicas; ajuste com <code>Columns["Nome"].HeaderText</code>, <code>DefaultCellStyle.Format = "C2"</code>, <code>Visible = false</code>. Pegue o objeto da linha com <code>CurrentRow?.DataBoundItem</code>.</li><li><code>ListView</code> (modo <code>Details</code>): crie <code>ListViewItem</code> e guarde o objeto em <code>Tag</code>.</li></ul>
+<h2>10. Arquitetura: a interface não é o sistema</h2><p>Colocar regras de negócio dentro do método do botão cria código difícil de testar e de reaproveitar. O caminho correto:</p><table><tr><th>Camada</th><th>Responsabilidade</th></tr>
+<tr><td><b>Formulário</b> (UI)</td><td>Ler os campos, chamar as classes, mostrar o resultado e as mensagens</td></tr>
+<tr><td><b>Classes de domínio</b></td><td>Regras e validações (as que você criou no Módulo 2)</td></tr>
+<tr><td><b>Acesso a dados</b></td><td>Banco ou arquivo (Módulo 5)</td></tr></table>
+<p>Sinal de alerta: um método de evento com dezenas de linhas, cálculos e <code>if</code> de regras. <b>Extraia</b> para uma classe ou método próprio.</p>
+<h2>11. Interface responsiva: threads, <code>async</code> e <code>await</code></h2><p>A interface roda em uma <b>única thread</b>. Se um evento executa algo demorado (<code>Thread.Sleep</code>, cálculo pesado, rede, banco), a janela <b>congela</b> até terminar: sem repintar, sem responder a cliques.</p><table><tr><th>Situação</th><th>Solução</th></tr>
+<tr><td>Esperar um tempo</td><td><code>await Task.Delay(1000)</code> em um método <code>async</code></td></tr>
+<tr><td>Cálculo pesado</td><td><code>await Task.Run(() =&gt; Calcular())</code></td></tr>
+<tr><td>Rede, arquivos, banco</td><td>Métodos assíncronos (<code>ReadAllTextAsync</code>, <code>HttpClient</code>...)</td></tr>
+<tr><td>Atualizar um controle a partir de outra thread</td><td><b>Proibido</b> (<code>InvalidOperationException</code>: acesso entre threads). Depois do <code>await</code> você já volta à thread da interface; senão use <code>Invoke</code></td></tr></table>
+<p>Manipuladores de evento <code>async</code> são os <b>únicos</b> casos em que se usa <code>async void</code>. Desabilite o botão durante a operação para evitar cliques repetidos.</p>
+<h2>12. Depuração em Windows Forms</h2><ul><li>Coloque o ponto de interrupção (<b>F9</b>) <b>dentro do manipulador</b>; ao clicar no botão, a execução para ali.</li><li>Evento “não dispara”? Confira se ele está <b>ligado</b> (ícone ⚡ nas Propriedades) e se não há duplicidade (duas assinaturas executam duas vezes).</li><li><code>NullReferenceException</code> no <code>Load</code>: dados ainda não carregados ou controle sem inicializar.</li><li><b>Tratamento global:</b> <code>Application.ThreadException</code> captura exceções não tratadas da interface e evita que o programa feche sem aviso.</li><li><b>Registro (log):</b> grave erros em arquivo para investigar depois.</li></ul>
+<h2>13. Publicação e distribuição</h2><table><tr><th>Modo</th><th>Característica</th></tr>
+<tr><td><b>Dependente do framework</b></td><td>Arquivos pequenos; o computador de destino precisa ter o <b>.NET Desktop Runtime</b> instalado</td></tr>
+<tr><td><b>Autocontido</b> (self-contained)</td><td>Inclui o runtime: pasta maior, mas roda sem instalar o .NET</td></tr>
+<tr><td>Arquivo único</td><td>Gera um único executável (opcional)</td></tr></table>
+<p>Compile em <b>Release</b> antes de distribuir. No Visual Studio: clique direito no projeto → <b>Publicar</b> → destino <b>Pasta</b>. Teste em <b>outro computador</b> (ou máquina virtual) para garantir que nada depende do seu ambiente.</p><div class="pager"><a href="index.html">← Início</a><a href="pratica.html">Prática →</a></div></main><footer>Módulo 3 · Interfaces Windows Forms com C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

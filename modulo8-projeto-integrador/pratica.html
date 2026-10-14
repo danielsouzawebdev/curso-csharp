@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Prática · Módulo 8 · Projeto Integrador</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="8" data-page="pratica"><header><nav><a class="logo" href="index.html">🎓 Módulo 8 · Projeto Integrador</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 8</a><span>›</span><strong>Prática guiada</strong></div><h1>Prática guiada · Biblioteca Escolar</h1><div class="tip practice-contract"><span class="callout-title">🧭 Como executar esta prática</span>Digite o código, execute a cada etapa e compare o comportamento com o resultado descrito. Se houver erro, leia a mensagem antes de alterar o código e use o depurador quando indicado.</div>
+<p>Siga as sprints na ordem. Em cada uma, ao terminar, confira a <b>Definição de Pronto</b> e faça a reunião de revisão/retrospectiva (10 minutos). Códigos para .NET 6 ou superior, escritos para você <b>digitar e entender</b> linha a linha.</p>
+<div class="tip">💡 Se sua equipe escolher outro tema, aplique o mesmo caminho: troque Leitor/Livro/Empréstimo pelas entidades do seu sistema e reescreva os requisitos.</div>
+<div class="steps"><div class="step"><h3>Sprint 0 · Organize a equipe e o ambiente</h3><ol><li>Defina os <b>papéis</b> (líder de produto, líder técnico, QA, UX/documentação, dados) e o nome da equipe.</li><li>Verifique o ambiente: <b>Visual Studio</b>, <b>Laragon</b> com MySQL iniciado, <b>Git</b> instalado (<code>git --version</code>) e conta no <b>GitHub</b>.</li><li>O líder técnico cria o repositório <code>biblioteca-escolar</code> no GitHub (com README e <code>.gitignore</code> para Visual Studio) e adiciona os integrantes como colaboradores.</li><li>Todos clonam: <code>git clone &lt;endereço-do-repositório&gt;</code>.</li><li>Combinem a <b>Definição de Pronto</b> (modelo na Teoria) e o canal de comunicação.</li></ol></div><div class="step"><h3>Sprint 0 · Escreva os requisitos</h3><p>Registre no documento de requisitos (arquivo <code>docs/requisitos.md</code> no repositório). Para cada RF, escreva ao menos um <b>critério de aceitação</b> (Dado – Quando – Então).</p><table><tr><th>ID</th><th>Requisito</th><th>Prior.</th></tr>
+<tr><td>RF01</td><td>Cadastrar livros (título, autor, exemplares).</td><td>M</td></tr>
+<tr><td>RF02</td><td>Cadastrar leitores, que podem ser aluno ou professor.</td><td>M</td></tr>
+<tr><td>RF03</td><td>Emprestar um livro somente se houver exemplar disponível.</td><td>M</td></tr>
+<tr><td>RF04</td><td>Limite de empréstimos ativos simultâneos: aluno 3, professor 5.</td><td>M</td></tr>
+<tr><td>RF05</td><td>Prazo de devolução: aluno 7 dias, professor 14 dias.</td><td>M</td></tr>
+<tr><td>RF06</td><td>Leitor com livro em atraso não pode fazer novo empréstimo.</td><td>M</td></tr>
+<tr><td>RF07</td><td>Na devolução, registrar a data e calcular multa de R$ 1,00 por dia de atraso.</td><td>M</td></tr>
+<tr><td>RF08</td><td>Listar empréstimos ativos com a situação (no prazo ou atrasado).</td><td>M</td></tr>
+<tr><td>RF09</td><td>Buscar livros por título.</td><td>S</td></tr>
+<tr><td>RF10</td><td>Um leitor não pode ter dois empréstimos ativos do mesmo livro.</td><td>S</td></tr>
+<tr><td>RNF01</td><td>Dados persistidos no MySQL (Laragon), sempre com parâmetros.</td><td>M</td></tr>
+<tr><td>RNF02</td><td>Interface seguindo as heurísticas de usabilidade (mensagens claras, confirmação, uso do teclado).</td><td>M</td></tr>
+<tr><td>RNF03</td><td>Todas as regras de negócio com testes unitários.</td><td>M</td></tr>
+<tr><td>RNF04</td><td>Código documentado com <code>///</code> e versionado no Git.</td><td>M</td></tr></table></div><div class="step"><h3>Sprint 0 · Modele o banco e as classes</h3><p>Desenhe o MER e o diagrama de classes (papel ou ferramenta) e discuta em equipe. Referência do diagrama de classes:</p><pre><code>          +----------------------+                 +--------------------+
+          |   &lt;&lt;abstract&gt;&gt;       |                 |       Livro        |
+          |       Leitor         |                 |--------------------|
+          |----------------------|                 | Id, Titulo, Autor  |
+          | Id, Nome             |                 | Exemplares         |
+          | LimiteEmprestimos *  |                 | Disponiveis        |
+          | PrazoDias *          |                 | TemDisponivel      |
+          +----------^-----------+                 +---------^----------+
+                     | herança (é um)                        |
+           +---------+---------+                             | tem um
+   +-------+-------+   +-------+-------+            +--------+---------+
+   |     Aluno     |   |   Professor   |            |    Emprestimo    |
+   | Limite=3      |   | Limite=5      |&lt;-----------| Leitor, Livro    |
+   | Prazo=7 dias  |   | Prazo=14 dias | tem um     | DataEmprestimo   |
+   +---------------+   +---------------+            | DataPrevista     |
+                                                    | DataDevolucao?   |
+   BibliotecaService: Emprestar(...) e Devolver(...)| CalcularMulta()  |
+   (regras de negócio, sem banco e sem tela)        +------------------+
+   * = membro abstrato, cada classe filha define o seu valor</code></pre><p>Execute no HeidiSQL (Laragon → Banco de dados) o script abaixo. Salve-o em <code>docs/banco.sql</code> e faça o primeiro commit.</p><pre><code>-- Cria o banco da biblioteca (se ainda não existir) com suporte a acentos
+CREATE DATABASE IF NOT EXISTS biblioteca CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE biblioteca;                                              -- seleciona o banco
+
+CREATE TABLE leitores (                                      -- uma tabela para alunos E professores
+    id   INT AUTO_INCREMENT PRIMARY KEY,                     -- identificador gerado automaticamente
+    nome VARCHAR(100) NOT NULL,                              -- nome obrigatório
+    tipo CHAR(1) NOT NULL,                                   -- 'A' = aluno, 'P' = professor
+    CHECK (tipo IN ('A', 'P'))                               -- impede qualquer outro valor
+);
+
+CREATE TABLE livros (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    titulo      VARCHAR(150) NOT NULL,
+    autor       VARCHAR(100) NOT NULL,
+    exemplares  INT NOT NULL DEFAULT 1,                      -- quantos exemplares a biblioteca possui
+    disponiveis INT NOT NULL DEFAULT 1,                      -- quantos estão na prateleira agora
+    CHECK (disponiveis &gt;= 0 AND disponiveis &lt;= exemplares)   -- nunca negativo e nunca maior que o total
+);
+
+CREATE TABLE emprestimos (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    leitor_id       INT NOT NULL,                            -- quem pegou (chave estrangeira)
+    livro_id        INT NOT NULL,                            -- o que pegou (chave estrangeira)
+    data_emprestimo DATE NOT NULL,                           -- dia da retirada
+    data_prevista   DATE NOT NULL,                           -- dia limite para devolver
+    data_devolucao  DATE NULL,                               -- NULL = ainda não devolvido (empréstimo ativo)
+    multa           DECIMAL(10,2) NULL,                      -- preenchida na devolução
+    FOREIGN KEY (leitor_id) REFERENCES leitores(id),         -- só aceita leitores que existem
+    FOREIGN KEY (livro_id)  REFERENCES livros(id)            -- só aceita livros que existem
+);
+
+-- Dados de exemplo para testar
+INSERT INTO leitores (nome, tipo) VALUES ('Ana Souza', 'A'), ('Bruno Lima', 'A'), ('Profa. Carla Dias', 'P');
+INSERT INTO livros (titulo, autor, exemplares, disponiveis) VALUES
+    ('Dom Casmurro', 'Machado de Assis', 2, 2),
+    ('O Cortiço', 'Aluísio Azevedo', 1, 1),
+    ('Capitães da Areia', 'Jorge Amado', 3, 3);</code></pre></div><div class="step"><h3>Sprint 0 · Monte a solução em camadas</h3><p>No Visual Studio: <b>Criar um projeto → Biblioteca de Classes</b> <code>Biblioteca.Core</code> (nome da solução: <code>Biblioteca</code>). Depois, <b>Adicionar → Novo Projeto</b>:</p><ul><li><code>Biblioteca.Data</code> (Biblioteca de Classes): referência a <code>Core</code>; instale o pacote NuGet <code>MySqlConnector</code>.</li><li><code>Biblioteca.UI</code> (Aplicativo do Windows Forms): referências a <code>Core</code> e <code>Data</code>; defina como <b>projeto de inicialização</b>.</li><li><code>Biblioteca.Tests</code> (Projeto de Teste xUnit): referência a <code>Core</code>.</li></ul><p>Apague <code>Class1.cs</code> e <code>UnitTest1.cs</code>. Confira que <code>Core</code> <b>não referencia</b> nenhum outro projeto. Commit: <code>chore: estrutura da solução em camadas</code>.</p></div><div class="step"><h3>Sprint 1 · Fluxo de Git para cada tarefa</h3><p>A partir daqui, <b>cada tarefa tem uma branch</b> e entra na main por Pull Request revisado. Comandos do fluxo:</p><pre><code>git switch -c feature/dominio                     # cria a branch da tarefa e entra nela
+# ... programe, teste ...
+git add .                                         # separa as mudanças para o commit
+git commit -m "RF03/RF04: regras de empréstimo no serviço"   # commit pequeno citando os requisitos
+git push -u origin feature/dominio                # envia a branch ao GitHub
+# No GitHub: abra um Pull Request, peça a revisão de um colega e execute o MERGE pelo próprio GitHub.
+# Depois que o Pull Request for aprovado e integrado à main:
+git switch main                                   # volta para a branch principal
+git pull origin main                              # traz para o computador a main já atualizada pelo merge do PR
+git branch -d feature/dominio                    # remove a branch local que já foi integrada
+git tag v0.1                                      # (opcional) marca uma versão estável
+git push --tags</code></pre></div><div class="step"><h3>Sprint 1 · Implemente o domínio (Core)</h3><p>Crie o arquivo <code>Dominio.cs</code> em <code>Biblioteca.Core</code> (depois você pode separar uma classe por arquivo, com <b>F12</b> e <b>Ctrl+.</b> → “Mover para arquivo”). Repare em quatro ideias: <b>herança</b> (<code>Aluno</code>/<code>Professor</code>), <b>abstração</b> (membros <code>abstract</code>), <b>polimorfismo</b> (o limite muda conforme o tipo) e <b>regras isoladas</b> no serviço.</p><pre><code>namespace Biblioteca.Core;                                       // namespace da camada de domínio
+
+public abstract class Leitor                                     // abstract: não existe "leitor genérico", só aluno ou professor
+{
+    public int Id { get; set; }                                  // identificador (vem do banco)
+    public string Nome { get; set; } = "";                       // nome do leitor
+    public abstract int LimiteEmprestimos { get; }               // abstract: cada filha é OBRIGADA a definir o seu limite
+    public abstract int PrazoDias { get; }                       // idem para o prazo de devolução
+    public override string ToString() =&gt; Nome;                   // ComboBox usa ToString() para exibir o item
+}
+
+public class Aluno : Leitor                                      // ": Leitor" = herança
+{
+    public override int LimiteEmprestimos =&gt; 3;                  // RF04: aluno pode ter até 3 empréstimos ativos
+    public override int PrazoDias =&gt; 7;                          // RF05: aluno tem 7 dias
+}
+
+public class Professor : Leitor
+{
+    public override int LimiteEmprestimos =&gt; 5;                  // RF04: professor até 5
+    public override int PrazoDias =&gt; 14;                         // RF05: professor tem 14 dias
+}
+
+public class Livro
+{
+    public int Id { get; set; }
+    public string Titulo { get; set; } = "";
+    public string Autor { get; set; } = "";
+    public int Exemplares { get; set; }                          // total de exemplares da biblioteca
+    public int Disponiveis { get; set; }                         // exemplares na prateleira agora
+    public bool TemDisponivel =&gt; Disponiveis &gt; 0;                // propriedade calculada: true se dá para emprestar
+    public override string ToString() =&gt; $"{Titulo} ({Autor})";  // texto mostrado nas listas
+}
+
+public class Emprestimo
+{
+    public const decimal MultaPorDia = 1.00m;                    // RF07: constante nomeada (m = tipo decimal)
+
+    public int Id { get; set; }
+    public Leitor Leitor { get; set; } = null!;                  // null! diz ao compilador: "será preenchido, confie"
+    public Livro Livro { get; set; } = null!;
+    public DateTime DataEmprestimo { get; set; }                 // dia da retirada
+    public DateTime DataPrevista { get; set; }                   // dia limite de devolução
+    public DateTime? DataDevolucao { get; set; }                 // DateTime? aceita null: null = ainda não devolvido
+
+    public bool Ativo =&gt; DataDevolucao == null;                  // ativo = ainda não foi devolvido
+
+    public bool EstaAtrasado(DateTime hoje)                      // recebe "hoje" por parâmetro: facilita os testes
+    {
+        return Ativo &amp;&amp; hoje.Date &gt; DataPrevista.Date;           // só está atrasado se ativo e passou do prazo
+    }
+
+    public decimal CalcularMulta(DateTime dataReferencia)        // RF07
+    {
+        DateTime fim = DataDevolucao ?? dataReferencia;          // ?? usa a devolução real; se for null, a data de referência
+        int diasAtraso = (fim.Date - DataPrevista.Date).Days;    // subtrair datas gera TimeSpan; .Days = número de dias
+        return diasAtraso &gt; 0 ? diasAtraso * MultaPorDia : 0m;   // sem atraso, multa zero
+    }
+}
+
+public class BibliotecaService                                   // regras de negócio: nada de banco, nada de tela
+{
+    public Emprestimo Emprestar(Leitor leitor, Livro livro,
+                                IReadOnlyList&lt;Emprestimo&gt; ativosDoLeitor, DateTime hoje)
+    {
+        if (!livro.TemDisponivel)                                // RF03
+            throw new InvalidOperationException("Não há exemplares disponíveis deste livro.");
+
+        if (ativosDoLeitor.Count &gt;= leitor.LimiteEmprestimos)    // RF04: polimorfismo, cada tipo tem seu limite
+            throw new InvalidOperationException(
+                $"O limite de {leitor.LimiteEmprestimos} empréstimos simultâneos foi atingido.");
+
+        if (ativosDoLeitor.Any(e =&gt; e.EstaAtrasado(hoje)))       // RF06: Any = "existe algum que...?" (LINQ)
+            throw new InvalidOperationException("O leitor possui livro em atraso e não pode fazer novo empréstimo.");
+
+        if (ativosDoLeitor.Any(e =&gt; e.Livro.Id == livro.Id))     // RF10: mesmo livro duas vezes
+            throw new InvalidOperationException("O leitor já está com um exemplar deste livro.");
+
+        // Não altere livro.Disponiveis aqui. O estoque persistente será baixado pelo DAO
+        // dentro da mesma transação que grava o empréstimo. Assim, se o banco falhar,
+        // o objeto em memória não fica divergente da fonte de verdade.
+
+        return new Emprestimo                                    // cria o empréstimo já com as datas calculadas
+        {
+            Leitor = leitor,
+            Livro = livro,
+            DataEmprestimo = hoje.Date,                          // .Date descarta a hora
+            DataPrevista = hoje.Date.AddDays(leitor.PrazoDias)   // RF05: prazo depende do tipo do leitor
+        };
+    }
+
+    public decimal CalcularMultaDevolucao(Emprestimo emprestimo, DateTime hoje)
+    {
+        if (!emprestimo.Ativo)                                   // não dá para devolver duas vezes
+            throw new InvalidOperationException("Este empréstimo já foi devolvido.");
+
+        // Este método valida e calcula a regra, mas não grava estado persistente.
+        // A data de devolução e a reposição do exemplar serão confirmadas pelo DAO
+        // dentro da mesma transação.
+        return emprestimo.CalcularMulta(hoje);                   // RF07: 0 se estiver no prazo
+    }
+}</code></pre></div><div class="step"><h3>Sprint 1 · Proteja as regras com testes (TDD)</h3><p>Em <code>Biblioteca.Tests</code>, crie <code>BibliotecaServiceTests.cs</code>. <b>Sugestão de TDD:</b> escreva os testes <b>antes</b> do serviço (eles falham: vermelho), implemente o serviço (verde) e refatore. Rode no Gerenciador de Testes (Ctrl+E, T). Todos precisam passar para a tarefa ser considerada pronta.</p><pre><code>using Biblioteca.Core;
+using Xunit;
+
+namespace Biblioteca.Tests;
+
+public class BibliotecaServiceTests
+{
+    private static readonly DateTime Hoje = new(2026, 3, 10);   // data fixa: o teste dá o mesmo resultado sempre (R de FIRST)
+    private readonly BibliotecaService servico = new();         // objeto testado; um novo para cada teste (xUnit cria uma classe por teste)
+
+    // ---------- métodos auxiliares para montar os dados (evita repetição) ----------
+    private static Livro NovoLivro(int id, int disponiveis) =&gt; new()
+        { Id = id, Titulo = "Livro " + id, Autor = "Autor", Exemplares = disponiveis, Disponiveis = disponiveis };
+
+    private static Emprestimo Ativo(Leitor leitor, Livro livro, DateTime inicio) =&gt; new()
+        { Leitor = leitor, Livro = livro, DataEmprestimo = inicio, DataPrevista = inicio.AddDays(leitor.PrazoDias) };
+
+    // ---------- RF03, RF05 ----------
+    [Fact]
+    public void Emprestar_AlunoComExemplar_CriaEmprestimoDeSeteDias()
+    {
+        var aluno = new Aluno { Id = 1, Nome = "Ana" };                       // ARRANGE
+        var livro = NovoLivro(1, 2);
+        var emp = servico.Emprestar(aluno, livro, new List&lt;Emprestimo&gt;(), Hoje); // ACT
+        Assert.Equal(Hoje.AddDays(7), emp.DataPrevista);                      // ASSERT: aluno = 7 dias
+        Assert.Equal(2, livro.Disponiveis);                                   // serviço não altera estoque persistente
+    }
+
+    [Fact]
+    public void Emprestar_Professor_CriaEmprestimoDeCatorzeDias()
+    {
+        var prof = new Professor { Id = 2, Nome = "Carla" };
+        var emp = servico.Emprestar(prof, NovoLivro(1, 1), new List&lt;Emprestimo&gt;(), Hoje);
+        Assert.Equal(Hoje.AddDays(14), emp.DataPrevista);
+    }
+
+    [Fact]
+    public void Emprestar_SemExemplarDisponivel_LancaExcecao()
+    {
+        var aluno = new Aluno { Id = 1 };
+        Assert.Throws&lt;InvalidOperationException&gt;(                             // espera a exceção da regra RF03
+            () =&gt; servico.Emprestar(aluno, NovoLivro(1, 0), new List&lt;Emprestimo&gt;(), Hoje));
+    }
+
+    // ---------- RF04 ----------
+    [Fact]
+    public void Emprestar_AlunoNoLimite_LancaExcecao()
+    {
+        var aluno = new Aluno { Id = 1 };
+        var ativos = new List&lt;Emprestimo&gt;                                     // aluno já tem 3 livros diferentes
+        {
+            Ativo(aluno, NovoLivro(1, 1), Hoje), Ativo(aluno, NovoLivro(2, 1), Hoje), Ativo(aluno, NovoLivro(3, 1), Hoje)
+        };
+        Assert.Throws&lt;InvalidOperationException&gt;(
+            () =&gt; servico.Emprestar(aluno, NovoLivro(4, 1), ativos, Hoje));   // o 4º deve ser recusado
+    }
+
+    [Fact]
+    public void Emprestar_ProfessorComTresAtivos_Permite()
+    {
+        var prof = new Professor { Id = 2 };
+        var ativos = new List&lt;Emprestimo&gt; { Ativo(prof, NovoLivro(1, 1), Hoje), Ativo(prof, NovoLivro(2, 1), Hoje), Ativo(prof, NovoLivro(3, 1), Hoje) };
+        var emp = servico.Emprestar(prof, NovoLivro(4, 1), ativos, Hoje);     // professor tem limite 5: o 4º é permitido
+        Assert.NotNull(emp);
+    }
+
+    // ---------- RF06 ----------
+    [Fact]
+    public void Emprestar_LeitorComAtraso_LancaExcecao()
+    {
+        var aluno = new Aluno { Id = 1 };
+        var inicio = new DateTime(2026, 3, 1);                                // prazo de 7 dias vence em 08/03
+        var ativos = new List&lt;Emprestimo&gt; { Ativo(aluno, NovoLivro(1, 1), inicio) }; // hoje (10/03) já está atrasado
+        Assert.Throws&lt;InvalidOperationException&gt;(
+            () =&gt; servico.Emprestar(aluno, NovoLivro(2, 1), ativos, Hoje));
+    }
+
+    // ---------- RF10 ----------
+    [Fact]
+    public void Emprestar_MesmoLivroDuasVezes_LancaExcecao()
+    {
+        var aluno = new Aluno { Id = 1 };
+        var livro = NovoLivro(1, 2);                                          // há 2 exemplares, mas é o mesmo livro
+        var ativos = new List&lt;Emprestimo&gt; { Ativo(aluno, livro, Hoje) };
+        Assert.Throws&lt;InvalidOperationException&gt;(() =&gt; servico.Emprestar(aluno, livro, ativos, Hoje));
+    }
+
+    // ---------- RF07 ----------
+    [Fact]
+    public void CalcularMultaDevolucao_NoPrazo_SemMulta()
+    {
+        var aluno = new Aluno { Id = 1 };
+        var emp = Ativo(aluno, NovoLivro(1, 0), Hoje);                        // vence em 17/03
+        decimal multa = servico.CalcularMultaDevolucao(emp, Hoje.AddDays(7));  // calcula para o último dia do prazo
+        Assert.Equal(0m, multa);
+    }
+
+    [Fact]
+    public void CalcularMultaDevolucao_ComCincoDiasDeAtraso_CobraCincoReais()
+    {
+        var aluno = new Aluno { Id = 1 };
+        var emp = Ativo(aluno, NovoLivro(1, 0), Hoje);                        // prevista = 17/03
+        decimal multa = servico.CalcularMultaDevolucao(emp, Hoje.AddDays(12)); // 22/03 = 5 dias de atraso
+        Assert.Equal(5.00m, multa);                                           // 5 dias x R$ 1,00
+    }
+
+    [Fact]
+    public void CalcularMultaDevolucao_NaoAlteraEstadoPersistenteEmMemoria()
+    {
+        var livro = NovoLivro(1, 0);
+        var emp = Ativo(new Aluno { Id = 1 }, livro, Hoje);
+        servico.CalcularMultaDevolucao(emp, Hoje.AddDays(1));
+        Assert.Null(emp.DataDevolucao);                                       // DAO ainda não confirmou a devolução
+        Assert.Equal(0, livro.Disponiveis);                                   // estoque também não é alterado pelo serviço
+    }
+}</code></pre></div><div class="step"><h3>Sprint 1 · Documente o domínio</h3><p>Adicione comentários <code>///</code> (summary, param, returns, exception) a <code>Emprestar</code>, <code>CalcularMultaDevolucao</code> e <code>CalcularMulta</code>. Preencha a <b>matriz de rastreabilidade</b>:</p><table><tr><th>Requisito</th><th>Código</th><th>Teste</th><th>Commit</th></tr><tr><td>RF03</td><td><code>BibliotecaService.Emprestar</code></td><td><code>Emprestar_SemExemplarDisponivel_LancaExcecao</code></td><td></td></tr><tr><td>RF04</td><td><code>BibliotecaService.Emprestar</code></td><td><code>Emprestar_AlunoNoLimite_LancaExcecao</code></td><td></td></tr><tr><td>RF05</td><td><code>Leitor.PrazoDias</code></td><td><code>Emprestar_AlunoComExemplar_CriaEmprestimoDeSeteDias</code></td><td></td></tr><tr><td>RF06</td><td><code>EstaAtrasado</code></td><td><code>Emprestar_LeitorComAtraso_LancaExcecao</code></td><td></td></tr><tr><td>RF07</td><td><code>CalcularMulta</code></td><td><code>CalcularMultaDevolucao_ComCincoDiasDeAtraso_CobraCincoReais</code></td><td></td></tr></table></div><div class="step"><h3>Sprint 2 · Acesso a dados (Data)</h3><p>Em <code>Biblioteca.Data</code>, crie <code>DAOs.cs</code>. Observe: <b>parâmetros em todo SQL</b> (RNF01), a <b>transação</b> que grava o empréstimo e baixa o estoque juntos, e o <code>AND disponiveis &gt; 0</code> que protege contra o “último exemplar” sendo pego por dois usuários.</p><div class="tip"><span class="callout-title">💡 Fonte da verdade e concorrência</span>O banco é a fonte da verdade para estoque e devoluções. As regras são validadas no serviço, mas mudanças persistentes são confirmadas em transação. Em sistemas multiusuário reais, limites, duplicidades e outras regras críticas também podem exigir restrições adicionais no banco ou estratégias de concorrência.</div><pre><code>using Biblioteca.Core;
+using MySqlConnector;
+
+namespace Biblioteca.Data;
+
+public static class Conexao                                      // único lugar que conhece a connection string
+{
+    private const string Texto = "Server=localhost;Port=3306;Database=biblioteca;User ID=root;Password=;";
+    public static MySqlConnection Criar() =&gt; new MySqlConnection(Texto); // cada operação cria e fecha a sua conexão
+}
+
+
+public class LivroDAO
+{
+    public List&lt;Livro&gt; Listar(string busca)                      // RF09: busca por parte do título
+    {
+        var lista = new List&lt;Livro&gt;();
+        using var con = Conexao.Criar();                         // using var: fecha ao sair do método
+        con.Open();
+        using var cmd = new MySqlCommand(
+            "SELECT id, titulo, autor, exemplares, disponiveis FROM livros " +
+            "WHERE titulo LIKE @busca ORDER BY titulo", con);
+        cmd.Parameters.AddWithValue("@busca", "%" + busca + "%"); // parâmetro: nunca concatene o texto digitado no SQL (RNF01)
+        using var r = cmd.ExecuteReader();                       // leitor de linhas
+        while (r.Read())                                         // uma volta por livro encontrado
+        {
+            lista.Add(new Livro
+            {
+                Id = r.GetInt32(r.GetOrdinal("id")),             // GetOrdinal acha a posição da coluna pelo nome
+                Titulo = r.GetString(r.GetOrdinal("titulo")),
+                Autor = r.GetString(r.GetOrdinal("autor")),
+                Exemplares = r.GetInt32(r.GetOrdinal("exemplares")),
+                Disponiveis = r.GetInt32(r.GetOrdinal("disponiveis"))
+            });
+        }
+        return lista;
+    }
+
+    public void Inserir(Livro livro)                             // RF01
+    {
+        using var con = Conexao.Criar();
+        con.Open();
+        using var cmd = new MySqlCommand(
+            "INSERT INTO livros (titulo, autor, exemplares, disponiveis) VALUES (@t, @a, @e, @e)", con); // @e usado duas vezes: ao cadastrar, todos estão disponíveis
+        cmd.Parameters.AddWithValue("@t", livro.Titulo);
+        cmd.Parameters.AddWithValue("@a", livro.Autor);
+        cmd.Parameters.AddWithValue("@e", livro.Exemplares);
+        cmd.ExecuteNonQuery();                                   // INSERT não devolve linhas
+    }
+}
+
+public class LeitorDAO
+{
+    public static Leitor Criar(string tipo)                      // static: usada também pelo EmprestimoDAO
+    {
+        return tipo == "P" ? new Professor() : new Aluno();      // decide a classe filha conforme a coluna "tipo"
+    }
+
+    public List&lt;Leitor&gt; Listar()
+    {
+        var lista = new List&lt;Leitor&gt;();
+        using var con = Conexao.Criar();
+        con.Open();
+        using var cmd = new MySqlCommand("SELECT id, nome, tipo FROM leitores ORDER BY nome", con);
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            Leitor l = Criar(r.GetString(r.GetOrdinal("tipo"))); // Aluno ou Professor (polimorfismo)
+            l.Id = r.GetInt32(r.GetOrdinal("id"));
+            l.Nome = r.GetString(r.GetOrdinal("nome"));
+            lista.Add(l);                                        // a lista guarda "Leitor"; cada item é Aluno ou Professor
+        }
+        return lista;
+    }
+}
+
+public class EmprestimoDAO
+{
+    public List&lt;Emprestimo&gt; ListarAtivos()                       // RF08: só os não devolvidos (data_devolucao IS NULL)
+    {
+        var lista = new List&lt;Emprestimo&gt;();
+        using var con = Conexao.Criar();
+        con.Open();
+        using var cmd = new MySqlCommand(
+            "SELECT e.id, e.data_emprestimo, e.data_prevista, " +
+            "       l.id AS leitor_id, l.nome AS leitor_nome, l.tipo, " +
+            "       v.id AS livro_id, v.titulo, v.autor, v.exemplares, v.disponiveis " +
+            "FROM emprestimos e " +
+            "INNER JOIN leitores l ON l.id = e.leitor_id " +     // junta com o leitor
+            "INNER JOIN livros v ON v.id = e.livro_id " +        // junta com o livro
+            "WHERE e.data_devolucao IS NULL " +                  // IS NULL (e não "= NULL") testa valor ausente
+            "ORDER BY e.data_prevista", con);
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            Leitor leitor = LeitorDAO.Criar(r.GetString(r.GetOrdinal("tipo")));
+            leitor.Id = r.GetInt32(r.GetOrdinal("leitor_id"));
+            leitor.Nome = r.GetString(r.GetOrdinal("leitor_nome"));
+            var livro = new Livro
+            {
+                Id = r.GetInt32(r.GetOrdinal("livro_id")),
+                Titulo = r.GetString(r.GetOrdinal("titulo")),
+                Autor = r.GetString(r.GetOrdinal("autor")),
+                Exemplares = r.GetInt32(r.GetOrdinal("exemplares")),
+                Disponiveis = r.GetInt32(r.GetOrdinal("disponiveis"))
+            };
+            lista.Add(new Emprestimo                             // monta o objeto completo, com leitor e livro dentro (composição)
+            {
+                Id = r.GetInt32(r.GetOrdinal("id")),
+                Leitor = leitor,
+                Livro = livro,
+                DataEmprestimo = r.GetDateTime(r.GetOrdinal("data_emprestimo")),
+                DataPrevista = r.GetDateTime(r.GetOrdinal("data_prevista"))
+            });
+        }
+        return lista;
+    }
+
+    public void Registrar(Emprestimo e)                          // grava o empréstimo E baixa o estoque, juntos
+    {
+        using var con = Conexao.Criar();
+        con.Open();
+        using var tx = con.BeginTransaction();                   // inicia a transação: tudo vale ou nada vale
+        try
+        {
+            using var inserir = new MySqlCommand(
+                "INSERT INTO emprestimos (leitor_id, livro_id, data_emprestimo, data_prevista) " +
+                "VALUES (@l, @v, @de, @dp)", con, tx);           // tx: este comando participa da transação
+            inserir.Parameters.AddWithValue("@l", e.Leitor.Id);
+            inserir.Parameters.AddWithValue("@v", e.Livro.Id);
+            inserir.Parameters.AddWithValue("@de", e.DataEmprestimo);
+            inserir.Parameters.AddWithValue("@dp", e.DataPrevista);
+            inserir.ExecuteNonQuery();
+
+            using var baixar = new MySqlCommand(
+                "UPDATE livros SET disponiveis = disponiveis - 1 " +
+                "WHERE id = @v AND disponiveis &gt; 0", con, tx);   // "AND disponiveis &gt; 0" protege se alguém pegou o último exemplar agora
+            baixar.Parameters.AddWithValue("@v", e.Livro.Id);
+            int afetadas = baixar.ExecuteNonQuery();             // devolve quantas linhas foram alteradas
+            if (afetadas != 1)                                   // 0 = não havia mais exemplar
+                throw new InvalidOperationException("O último exemplar acabou de ser emprestado.");
+
+            tx.Commit();                                         // tudo certo: grava definitivamente as duas mudanças
+        }
+        catch
+        {
+            tx.Rollback();                                       // algo falhou: desfaz as duas mudanças
+            throw;                                               // relança o erro para a tela tratar
+        }
+    }
+
+    public void RegistrarDevolucao(Emprestimo e, DateTime dataDevolucao, decimal multa) // RF07
+    {
+        using var con = Conexao.Criar();
+        con.Open();
+        using var tx = con.BeginTransaction();
+        try
+        {
+            using var devolver = new MySqlCommand(
+                "UPDATE emprestimos SET data_devolucao = @d, multa = @m " +
+                "WHERE id = @id AND data_devolucao IS NULL", con, tx); // só devolve o que ainda está ativo
+            devolver.Parameters.AddWithValue("@d", dataDevolucao.Date);
+            devolver.Parameters.AddWithValue("@m", multa);
+            devolver.Parameters.AddWithValue("@id", e.Id);
+            if (devolver.ExecuteNonQuery() != 1)
+                throw new InvalidOperationException("Este empréstimo já foi devolvido.");
+
+            using var repor = new MySqlCommand(
+                "UPDATE livros SET disponiveis = disponiveis + 1 WHERE id = @v", con, tx);
+            repor.Parameters.AddWithValue("@v", e.Livro.Id);
+            repor.ExecuteNonQuery();
+
+            tx.Commit();
+        }
+        catch
+        {
+            tx.Rollback();
+            throw;
+        }
+    }
+}</code></pre><div class="warning"><span class="callout-title">⚠ Configuração didática</span>A conexão com <code>root</code> e senha vazia é usada aqui apenas para simplificar o laboratório local com Laragon. Em aplicações reais, crie um usuário específico para o sistema, use senha forte, conceda somente as permissões necessárias e não deixe segredos diretamente no código-fonte.</div></div><div class="step"><h3>Sprint 2 · Teste o banco sem tela</h3><p>No <code>Program.cs</code> de um console temporário (ou em um teste manual), execute <code>new LeitorDAO().Listar()</code> e <code>new LivroDAO().Listar("")</code> e confira se mostram os dados do script. Desligue o MySQL e veja o erro: ele será tratado na tela na próxima sprint. Faça o PR da branch <code>feature/dados</code>.</p></div><div class="step"><h3>Sprint 3 · Monte a tela com UX</h3><p>No projeto <code>Biblioteca.UI</code>, renomeie <code>Form1</code> para <code>FrmEmprestimos</code>. Siga as heurísticas de usabilidade: rótulos acima dos campos, campos obrigatórios com *, botão principal em destaque, ordem de Tab lógica, atalhos com <code>&amp;</code>, mensagens claras e confirmação para ações irreversíveis.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr>
+<tr><td>Form</td><td>FrmEmprestimos</td><td><code>Text</code>=“Biblioteca · Empréstimos”, <code>Font</code>=Segoe UI 10pt, <code>StartPosition</code>=CenterScreen, <code>AcceptButton</code>=btnEmprestar</td></tr>
+<tr><td>GroupBox</td><td>grpNovo</td><td><code>Text</code>=“Novo empréstimo”</td></tr>
+<tr><td>Label + ComboBox</td><td>lblLeitor / cmbLeitor</td><td>“Leitor *”. <code>DropDownStyle</code>=DropDownList</td></tr>
+<tr><td>Label + ComboBox</td><td>lblLivro / cmbLivro</td><td>“Livro disponível *”. <code>DropDownStyle</code>=DropDownList</td></tr>
+<tr><td>Button</td><td>btnEmprestar</td><td>“&amp;Emprestar” (botão principal, destacado)</td></tr>
+<tr><td>Label</td><td>lblAtivos</td><td>“Empréstimos ativos”</td></tr>
+<tr><td>DataGridView</td><td>dgvAtivos</td><td><code>ReadOnly</code>, <code>AllowUserToAddRows</code>=False, <code>SelectionMode</code>=FullRowSelect, <code>MultiSelect</code>=False</td></tr>
+<tr><td>Button</td><td>btnDevolver</td><td>“&amp;Devolver o selecionado”</td></tr>
+<tr><td>StatusStrip + ToolStripStatusLabel</td><td>statusBar / tslStatus</td><td>Mensagens ao usuário</td></tr></table></div><div class="step"><h3>Sprint 3 · Programe a tela</h3><p>Dê clique duplo no formulário (<code>Load</code>) e em cada botão para criar os eventos. A tela <b>só orquestra</b>: pede dados ao DAO, entrega ao serviço, manda o DAO gravar e recarrega. Veja como o tratamento de erros separa <b>regra de negócio</b> (aviso amarelo) de <b>falha técnica</b> (erro vermelho).</p><pre><code>using Biblioteca.Core;
+using Biblioteca.Data;
+using MySqlConnector;
+
+namespace Biblioteca.UI;
+
+public partial class FrmEmprestimos : Form
+{
+    private readonly LeitorDAO leitorDAO = new();                // acesso a dados
+    private readonly LivroDAO livroDAO = new();
+    private readonly EmprestimoDAO emprestimoDAO = new();
+    private readonly BibliotecaService servico = new();          // regras de negócio
+    private List&lt;Emprestimo&gt; ativos = new();                     // cópia local dos empréstimos ativos (para achar o selecionado)
+
+    public FrmEmprestimos()
+    {
+        InitializeComponent();                                   // monta os controles do designer
+    }
+
+    private void FrmEmprestimos_Load(object sender, EventArgs e)
+    {
+        Executar(Recarregar);                                    // carrega tudo dentro do tratamento de erros
+        tslStatus.Text = "Pronto.";
+    }
+
+    // Executar roda uma ação com tratamento de erros em UM só lugar (reutilização).
+    private void Executar(Action acao)
+    {
+        try
+        {
+            acao();                                              // roda o método recebido
+        }
+        catch (InvalidOperationException ex)                     // violação de REGRA DE NEGÓCIO (vem do serviço ou do DAO)
+        {
+            tslStatus.Text = ex.Message;                         // mensagem clara: o que houve
+            MessageBox.Show(ex.Message, "Não foi possível concluir",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);   // ícone de aviso: o usuário pode corrigir
+        }
+        catch (MySqlException)                                   // problema TÉCNICO de banco
+        {
+            const string msg = "Não foi possível acessar o banco. Verifique se o MySQL do Laragon está iniciado.";
+            tslStatus.Text = msg;
+            MessageBox.Show(msg, "Erro no banco de dados",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);     // ícone de erro: não depende do usuário
+        }
+    }
+
+    private void Recarregar()                                    // lê o banco e atualiza a tela (fonte da verdade)
+    {
+        cmbLeitor.DataSource = leitorDAO.Listar();               // lista de Leitor (Aluno e Professor misturados)
+
+        cmbLivro.DataSource = livroDAO.Listar("")                // "" = todos os livros
+            .Where(l =&gt; l.TemDisponivel)                         // só os que têm exemplar (prevenção de erro)
+            .ToList();
+
+        ativos = emprestimoDAO.ListarAtivos();                   // empréstimos não devolvidos
+        DateTime hoje = DateTime.Today;                          // data de hoje (sem hora)
+
+        dgvAtivos.DataSource = ativos                            // projeta só o que a grade precisa mostrar
+            .Select(x =&gt; new
+            {
+                x.Id,                                            // usado para achar o empréstimo selecionado
+                Leitor = x.Leitor.Nome,
+                Livro = x.Livro.Titulo,
+                Retirada = x.DataEmprestimo.ToString("dd/MM/yyyy"),
+                Prevista = x.DataPrevista.ToString("dd/MM/yyyy"),
+                Situação = x.EstaAtrasado(hoje) ? "ATRASADO" : "No prazo"
+            })
+            .ToList();
+        dgvAtivos.ClearSelection();                              // nenhuma linha selecionada ao carregar
+    }
+
+    private void btnEmprestar_Click(object sender, EventArgs e)
+    {
+        var leitor = cmbLeitor.SelectedItem as Leitor;           // "as" converte; null se não houver seleção
+        var livro = cmbLivro.SelectedItem as Livro;
+        if (leitor == null || livro == null)                     // validação básica de preenchimento
+        {
+            tslStatus.Text = "Escolha o leitor e o livro.";
+            return;
+        }
+
+        Executar(() =&gt;
+        {
+            var doLeitor = emprestimoDAO.ListarAtivos()          // dados frescos do banco
+                .Where(x =&gt; x.Leitor.Id == leitor.Id)            // só os empréstimos deste leitor
+                .ToList();
+
+            var emprestimo = servico.Emprestar(leitor, livro, doLeitor, DateTime.Today); // REGRAS: pode lançar exceção
+            emprestimoDAO.Registrar(emprestimo);                 // PERSISTÊNCIA: só chega aqui se as regras permitiram
+
+            tslStatus.Text = $"\"{livro.Titulo}\" emprestado a {leitor.Nome}. Devolver até {emprestimo.DataPrevista:dd/MM/yyyy}.";
+            Recarregar();                                        // atualiza listas e grade
+        });
+    }
+
+    private void btnDevolver_Click(object sender, EventArgs e)
+    {
+        if (dgvAtivos.CurrentRow == null)                        // nenhuma linha escolhida
+        {
+            tslStatus.Text = "Selecione um empréstimo na lista.";
+            return;
+        }
+
+        int id = (int)dgvAtivos.CurrentRow.Cells["Id"].Value;    // lê o Id da linha selecionada
+        var emprestimo = ativos.First(x =&gt; x.Id == id);          // acha o objeto completo na lista local
+
+        Executar(() =&gt;
+        {
+            DateTime hoje = DateTime.Today;
+            decimal multa = servico.CalcularMultaDevolucao(emprestimo, hoje); // REGRA: só calcula
+            emprestimoDAO.RegistrarDevolucao(emprestimo, hoje, multa);         // PERSISTÊNCIA atômica
+
+            tslStatus.Text = multa &gt; 0
+                ? $"Devolvido com atraso. Multa: {multa:C2}."    // C2 = moeda com 2 casas
+                : "Devolvido no prazo. Sem multa.";
+            Recarregar();
+        });
+    }
+}</code></pre></div><div class="step"><h3>Sprint 3 · Complete o sistema (autonomia)</h3><p>Aplicando o mesmo padrão, a equipe deve entregar:</p><ul><li><b>FrmLivros</b> (RF01 e RF09): cadastro com validação (<code>ErrorProvider</code>) e busca em tempo real.</li><li><b>FrmLeitores</b> (RF02): cadastro com <code>RadioButton</code> para aluno/professor.</li><li><b>Menu principal</b> (<code>MenuStrip</code>) ligando as telas.</li><li><b>Relatório</b>: livros mais emprestados (consulta SQL com <code>COUNT</code> e <code>GROUP BY</code>).</li></ul><p>Cada tela em uma branch própria, com PR revisado e testes manuais registrados.</p></div><div class="step"><h3>Sprint 4 · Qualidade: testes, defeitos e indicadores</h3><ol><li><b>Plano de testes manuais:</b> escreva ao menos 15 casos (cadastrar, emprestar até o limite, emprestar com atraso, devolver com multa, banco desligado, busca vazia, etc.) com resultado esperado e obtido.</li><li><b>Registro de defeitos:</b> cada falha encontrada entra na planilha com ID, requisito, gravidade, responsável e status.</li><li><b>Depure</b> usando breakpoints e a janela Inspeção; corrija com commits que citam o requisito.</li><li><b>Revisão por pares:</b> troque o código com outra equipe usando o checklist.</li><li><b>Indicadores:</b> defeitos por semana, testes aprovados (%), requisitos concluídos (%). Faça um Pareto dos defeitos e um plano <b>5W2H</b> para o tipo mais frequente.</li><li><b>Atualize a matriz de rastreabilidade</b> com todos os requisitos.</li></ol></div><div class="step"><h3>Sprint 5 · Entrega e apresentação</h3><ol><li><b>README.md</b> completo (modelo na Avaliação).</li><li>Script <code>docs/banco.sql</code> atualizado, dicionário de dados e documento de requisitos finalizados.</li><li>Manual do usuário curto com capturas de tela.</li><li>Marque a versão: <code>git tag v1.0</code> e <code>git push --tags</code>.</li><li>Faça um <b>teste de instalação</b>: clone o repositório em outro computador, crie o banco com o script e rode o sistema. O que faltou no README?</li><li>Ensaie a apresentação (roteiro na Avaliação) e faça a <b>retrospectiva final</b>.</li></ol></div></div><div class="common-error"><span class="callout-title">🐞 Antes de pedir ajuda</span>Confira o nome do arquivo, o namespace, o <code>Name</code> dos controles, referências do projeto, pacotes NuGet e a mensagem completa do erro. Use <code>Ctrl+Shift+B</code> para compilar e identifique a primeira mensagem de erro da lista.</div><div class="pager"><a href="teoria.html">← Teoria</a><a href="avaliacao.html">Avaliação →</a></div></main><footer>Módulo 8 · Projeto Integrador · Programação de Aplicativos · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

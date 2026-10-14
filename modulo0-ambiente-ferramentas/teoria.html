@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Teoria · Módulo 0 · Ambiente e Ferramentas</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="0" data-page="teoria"><header><nav><a class="logo" href="index.html">🎓 Módulo 0 · Ambiente e Ferramentas</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 0</a><span>›</span><strong>Teoria</strong></div><h1>Teoria</h1><div class="lesson-contract"><span class="callout-title">🧭 Objetivo desta etapa</span>Compreender como as ferramentas se relacionam e por que cada configuração existe antes de executar instalações e comandos.<br/><b>Estratégia:</b> leia uma seção por vez, execute mentalmente os exemplos e anote uma dúvida ou exemplo próprio antes de avançar para a prática.</div>
+<h2>1. O que é um ambiente de desenvolvimento</h2><p>É o conjunto de <b>ferramentas, configurações e versões</b> que permite escrever, compilar, testar, executar e guardar o código. Um ambiente bem preparado evita o clássico “na minha máquina funciona” e permite que outra pessoa repita exatamente o que você fez (<b>reprodutibilidade</b>).</p>
+<h2>2. Ferramentas e suas funções</h2><table><tr><th>Ferramenta</th><th>Função</th><th>Neste curso</th></tr>
+<tr><td><b>IDE</b> (Ambiente de Desenvolvimento Integrado)</td><td>Editor com autocompletar, designer visual, depurador, testes e Git em um só programa</td><td>Visual Studio</td></tr>
+<tr><td><b>Editor de código</b></td><td>Edita texto de código; mais leve, com menos recursos prontos</td><td>VS Code (opcional)</td></tr>
+<tr><td><b>SDK</b> (Software Development Kit)</td><td>Compilador, bibliotecas e ferramentas de linha de comando para criar aplicações</td><td>.NET SDK</td></tr>
+<tr><td><b>Runtime</b> (ambiente de execução)</td><td>Executa os programas já compilados</td><td>.NET Runtime (vem com o SDK)</td></tr>
+<tr><td><b>Compilador</b></td><td>Traduz o código C# para uma forma executável</td><td>Roslyn (dentro do SDK)</td></tr>
+<tr><td><b>Gerenciador de pacotes</b></td><td>Baixa e controla bibliotecas de terceiros</td><td>NuGet</td></tr>
+<tr><td><b>Controle de versão</b></td><td>Registra o histórico do código e permite trabalho em equipe</td><td>Git</td></tr>
+<tr><td><b>Repositório remoto</b></td><td>Guarda o repositório na nuvem para compartilhar e fazer backup</td><td>GitHub</td></tr>
+<tr><td><b>SGBD</b></td><td>Armazena e consulta dados</td><td>MySQL/MariaDB (via Laragon)</td></tr>
+<tr><td><b>Cliente de banco de dados</b></td><td>Interface para criar tabelas e executar SQL</td><td>HeidiSQL (vem no Laragon)</td></tr>
+<tr><td><b>Terminal</b></td><td>Executa comandos de texto</td><td>PowerShell, Git Bash</td></tr></table>
+<h2>3. IDE: o que oferece</h2><ul><li><b>Editor inteligente</b> (IntelliSense): sugere código e aponta erros enquanto você digita.</li><li><b>Designer</b> de formulários (arrastar e soltar controles).</li><li><b>Depurador</b>: pausa o programa e inspeciona variáveis.</li><li><b>Gerenciador de testes</b> e <b>NuGet</b> integrados.</li><li><b>Git</b> integrado (janelas Alterações do Git e Repositório).</li><li><b>Navegação e refatoração</b>: ir para definição (F12), renomear (F2).</li></ul>
+<p><b>Edições do Visual Studio:</b> a <b>Community</b> é gratuita para estudantes, desenvolvedores individuais e projetos de código aberto, com limites de uso em empresas (leia os termos de licença); <b>Professional</b> e <b>Enterprise</b> são pagas. Use sempre o <b>site oficial</b> e uma licença legítima: instaladores de fontes desconhecidas e “cracks” trazem malware e problemas legais.</p>
+<h2>4. O .NET</h2><table><tr><th>Conceito</th><th>Explicação</th></tr>
+<tr><td>.NET moderno (ex.: .NET 8, 9 e 10)</td><td>Plataforma atual, mantida pela Microsoft. Windows Forms funciona nela (somente no Windows).</td></tr>
+<tr><td>.NET Framework (4.x)</td><td>Plataforma antiga, só Windows, mantida apenas para sistemas legados. O Visual Studio ainda a usa internamente.</td></tr>
+<tr><td>LTS</td><td><i>Long Term Support</i>: versão com suporte mais longo. Prefira LTS em projetos de estudo.</td></tr>
+<tr><td>STS</td><td><i>Standard Term Support</i>: suporte mais curto, traz novidades mais rápido.</td></tr>
+<tr><td>SDK × Runtime</td><td>Para <b>desenvolver</b> você precisa do SDK; para apenas <b>executar</b> um programa, basta o runtime.</td></tr></table>
+<p>Neste curso, use o <b>.NET LTS mais recente que o Visual Studio oferecer</b> (por exemplo, .NET 10). O código dos módulos funciona em .NET 6 ou superior.</p>
+<h2>5. Requisitos mínimos e recomendados</h2><p>Todo software informa o que o computador precisa ter para funcionar. <b>Mínimo</b> significa “abre e roda”; <b>recomendado</b> significa “roda com conforto”. Valores do <b>Visual Studio 2026</b> (confira a página oficial de requisitos do Visual Studio no Microsoft Learn):</p>
+<table><tr><th>Item</th><th>Mínimo</th><th>Recomendado</th></tr>
+<tr><td>Sistema operacional</td><td>Windows 11 ou Windows 10, 64 bits, em versão ainda com suporte</td><td>Windows 11 atualizado</td></tr>
+<tr><td>Processador</td><td>64 bits (x64 ou ARM64 no Windows 11)</td><td>4 núcleos ou mais</td></tr>
+<tr><td>Memória RAM</td><td>4 GB</td><td>16 GB (para soluções grandes, mais)</td></tr>
+<tr><td>Disco</td><td>850 MB a 210 GB, conforme as cargas instaladas; instalações típicas usam 20 a 50 GB</td><td><b>SSD</b> com folga de espaço</td></tr>
+<tr><td>Outros</td><td>Permissão de administrador para instalar; WebView2 e .NET Framework 4.8 (o instalador cuida disso); conexão com a internet para baixar</td><td>Boa conexão e monitor com resolução de pelo menos 1366×768</td></tr></table>
+<table><tr><th>Ferramenta</th><th>Requisitos práticos</th></tr>
+<tr><td>Git para Windows</td><td>Muito leve (algumas centenas de MB)</td></tr>
+<tr><td>Laragon</td><td>Windows 64 bits; algumas centenas de MB; <b>portas livres</b> (80, 443 e 3306 para o MySQL)</td></tr>
+<tr><td>Conta GitHub</td><td>E-mail válido e navegador</td></tr></table>
+<h3>Como interpretar</h3><ul><li><b>Cumpre o mínimo?</b> Se alguma linha não cumpre, a instalação pode falhar ou ficar insuportavelmente lenta.</li><li><b>RAM:</b> o Visual Studio, o navegador, o MySQL e o Windows disputam memória. Com 8 GB já é possível estudar; com 4 GB só com poucas coisas abertas.</li><li><b>Disco:</b> considere também o espaço dos projetos, do Windows Update e de arquivos temporários.</li><li><b>Laboratório:</b> multiplique por <i>n</i> máquinas e considere a <b>rede</b>: baixar 5 GB em 20 computadores ao mesmo tempo congestiona a internet. Há a opção de criar um <b>layout offline</b> do instalador.</li></ul>
+<h2>6. Instalação e configuração</h2><h3>Etapas gerais de uma instalação profissional</h3><ol><li>Verificar requisitos.</li><li>Baixar do <b>site oficial</b>.</li><li>Instalar com o <b>perfil de uso</b> correto (no Visual Studio: <i>cargas de trabalho</i>).</li><li>Configurar (preferências, extensões, caminhos).</li><li><b>Verificar</b> se funciona (um teste simples).</li><li><b>Documentar</b> versões e parâmetros.</li></ol>
+<h3>Cargas de trabalho do Visual Studio</h3><p>Em vez de instalar tudo, você escolhe o que precisa. Para este curso: <b>Desenvolvimento para desktop com .NET</b> (inclui Windows Forms). Opcional: <b>Desenvolvimento para ASP.NET e web</b> para estender o estudo à web. Marque só o necessário: economiza disco e tempo.</p>
+<h3>Parâmetros de configuração comuns</h3><table><tr><th>Parâmetro</th><th>Para quê</th></tr>
+<tr><td>Local da instalação</td><td>Pasta e unidade (prefira o SSD)</td></tr>
+<tr><td>Idioma da IDE</td><td>Português (Brasil) ou inglês; mensagens em inglês facilitam pesquisar erros</td></tr>
+<tr><td>Cargas de trabalho e componentes individuais</td><td>Define quais recursos serão instalados</td></tr>
+<tr><td>Tema, fonte e tamanho</td><td>Conforto de leitura</td></tr>
+<tr><td>Indentação (4 espaços) e numeração de linhas</td><td>Padrão de formatação do código</td></tr>
+<tr><td>Atualizações automáticas</td><td>Mantém correções de segurança</td></tr>
+<tr><td>Pasta padrão dos projetos</td><td>Organização (por exemplo, <code>C:\Projetos</code>)</td></tr>
+<tr><td>Dados do Git (<code>user.name</code> e <code>user.email</code>)</td><td>Identifica o autor dos commits</td></tr>
+<tr><td>Portas e senha do banco</td><td>Evitam conflitos e definem o acesso ao MySQL</td></tr></table>
+<h3>Organização de pastas</h3><ul><li>Crie uma pasta curta, <b>sem espaços e sem acentos</b>: <code>C:\Projetos</code>.</li><li><b>Evite</b> deixar os projetos dentro de pastas sincronizadas automaticamente (como OneDrive ou Google Drive): a sincronização pode travar arquivos de compilação (<code>bin</code>/<code>obj</code>) e gerar conflitos.</li><li>Uma pasta por projeto, e cada projeto é um repositório Git.</li></ul>
+<h2>7. Controle de versão e repositórios</h2><p><b>Controle de versão</b> registra cada mudança do código, com autor, data e motivo, e permite voltar atrás, comparar e trabalhar em equipe sem sobrescrever o trabalho dos outros. O <b>Git</b> é o sistema mais usado; o <b>GitHub</b> é um serviço que hospeda repositórios Git na nuvem.</p>
+<table><tr><th>Conceito</th><th>Significado</th></tr>
+<tr><td>Repositório (repo)</td><td>Pasta do projeto com todo o histórico</td></tr>
+<tr><td>Repositório local / remoto</td><td>O que está no seu computador / o que está no GitHub</td></tr>
+<tr><td>Working directory</td><td>Arquivos como estão agora na pasta</td></tr>
+<tr><td>Staging (área de preparação)</td><td>Mudanças escolhidas para o próximo commit (<code>git add</code>)</td></tr>
+<tr><td>Commit</td><td>“Foto” registrada do projeto, com uma mensagem</td></tr>
+<tr><td>Branch</td><td>Linha de desenvolvimento paralela</td></tr>
+<tr><td>Merge</td><td>Junção de uma branch em outra</td></tr>
+<tr><td>Clone</td><td>Copia um repositório remoto para o seu computador</td></tr>
+<tr><td>Push / Pull</td><td>Envia seus commits ao remoto / traz os commits do remoto</td></tr>
+<tr><td><code>.gitignore</code></td><td>Lista do que não deve ser versionado (<code>bin/</code>, <code>obj/</code>, senhas)</td></tr>
+<tr><td>README</td><td>Cartão de visita do projeto: o que é e como rodar</td></tr></table>
+<h3>Ciclo básico</h3><ol><li>Altere os arquivos.</li><li><code>git status</code>: veja o que mudou.</li><li><code>git add</code>: escolha o que entra no commit.</li><li><code>git commit -m "mensagem"</code>: registre.</li><li><code>git push</code>: envie ao GitHub.</li><li><code>git pull</code>: traga as novidades antes de recomeçar.</li></ol>
+<h3>Boas mensagens de commit</h3><table><tr><th>Ruim</th><th>Bom</th></tr>
+<tr><td class="bad"><code>mudanças</code> · <code>arrumei</code> · <code>teste123</code></td><td class="good"><code>feat: cadastro de clientes com validação</code> · <code>fix: corrige cálculo da multa</code> · <code>docs: instruções de instalação no README</code></td></tr></table>
+<h3>Autenticação com o GitHub</h3><p>O GitHub não aceita mais a senha da conta para operações Git pela linha de comando. No Windows, o <b>Git Credential Manager</b> (instalado com o Git para Windows) abre uma janela do navegador para você autorizar uma vez e guarda a credencial. Alternativas: <i>token de acesso pessoal</i> ou chave <b>SSH</b>. <b>Nunca</b> compartilhe seu token e nunca o coloque no código.</p><div class="warning" id="laboratorio-seguro"><span class="callout-title">🔐 Git em computador compartilhado</span><ul><li>Use <code>git config --local user.name</code> e <code>git config --local user.email</code>; evite <code>--global</code>.</li><li>Não marque opções para lembrar sessão, senha ou token.</li><li>Prefira autenticação temporária e com menor privilégio; ao terminar, confirme o <code>push</code>, faça logout e remova suas credenciais.</li><li>Token é senha: nunca coloque em código, README, print ou commit.</li></ul></div>
+<h2>8. Boas práticas</h2><ul><li><b>Fonte oficial</b> para todos os downloads, com licenças legítimas.</li><li><b>Verifique</b> cada instalação com um teste simples (“Olá, mundo”, <code>git --version</code>).</li><li><b>Documente</b> versões, caminhos e parâmetros em um README ou ficha do ambiente.</li><li><b>Mantenha atualizado</b>, mas não troque a versão da ferramenta no meio de um projeto sem avisar a equipe.</li><li><b>Faça backup</b>: o Git remoto é um backup do código; exporte também as configurações da IDE.</li><li><b>Segurança:</b> não versionar senhas; manter o antivírus e o Windows atualizados.</li></ul>
+<h2>9. Diagnóstico de problemas de instalação</h2><table><tr><th>Passo</th><th>O que fazer</th></tr>
+<tr><td>1. Ler a mensagem</td><td>Copie o texto exato do erro: ele é a melhor pista (e a melhor busca na internet)</td></tr>
+<tr><td>2. Verificar requisitos</td><td>Espaço em disco, versão do Windows, permissão de administrador</td></tr>
+<tr><td>3. Conferir a internet e o antivírus/firewall</td><td>Bloqueios impedem downloads e portas</td></tr>
+<tr><td>4. Reiniciar</td><td>Resolve muitos casos de instalação pendente</td></tr>
+<tr><td>5. Consultar o log</td><td>O Visual Studio Installer oferece relatório de problemas e logs da instalação</td></tr>
+<tr><td>6. Reparar ou reinstalar</td><td>O Installer tem a opção <b>Reparar</b></td></tr>
+<tr><td>7. Registrar</td><td>Anote o problema e a solução na ficha do ambiente</td></tr></table><div class="pager"><a href="index.html">← Início</a><a href="pratica.html">Prática →</a></div></main><footer>Módulo 0 · Preparação do Ambiente de Desenvolvimento · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

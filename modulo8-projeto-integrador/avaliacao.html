@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Avaliação · Módulo 8 · Projeto Integrador</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="8" data-page="avaliacao"><header><nav><a class="logo" href="index.html">🎓 Módulo 8 · Projeto Integrador</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 8</a><span>›</span><strong>Avaliação</strong></div><h1>Avaliação e entrega</h1><div class="assessment-contract"><span class="callout-title">🧠 Como usar esta avaliação</span>Faça primeiro sem consultar a teoria. Marque as questões em que teve dúvida, volte ao conteúdo apenas depois da primeira tentativa e corrija suas respostas explicando <i>por que</i> a solução correta funciona. A rubrica serve para autoavaliação e para feedback do professor.</div><div class="uc-box assessment-note"><span class="callout-title">✅ Evidência de aprendizagem</span>Resolva sem copiar a resposta dos exemplos. Quando houver código, execute e teste. O objetivo é demonstrar que você consegue explicar, aplicar e diagnosticar os conceitos deste módulo.</div>
+<h2>1. Cronograma sugerido</h2><table><tr><th>Semana</th><th>Sprint</th><th>Entregas</th></tr>
+<tr><td>1</td><td>Sprint 0</td><td>Equipe, repositório, requisitos, MER, diagrama de classes, banco criado, solução em camadas</td></tr>
+<tr><td>2</td><td>Sprint 1</td><td>Domínio implementado e testes unitários passando; documentação <code>///</code></td></tr>
+<tr><td>3</td><td>Sprint 2</td><td>DAOs com parâmetros e transação funcionando</td></tr>
+<tr><td>4</td><td>Sprint 3</td><td>Telas principais com UX e tratamento de erros</td></tr>
+<tr><td>5</td><td>Sprint 4</td><td>Plano de testes, registro de defeitos, indicadores, Pareto e 5W2H</td></tr>
+<tr><td>6</td><td>Sprint 5</td><td>README, manual, release <code>v1.0</code>, apresentação</td></tr></table>
+<h2>2. Checklist final de entrega</h2><table><tr><th>#</th><th>Item</th><th>OK?</th></tr>
+<tr><td>1</td><td>Repositório com histórico de commits de todos os integrantes</td><td></td></tr>
+<tr><td>2</td><td>Branches e Pull Requests revisados</td><td></td></tr>
+<tr><td>3</td><td>README com instruções de instalação e execução</td><td></td></tr>
+<tr><td>4</td><td>Documento de requisitos com critérios de aceitação</td><td></td></tr>
+<tr><td>5</td><td>Script do banco e dicionário de dados</td><td></td></tr>
+<tr><td>6</td><td>Domínio separado da tela e do banco</td><td></td></tr>
+<tr><td>7</td><td>Testes unitários para todas as regras de negócio, todos passando</td><td></td></tr>
+<tr><td>8</td><td>SQL somente com parâmetros</td><td></td></tr>
+<tr><td>9</td><td>Telas seguindo o checklist de usabilidade</td><td></td></tr>
+<tr><td>10</td><td>Mensagens de erro claras (regra de negócio e falha técnica)</td><td></td></tr>
+<tr><td>11</td><td>Membros públicos documentados com <code>///</code></td><td></td></tr>
+<tr><td>12</td><td>Matriz de rastreabilidade completa</td><td></td></tr>
+<tr><td>13</td><td>Registro de defeitos, indicadores, Pareto e 5W2H</td><td></td></tr>
+<tr><td>14</td><td>Atas das retrospectivas</td><td></td></tr>
+<tr><td>15</td><td>Instalação testada em outro computador</td><td></td></tr></table>
+<h2>3. Modelo de README.md</h2><pre><code># Biblioteca Escolar
+
+Sistema desktop (Windows Forms, C#) para controlar empréstimos de livros.
+
+## Equipe
+- Nome: papel
+- Nome: papel
+
+## Tecnologias
+- C# / .NET 6+ · Windows Forms
+- MySQL (Laragon) · MySqlConnector
+- xUnit (testes) · Git/GitHub
+
+## Como instalar e executar
+1. Instale o Visual Studio (carga "Desenvolvimento para desktop com .NET") e o Laragon.
+2. Inicie o MySQL no Laragon.
+3. Execute o script `docs/banco.sql` no HeidiSQL.
+4. Abra `Biblioteca.sln`, defina `Biblioteca.UI` como projeto de inicialização e pressione F5.
+5. Se a senha do banco for diferente, ajuste `Conexao.cs`.
+
+## Como rodar os testes
+Menu Teste &gt; Gerenciador de Testes &gt; Executar Tudo.
+
+## Funcionalidades
+- Cadastro de livros e leitores
+- Empréstimo e devolução com multa
+- Listagem de empréstimos ativos
+
+## Regras de negócio
+(resuma RF03 a RF07 e RF10)
+
+## Documentação
+- Requisitos: docs/requisitos.md
+- Banco de dados: docs/banco.sql
+- Matriz de rastreabilidade: docs/rastreabilidade.md
+
+## Licença / Observações</code></pre>
+<h2>4. Registro de riscos (modelo)</h2><table><tr><th>ID</th><th>Risco</th><th>Probabilidade</th><th>Impacto</th><th>Ação preventiva</th><th>Responsável</th></tr>
+<tr><td>R01</td><td>Conflito de código entre integrantes</td><td>Média</td><td>Alto</td><td>Branches por tarefa, PRs curtos, sincronizar com a main todo dia</td><td>Líder técnico</td></tr>
+<tr><td>R02</td><td>Um integrante ausente</td><td>Média</td><td>Alto</td><td>Duplas em tarefas críticas, documentação em dia</td><td>Líder de produto</td></tr>
+<tr><td>R03</td><td>Prazo insuficiente</td><td>Alta</td><td>Alto</td><td>Priorizar obrigatórios (M), cortar desejáveis (C)</td><td>Equipe</td></tr></table>
+<h2>5. Roteiro de apresentação (10 a 15 minutos)</h2><ol><li><b>Problema e solução</b> (1 min).</li><li><b>Arquitetura</b>: camadas, diagrama de classes, MER (2 min).</li><li><b>Demonstração</b>: emprestar, tentar violar uma regra, devolver com multa, banco desligado (4 min).</li><li><b>Qualidade</b>: testes unitários rodando, rastreabilidade, indicadores e Pareto (3 min).</li><li><b>Git</b>: histórico, branches e PRs (1 min).</li><li><b>Lições aprendidas</b> e melhorias futuras (1 min).</li><li><b>Perguntas</b>: qualquer integrante pode ser chamado a explicar qualquer parte.</li></ol>
+<h2>6. Rubrica de avaliação</h2><table><tr><th>Critério</th><th>Peso</th><th>Insuficiente</th><th>Adequado</th><th>Excelente</th></tr>
+<tr><td>Requisitos e modelagem</td><td>10%</td><td>Requisitos vagos</td><td>RF/RNF/RN claros; MER e classes coerentes</td><td>Critérios de aceitação e rastreabilidade completa</td></tr>
+<tr><td>POO e organização do código</td><td>20%</td><td>Tudo no formulário</td><td>Camadas separadas, herança aplicada</td><td>Camadas limpas, polimorfismo e reutilização bem usados</td></tr>
+<tr><td>Banco de dados</td><td>15%</td><td>Dados em memória ou SQL concatenado</td><td>CRUD com parâmetros</td><td>Transações, restrições e consultas com JOIN/agregação</td></tr>
+<tr><td>Interface e UX</td><td>10%</td><td>Telas desorganizadas</td><td>Layout consistente, validações</td><td>Heurísticas aplicadas e teste de usabilidade realizado</td></tr>
+<tr><td>Testes e depuração</td><td>15%</td><td>Sem testes</td><td>Testes cobrem as regras principais</td><td>Todas as regras e casos limite; defeitos tratados com método</td></tr>
+<tr><td>Git e trabalho em equipe</td><td>10%</td><td>Poucos commits, um só autor</td><td>Branches e commits de todos</td><td>PRs revisados, commits que citam requisitos</td></tr>
+<tr><td>Documentação</td><td>10%</td><td>Sem README</td><td>README e <code>///</code></td><td>Documentação completa e instalação validada</td></tr>
+<tr><td>Qualidade e melhoria contínua</td><td>5%</td><td>Sem registro</td><td>Defeitos e indicadores registrados</td><td>Pareto, 5W2H, PDCA e retrospectivas aplicados</td></tr>
+<tr><td>Apresentação</td><td>5%</td><td>Confusa</td><td>Clara e dentro do tempo</td><td>Demonstração sólida e domínio de todos</td></tr></table>
+<h2>7. Avaliação individual e por pares</h2><p>Cada integrante preenche (nota de 1 a 5) e justifica com exemplos:</p><table><tr><th>Critério</th><th>Autoavaliação</th><th>Colega 1</th><th>Colega 2</th></tr>
+<tr><td>Cumpriu as tarefas combinadas nos prazos</td><td></td><td></td><td></td></tr><tr><td>Contribuiu com código e documentação (commits)</td><td></td><td></td><td></td></tr><tr><td>Colaborou, ouviu e ajudou a equipe</td><td></td><td></td><td></td></tr><tr><td>Fez revisões de código úteis</td><td></td><td></td><td></td></tr><tr><td>Sabe explicar o que foi desenvolvido</td><td></td><td></td><td></td></tr></table>
+<h2>8. Temas alternativos</h2><table><tr><th>Sistema</th><th>Entidades principais</th><th>Regras interessantes</th></tr>
+<tr><td>Clínica ou consultório</td><td>Paciente, Médico, Consulta</td><td>Sem choque de horário; limite de consultas por dia</td></tr>
+<tr><td>Oficina mecânica</td><td>Cliente, Veículo, Ordem de Serviço, Peça</td><td>Baixa de estoque de peças; status da OS</td></tr>
+<tr><td>Academia</td><td>Aluno, Plano, Pagamento, Presença</td><td>Plano vencido bloqueia acesso; desconto por plano</td></tr>
+<tr><td>Loja / PDV</td><td>Produto, Venda, Item, Cliente</td><td>Estoque, desconto progressivo, total da venda</td></tr>
+<tr><td>Locadora de veículos</td><td>Cliente, Veículo, Locação</td><td>Diária, multa por atraso, veículo indisponível</td></tr>
+<tr><td>Escola</td><td>Aluno, Turma, Disciplina, Nota</td><td>Média, situação do aluno, limite de vagas</td></tr>
+<tr><td>Restaurante</td><td>Mesa, Pedido, Prato</td><td>Mesa ocupada, conta com taxa de serviço</td></tr></table>
+<h2>9. Solução de problemas</h2><table><tr><th>Sintoma</th><th>Causa provável</th><th>O que fazer</th></tr>
+<tr><td>Conflito de merge no Git</td><td>Duas pessoas alteraram o mesmo trecho</td><td>Abrir o arquivo, escolher o resultado correto (removendo <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>), rodar os testes e fazer commit</td></tr>
+<tr><td>“Referência circular” ao adicionar projeto</td><td><code>Core</code> referenciando <code>Data</code> ou <code>UI</code></td><td>Remover a referência: as dependências devem apontar para o Core</td></tr>
+<tr><td>Erro de transação: “command not associated with transaction”</td><td>Comando sem o parâmetro <code>tx</code></td><td>Passar a transação ao construir o <code>MySqlCommand</code></td></tr>
+<tr><td>CHECK de <code>disponiveis</code> não impede valor inválido</td><td>Versão antiga do MySQL/MariaDB não aplica <code>CHECK</code></td><td>Atualizar o Laragon ou confiar nas regras do serviço e no <code>AND disponiveis &gt; 0</code></td></tr>
+<tr><td>Grade mostra a coluna <code>Id</code> sem formatação</td><td>Projeção anônima sem ajustes</td><td>Definir <code>HeaderText</code>/<code>Visible</code> das colunas</td></tr>
+<tr><td>Testes passam local, mas falham na máquina do colega</td><td>Dependência de data/hora do sistema</td><td>Passar a data por parâmetro (como em <code>Emprestar(..., hoje)</code>)</td></tr>
+<tr><td>Sistema não abre em outro computador</td><td>Banco não criado ou senha diferente</td><td>Seguir o README e conferir a string de conexão</td></tr></table>
+<h2>10. Glossário</h2><table><tr><th>Termo</th><th>Significado</th></tr>
+<tr><td>Sprint</td><td>Período curto de trabalho com metas definidas</td></tr>
+<tr><td>Backlog</td><td>Lista priorizada de tudo que precisa ser feito</td></tr>
+<tr><td>DoD</td><td>Definição de Pronto: critérios para considerar uma tarefa concluída</td></tr>
+<tr><td>MER</td><td>Modelo Entidade-Relacionamento do banco de dados</td></tr>
+<tr><td>Pull Request</td><td>Pedido de revisão e junção de uma branch na main</td></tr>
+<tr><td>Transação</td><td>Conjunto de operações que valem todas ou nenhuma</td></tr>
+<tr><td>Camadas</td><td>Separação do sistema em partes com responsabilidades distintas</td></tr>
+<tr><td>Critério de aceitação</td><td>Condição verificável que mostra que o requisito foi atendido</td></tr></table><div class="pager"><a href="pratica.html">← Prática</a><a href="index.html">Início ↑</a></div></main><footer>Módulo 8 · Projeto Integrador · Programação de Aplicativos · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

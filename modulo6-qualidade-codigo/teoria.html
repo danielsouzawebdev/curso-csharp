@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Teoria · Módulo 6 · Qualidade do Código</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="6" data-page="teoria"><header><nav><a class="logo" href="index.html">🎓 Módulo 6 · Qualidade do Código</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 6</a><span>›</span><strong>Teoria</strong></div><h1>Teoria</h1><div class="lesson-contract"><span class="callout-title">🧭 Objetivo desta etapa</span>Distinguir código que apenas funciona de código que pode ser entendido, testado, depurado e alterado com segurança.<br/><b>Estratégia:</b> leia uma seção por vez, execute mentalmente os exemplos e anote uma dúvida ou exemplo próprio antes de avançar para a prática.</div>
+<h2>1. O que é qualidade de código</h2><p>Um software passa a maior parte da vida sendo <b>lido e modificado</b>, e não escrito. Código de qualidade facilita esse trabalho. Atributos principais:</p>
+<table><tr><th>Atributo</th><th>Pergunta que responde</th></tr>
+<tr><td>Correção</td><td>Faz o que os requisitos pedem?</td></tr>
+<tr><td>Legibilidade</td><td>Outra pessoa entende rápido?</td></tr>
+<tr><td>Manutenibilidade</td><td>É fácil corrigir ou ampliar?</td></tr>
+<tr><td>Testabilidade</td><td>Dá para verificar automaticamente?</td></tr>
+<tr><td>Desempenho</td><td>Usa tempo e memória de forma adequada?</td></tr>
+<tr><td>Segurança</td><td>Resiste a uso indevido e entradas inválidas?</td></tr></table>
+<h2>2. Formatação e padrões de nomenclatura</h2><table><tr><th>Elemento</th><th>Padrão em C#</th><th>Exemplo</th></tr>
+<tr><td>Classe, método, propriedade, enum</td><td>PascalCase</td><td><code>ContaBancaria</code>, <code>Sacar()</code></td></tr>
+<tr><td>Variável local e parâmetro</td><td>camelCase</td><td><code>valorSaque</code></td></tr>
+<tr><td>Campo privado</td><td>camelCase (ou <code>_camelCase</code>)</td><td><code>saldo</code> / <code>_saldo</code></td></tr>
+<tr><td>Constante</td><td>PascalCase</td><td><code>LimitePadrao</code></td></tr>
+<tr><td>Interface</td><td>Prefixo <code>I</code></td><td><code>IRepositorio</code></td></tr>
+<tr><td>Método booleano</td><td>Pergunta</td><td><code>EhValido()</code>, <code>TemSaldo()</code></td></tr></table>
+<table><tr><th>Ruim</th><th>Bom</th></tr>
+<tr><td class="bad"><code>int d;</code> · <code>void Proc()</code> · <code>var x1, x2;</code></td><td class="good"><code>int diasEmAtraso;</code> · <code>void CalcularJuros()</code></td></tr>
+<tr><td class="bad"><code>if (t == 3) ...</code> (número mágico)</td><td class="good"><code>if (tipo == TipoConta.Poupanca) ...</code> ou <code>const int</code></td></tr></table>
+<h3>Regras de formatação</h3><ul><li>Uma instrução por linha; indentação de 4 espaços; chaves <code>{ }</code> sempre, mesmo em <code>if</code> de uma linha.</li><li>Métodos curtos que fazem <b>uma coisa só</b> (princípio da responsabilidade única).</li><li>Evitar números e textos “mágicos”: use <code>const</code> com nome.</li><li>Formatar o arquivo no Visual Studio: <b>Ctrl+K, Ctrl+D</b>. Para toda a equipe seguir o mesmo padrão, crie um arquivo <code>.editorconfig</code> (Projeto → Adicionar → Novo Item → <i>Arquivo editorconfig</i>).</li></ul>
+<h2>3. Documentação de código</h2><h3>Comentário comum (<code>//</code>)</h3><p>Explica o <b>porquê</b> de uma decisão, não o óbvio. Compare:</p>
+<table><tr><th>Ruim</th><th>Bom</th></tr>
+<tr><td class="bad"><code>i++; // soma 1 em i</code></td><td class="good"><code>// Limite de 500 definido pela regra RF04</code></td></tr>
+<tr><td class="bad">Blocos de código antigo comentados “para o caso de precisar”</td><td class="good">Remover (o Git guarda o histórico)</td></tr></table>
+<h3>Comentário XML (<code>///</code>)</h3><p>Digite <code>///</code> acima de uma classe ou método e o Visual Studio gera o modelo. O texto aparece no IntelliSense para quem usar seu código.</p>
+<table><tr><th>Tag</th><th>Uso</th></tr>
+<tr><td><code>&lt;summary&gt;</code></td><td>O que a classe ou método faz (obrigatória)</td></tr>
+<tr><td><code>&lt;param name="x"&gt;</code></td><td>Descreve um parâmetro</td></tr>
+<tr><td><code>&lt;returns&gt;</code></td><td>Descreve o valor devolvido</td></tr>
+<tr><td><code>&lt;exception cref="T"&gt;</code></td><td>Quando uma exceção é lançada</td></tr>
+<tr><td><code>&lt;remarks&gt;</code></td><td>Observações adicionais, regras de negócio</td></tr>
+<tr><td><code>&lt;example&gt;</code></td><td>Exemplo de uso</td></tr></table>
+<p>Para gerar o arquivo de documentação: propriedades do projeto → <b>Build → Saída → Arquivo de documentação XML</b> (ou <code>&lt;GenerateDocumentationFile&gt;true&lt;/GenerateDocumentationFile&gt;</code> no <code>.csproj</code>).</p>
+<h2>4. Reutilização de código e refatoração</h2><p><b>DRY</b> (<i>Don't Repeat Yourself</i>): cada regra deve existir em <b>um só lugar</b>. <b>Refatorar</b> é melhorar a estrutura do código <b>sem mudar seu comportamento</b>, e os testes garantem que nada quebrou.</p>
+<table><tr><th>Sinal de problema (“code smell”)</th><th>Solução</th><th>Atalho no Visual Studio</th></tr>
+<tr><td>Trecho repetido em vários lugares</td><td>Extrair método</td><td>Selecionar → <b>Ctrl+R, M</b></td></tr>
+<tr><td>Nome que não explica</td><td>Renomear (atualiza todas as referências)</td><td><b>F2</b> ou <b>Ctrl+R, R</b></td></tr>
+<tr><td>Número ou texto fixo repetido</td><td>Introduzir constante</td><td><b>Ctrl+.</b> (Ações Rápidas)</td></tr>
+<tr><td>Método muito longo</td><td>Dividir em métodos menores</td><td><b>Ctrl+R, M</b></td></tr>
+<tr><td>Classe fazendo coisas demais</td><td>Extrair classe</td><td><b>Ctrl+.</b></td></tr>
+<tr><td>Muitos <code>if</code> por tipo</td><td>Herança/polimorfismo ou enum + método</td><td>Manual</td></tr></table>
+<div class="tip">💡 <b>Regra de ouro da refatoração:</b> mudar pouco, rodar os testes, repetir. Se os testes quebrarem, você sabe exatamente qual mudança causou.</div>
+<h2>5. Otimização de código</h2><p>Otimizar é fazer o programa gastar <b>menos tempo ou memória</b>. A regra é: <b>meça antes, otimize depois</b>. “A otimização prematura é a raiz de todo o mal” (Donald Knuth): código claro e correto vem primeiro.</p>
+<table><tr><th>Técnica</th><th>Quando usar</th></tr>
+<tr><td>Escolher a estrutura certa</td><td><code>List</code> para ordem; <code>Dictionary</code> para buscar por chave; <code>HashSet</code> para verificar pertencimento</td></tr>
+<tr><td><code>StringBuilder</code></td><td>Montar textos grandes em laço (concatenar com <code>+</code> cria uma nova string a cada volta)</td></tr>
+<tr><td>Tirar trabalho de dentro do laço</td><td>Cálculos e consultas ao banco que não mudam a cada volta</td></tr>
+<tr><td>Sair cedo</td><td><code>break</code> ou <code>return</code> assim que achar o resultado</td></tr>
+<tr><td>Evitar conversões e alocações desnecessárias</td><td>Em trechos executados milhares de vezes</td></tr>
+<tr><td>Medir com <code>Stopwatch</code></td><td>Sempre, e em modo <b>Release</b> (Ctrl+F5)</td></tr></table>
+<h2>6. Depuração</h2><p><b>Depurar</b> é encontrar e eliminar a causa de um defeito. Tipos de erro:</p><table><tr><th>Tipo</th><th>Quando aparece</th><th>Exemplo</th></tr>
+<tr><td>Sintaxe</td><td>Ao compilar</td><td>Faltou <code>;</code></td></tr>
+<tr><td>Execução</td><td>Com o programa rodando</td><td>Divisão por zero, referência nula</td></tr>
+<tr><td>Lógica</td><td>O programa roda, mas o resultado está errado</td><td><code>&gt;</code> no lugar de <code>&gt;=</code></td></tr></table>
+<h3>Método de depuração</h3><ol><li><b>Reproduzir</b> o defeito de forma confiável (um teste é o ideal).</li><li><b>Isolar</b>: em que ponto o valor deixa de ser o esperado?</li><li><b>Formular uma hipótese</b> sobre a causa.</li><li><b>Verificar</b> com o depurador (não adivinhe).</li><li><b>Corrigir</b> uma coisa por vez.</li><li><b>Confirmar</b> rodando os testes e conferir se nada mais quebrou.</li></ol>
+<h3>Ferramentas do Visual Studio</h3><table><tr><th>Recurso</th><th>Atalho / como usar</th></tr>
+<tr><td>Ponto de interrupção</td><td><b>F9</b> na linha (ou clique na margem)</td></tr>
+<tr><td>Iniciar com depuração</td><td><b>F5</b></td></tr>
+<tr><td>Passar por cima (executa a linha inteira)</td><td><b>F10</b></td></tr>
+<tr><td>Entrar no método</td><td><b>F11</b></td></tr>
+<tr><td>Sair do método</td><td><b>Shift+F11</b></td></tr>
+<tr><td>Executar até o cursor</td><td><b>Ctrl+F10</b></td></tr>
+<tr><td>Janela <b>Locais</b> / <b>Automáticos</b></td><td>Valores das variáveis em uso (Depurar → Janelas)</td></tr>
+<tr><td>Janela <b>Inspeção</b></td><td>Digite uma expressão (ex.: <code>Saldo + Limite</code>) e veja o valor</td></tr>
+<tr><td>Janela <b>Imediata</b></td><td>Teste expressões na hora (ex.: <code>valor &gt; Saldo</code>)</td></tr>
+<tr><td>Pilha de Chamadas</td><td>Mostra quem chamou quem até chegar ali</td></tr>
+<tr><td>Ponto de interrupção condicional</td><td>Clique direito no ponto → Condições (ex.: <code>valor &gt; 500</code>)</td></tr>
+<tr><td>Parar em exceções</td><td><b>Ctrl+Alt+E</b></td></tr>
+<tr><td>Depurar um teste</td><td>Gerenciador de Testes → clique direito no teste → <b>Depurar</b></td></tr></table>
+<h2>7. Rastreabilidade</h2><p>É a capacidade de <b>seguir o caminho</b> entre o requisito, o código que o implementa, o teste que o verifica e o commit que o registrou. Serve para saber <i>por que</i> o código existe e <i>o que pode quebrar</i> ao mudá-lo.</p>
+<table><tr><th>Ferramenta</th><th>Para quê</th><th>Como</th></tr>
+<tr><td>Ir para a definição</td><td>Ver onde um método foi criado</td><td><b>F12</b></td></tr>
+<tr><td>Localizar todas as referências</td><td>Ver onde algo é usado (impacto de uma mudança)</td><td><b>Shift+F12</b></td></tr>
+<tr><td>Hierarquia de chamadas</td><td>Ver quem chama o método</td><td><b>Ctrl+K, Ctrl+T</b></td></tr>
+<tr><td>Ir para tudo</td><td>Achar classe, método ou arquivo pelo nome</td><td><b>Ctrl+T</b></td></tr>
+<tr><td>Histórico do Git</td><td>Ver quem mudou o quê e quando</td><td>Git → Exibir Histórico / <code>git log</code></td></tr>
+<tr><td>Anotação (blame)</td><td>Ver o autor de cada linha</td><td>Clique direito no código → Git → Anotar / <code>git blame</code></td></tr></table>
+<h3>Boas práticas de commit</h3><ul><li><b>Commits pequenos</b>: uma mudança lógica por vez.</li><li>Mensagem que cita o requisito: <code>RF03: permite sacar até saldo + limite</code>.</li><li>Nomes de teste que citam o requisito ou o cenário.</li></ul>
+<h3>Matriz de rastreabilidade</h3><table><tr><th>Requisito</th><th>Código</th><th>Teste</th><th>Commit</th><th>Situação</th></tr><tr><td>RF03</td><td><code>Conta.Sacar</code></td><td><code>Sacar_AcimaDoDisponivel_LancaExcecao</code></td><td>a1b2c3d</td><td>✅</td></tr></table>
+<h2>8. Testes unitários</h2><p>Teste unitário é um <b>pequeno programa que verifica automaticamente</b> uma unidade de código (um método ou classe) isolada. Rodá-los a cada mudança dá segurança para evoluir.</p>
+<table><tr><th>Característica (FIRST)</th><th>Significado</th></tr>
+<tr><td><b>F</b>ast</td><td>Rápido: roda em milissegundos</td></tr>
+<tr><td><b>I</b>solated</td><td>Independente: um teste não depende do outro</td></tr>
+<tr><td><b>R</b>epeatable</td><td>Repetível: mesmo resultado sempre</td></tr>
+<tr><td><b>S</b>elf-validating</td><td>Autoverificável: passa ou falha, sem análise manual</td></tr>
+<tr><td><b>T</b>imely</td><td>Oportuno: escrito junto com o código</td></tr></table>
+<h3>Padrão AAA</h3><ul><li><b>Arrange</b> (preparar): criar objetos e dados.</li><li><b>Act</b> (agir): executar o que está sendo testado.</li><li><b>Assert</b> (verificar): comparar com o resultado esperado.</li></ul>
+<table><tr><th>Recurso do xUnit</th><th>Função</th></tr>
+<tr><td><code>[Fact]</code></td><td>Teste simples, sem parâmetros</td></tr>
+<tr><td><code>[Theory]</code> + <code>[InlineData(...)]</code></td><td>Mesmo teste com vários conjuntos de dados</td></tr>
+<tr><td><code>Assert.Equal(esperado, atual)</code></td><td>Verifica igualdade</td></tr>
+<tr><td><code>Assert.True / False</code></td><td>Verifica condição</td></tr>
+<tr><td><code>Assert.Throws&lt;T&gt;(() =&gt; ...)</code></td><td>Verifica se a exceção esperada é lançada</td></tr>
+<tr><td><code>Assert.Null / NotNull</code></td><td>Verifica nulos</td></tr>
+<tr><td><code>Assert.Contains / Empty</code></td><td>Verifica coleções</td></tr></table>
+<p><b>Nome do teste:</b> <code>Metodo_Cenario_ResultadoEsperado</code>, por exemplo <code>Sacar_AcimaDoDisponivel_LancaExcecao</code>. Ao falhar, o nome já diz o que quebrou.</p>
+<h3>TDD (desenvolvimento guiado por testes)</h3><div class="tip"><b>Importante:</b> TDD é uma estratégia de desenvolvimento útil em muitos contextos, mas não é a única forma profissional de produzir software. Nesta UC, use-o para experimentar o ciclo teste → implementação → refatoração e comparar com seu fluxo habitual.</div><ol><li><b>Red:</b> escreva um teste que falha.</li><li><b>Green:</b> escreva o mínimo de código para passar.</li><li><b>Refactor:</b> melhore o código mantendo os testes verdes.</li></ol>
+<h2>9. Identificando erros conforme o requisito</h2><p>Um defeito é a diferença entre o <b>comportamento esperado</b> (requisito) e o <b>comportamento real</b>. Para isso o requisito precisa ser <b>claro, específico e testável</b>.</p>
+<table><tr><th>Requisito ruim</th><th>Requisito bom (testável)</th></tr>
+<tr><td class="bad">“O saque deve funcionar direito.”</td><td class="good">“RF03: o saque só é permitido se o valor for maior que zero e menor ou igual ao saldo mais o limite.”</td></tr>
+<tr><td class="bad">“O sistema deve ser rápido.”</td><td class="good">“A consulta ao extrato deve responder em até 2 segundos com 10.000 movimentações.”</td></tr></table>
+<p>Ao encontrar um erro, classifique: <b>defeito de código</b> (não cumpre o requisito), <b>requisito ambíguo</b> (precisa de esclarecimento) ou <b>requisito faltando</b> (nunca foi pedido). Registre sempre com: o que esperava, o que aconteceu e como reproduzir.</p><div class="pager"><a href="index.html">← Início</a><a href="pratica.html">Prática →</a></div></main><footer>Módulo 6 · Qualidade do Código em C# · Programação de Aplicativos</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

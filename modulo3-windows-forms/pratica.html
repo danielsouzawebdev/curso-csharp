@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Prática · Módulo 3 · Windows Forms</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="3" data-page="pratica"><header><nav><a class="logo" href="index.html">🎓 Módulo 3 · Windows Forms</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 3</a><span>›</span><strong>Prática guiada</strong></div><h1>Prática guiada · 10 projetos e 4 laboratórios</h1><div class="tip practice-contract"><span class="callout-title">🧭 Como executar esta prática</span>Digite o código, execute a cada etapa e compare o comportamento com o resultado descrito. Se houver erro, leia a mensagem antes de alterar o código e use o depurador quando indicado.</div>
+<p>Em cada projeto: (1) crie o formulário e <b>configure os controles</b> conforme a tabela (<code>Name</code> primeiro!), (2) defina a <b>ordem de Tab</b>, (3) <b>digite o código</b> lendo os comentários, (4) <b>execute</b> e faça os testes sugeridos, (5) responda às perguntas e tente os desafios. Códigos para .NET 6 ou superior com <code>Nullable</code> ativado (padrão dos modelos atuais).</p>
+<div class="tip">💡 Os manipuladores de evento têm a forma <code>(object sender, EventArgs e)</code>. Nos modelos recentes o Visual Studio pode gerar <code>object? sender</code>: as duas formas funcionam. Se o evento não for criado automaticamente, selecione o controle → ícone ⚡ → clique duplo no evento.</div>
+<div class="steps"><div class="step"><h3>Prepare a solução e conheça o projeto</h3><ol><li>Crie uma <b>solução</b> <code>Modulo3</code> e, para cada projeto, adicione um <b>Aplicativo do Windows Forms</b> (C#, .NET LTS): <code>P01Pessoa</code>, <code>P02Imc</code>... .</li><li>Em cada um, renomeie <code>Form1</code> para o nome do formulário (<code>FrmCadastroPessoa</code>, etc.) com clique direito → <b>Renomear</b> e confirme a atualização das referências.</li><li>Abra <code>Program.cs</code> e confira que <code>Application.Run(new SeuFormulario())</code> usa o nome novo.</li><li>Para escolher qual executa: clique direito no projeto → <b>Definir como Projeto de Inicialização</b>.</li><li>As classes de cada projeto ficam em arquivos próprios (<b>Adicionar → Classe</b>); mantenha o namespace que o Visual Studio colocar.</li><li>Faça um commit ao final de cada projeto.</li></ol><div class="tip">💡 O código mostrado é o <b>seu código</b> (<code>FrmX.cs</code>, tecla <b>F7</b>) e as classes de apoio. O código do designer (<code>FrmX.Designer.cs</code>) é gerado pelo Visual Studio a partir das tabelas de controles, e você <b>não digita</b>.</div></div><div class="step"><h3>Projeto 1 · Cadastro de Pessoa (primeiro evento)</h3><p><b>Objetivo:</b> montar o primeiro formulário, ligar o evento <code>Click</code>, validar a entrada e usar uma classe.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>Form</td><td><code>FrmCadastroPessoa</code></td><td><code>Text</code>=“Cadastro de Pessoa”, <code>StartPosition</code>=CenterScreen, <code>FormBorderStyle</code>=FixedSingle, <code>MaximizeBox</code>=False, <code>AcceptButton</code>=btnCadastrar, <code>CancelButton</code>=btnLimpar</td></tr><tr><td>Label + TextBox</td><td><code>lblNome / txtNome</code></td><td>Label “Nome *”, acima do campo</td></tr><tr><td>Label + TextBox</td><td><code>lblIdade / txtIdade</code></td><td>Label “Idade *”</td></tr><tr><td>Button</td><td><code>btnCadastrar</code></td><td><code>Text</code>=“&amp;Cadastrar”</td></tr><tr><td>Button</td><td><code>btnLimpar</code></td><td><code>Text</code>=“&amp;Limpar”</td></tr><tr><td>Label</td><td><code>lblResultado</code></td><td><code>Text</code> vazio; <code>AutoSize</code>=True</td></tr></table><p>Defina a ordem de Tab (Exibir → Ordem de Tabulação). Depois, abra <code>FrmCadastroPessoa.Designer.cs</code> <b>só para olhar</b> e localize a linha que liga o evento (<code>this.btnCadastrar.Click += ...</code>).</p><h4>Código</h4><pre><code>// ---------- Pessoa.cs ----------
+public class Pessoa
+{
+    public string Nome { get; }                          // só leitura: definido no construtor
+    public int Idade { get; }
+
+    public Pessoa(string nome, int idade)                // CONSTRUTOR: valida antes de criar o objeto
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new ArgumentException("Informe o nome.");
+        if (idade &lt; 0 || idade &gt; 130)
+            throw new ArgumentException("A idade deve estar entre 0 e 130.");
+
+        Nome = nome.Trim();                              // guarda sem espaços nas pontas
+        Idade = idade;
+    }
+
+    public bool EhMaiorDeIdade() =&gt; Idade &gt;= 18;
+    public string Apresentar() =&gt; $"Olá, eu sou {Nome} e tenho {Idade} anos.";
+}
+
+// ---------- FrmCadastroPessoa.cs (dentro da classe do formulário) ----------
+private void btnCadastrar_Click(object sender, EventArgs e)      // roda quando o botão é clicado (ou Enter)
+{
+    if (!int.TryParse(txtIdade.Text, out int idade))             // texto -&gt; número, sem quebrar
+    {
+        MessageBox.Show("Digite a idade usando apenas números.", "Atenção",
+            MessageBoxButtons.OK, MessageBoxIcon.Warning);       // título, botões e ícone
+        txtIdade.Focus();                                        // leva o cursor ao campo com problema
+        return;                                                  // sai do método: não continua
+    }
+
+    try
+    {
+        var pessoa = new Pessoa(txtNome.Text, idade);            // a CLASSE valida as regras
+        string situacao = pessoa.EhMaiorDeIdade() ? "maior de idade" : "menor de idade";
+        lblResultado.Text = $"{pessoa.Apresentar()} ({situacao})";   // mostra o resultado na tela
+    }
+    catch (ArgumentException ex)                                 // a classe recusou os dados
+    {
+        MessageBox.Show(ex.Message, "Dados inválidos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    }
+}
+
+private void btnLimpar_Click(object sender, EventArgs e)         // botão Limpar (e tecla Esc)
+{
+    txtNome.Clear();                                             // esvazia os campos
+    txtIdade.Clear();
+    lblResultado.Text = "";
+    txtNome.Focus();                                             // cursor volta ao primeiro campo
+}
+
+// ---------- LIGAR UM EVENTO EM CÓDIGO (alternativa ao designer) ----------
+// public FrmCadastroPessoa()
+// {
+//     InitializeComponent();
+//     btnLimpar.Click += btnLimpar_Click;      // += "assina" o evento; seria o mesmo que o designer faz
+// }</code></pre><div class="desafio">🧪 <b>Teste:</b> campos vazios, idade com letras, idade 200, idade 17 e 18. <b>Perguntas:</b> por que a classe <code>Pessoa</code> também valida, se a tela já converte a idade? O que acontece com Enter e Esc?</div></div><div class="step"><h3>Projeto 2 · Calculadora de IMC (ErrorProvider)</h3><p><b>Objetivo:</b> validação visual com <code>ErrorProvider</code>, regras na classe e cor conforme o resultado.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>Form</td><td><code>FrmImc</code></td><td><code>Text</code>=“Calculadora de IMC”, <code>AcceptButton</code>=btnCalcular</td></tr><tr><td>Label + TextBox</td><td><code>lblPeso / txtPeso</code></td><td>“Peso (kg) *”</td></tr><tr><td>Label + TextBox</td><td><code>lblAltura / txtAltura</code></td><td>“Altura (m) *”</td></tr><tr><td>Button</td><td><code>btnCalcular</code></td><td>“&amp;Calcular”</td></tr><tr><td>Label</td><td><code>lblImc</code></td><td><code>Font</code> grande, negrito</td></tr><tr><td>Label</td><td><code>lblClassificacao</code></td><td>Texto da classificação</td></tr></table><p>Use vírgula como separador decimal (ex.: <code>1,75</code>), conforme a configuração regional do Windows.</p><h4>Código</h4><pre><code>// ---------- Paciente.cs ----------
+public class Paciente
+{
+    public double Peso { get; }                          // em quilos
+    public double Altura { get; }                        // em metros
+
+    public Paciente(double peso, double altura)
+    {
+        if (peso &lt;= 0 || peso &gt; 500) throw new ArgumentException("O peso deve estar entre 0 e 500 kg.");
+        if (altura &lt; 0.3 || altura &gt; 2.8) throw new ArgumentException("A altura deve estar entre 0,3 e 2,8 m.");
+        Peso = peso;
+        Altura = altura;
+    }
+
+    public double Imc =&gt; Peso / (Altura * Altura);       // propriedade calculada
+
+    public string Classificacao =&gt; Imc switch            // switch expression com intervalos (C# 9)
+    {
+        &lt; 18.5 =&gt; "Abaixo do peso",
+        &lt; 25   =&gt; "Peso normal",                         // só chega aqui se for &gt;= 18,5
+        &lt; 30   =&gt; "Sobrepeso",
+        _      =&gt; "Obesidade"                            // _ = todo o resto
+    };
+}
+
+// ---------- FrmImc.cs ----------
+private readonly ErrorProvider erros = new();            // mostra um ícone de erro ao lado do controle
+
+private void btnCalcular_Click(object sender, EventArgs e)
+{
+    erros.Clear();                                       // apaga os avisos da tentativa anterior
+
+    bool okPeso = double.TryParse(txtPeso.Text, out double peso);
+    bool okAltura = double.TryParse(txtAltura.Text, out double altura);
+
+    if (!okPeso) erros.SetError(txtPeso, "Informe o peso em kg. Ex.: 70,5");          // ícone + mensagem no campo
+    if (!okAltura) erros.SetError(txtAltura, "Informe a altura em metros. Ex.: 1,75");
+    if (!okPeso || !okAltura)                            // se algum falhou, para aqui
+    {
+        (okPeso ? txtAltura : txtPeso).Focus();          // foco no primeiro campo com erro
+        return;
+    }
+
+    try
+    {
+        var paciente = new Paciente(peso, altura);       // a classe valida as faixas
+        lblImc.Text = paciente.Imc.ToString("F1");       // 1 casa decimal
+        lblClassificacao.Text = paciente.Classificacao;
+        lblClassificacao.ForeColor = paciente.Classificacao switch   // cor conforme o resultado
+        {
+            "Peso normal" =&gt; Color.SeaGreen,
+            "Abaixo do peso" =&gt; Color.DarkOrange,
+            _ =&gt; Color.Firebrick
+        };
+    }
+    catch (ArgumentException ex)
+    {
+        MessageBox.Show(ex.Message, "Valor fora da faixa", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    }
+}</code></pre><div class="desafio">🧪 <b>Teste:</b> (70; 1,75) → 22,9 Peso normal; (50; 1,80) → Abaixo do peso; (100; 1,70) → Obesidade; letras; altura 5. <b>Desafio:</b> limpe o aviso do campo assim que o usuário voltar a digitar (evento <code>TextChanged</code> com <code>erros.SetError(txtPeso, "")</code>).</div></div><div class="step"><h3>Projeto 3 · Conversor de Temperatura (eventos compartilhados e KeyPress)</h3><p><b>Objetivo:</b> um mesmo método tratando vários eventos, <code>RadioButton</code>, conversão em tempo real e filtro de teclas.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>Form</td><td><code>FrmTemperatura</code></td><td><code>Text</code>=“Conversor de Temperatura”</td></tr><tr><td>Label + TextBox</td><td><code>lblValor / txtValor</code></td><td>“Valor”</td></tr><tr><td>GroupBox</td><td><code>grpModo</code></td><td><code>Text</code>=“Converter de/para”</td></tr><tr><td>RadioButton (3)</td><td><code>rdoCF / rdoCK / rdoFC</code></td><td>Textos “°C → °F”, “°C → K”, “°F → °C”; <code>rdoCF.Checked</code>=True</td></tr><tr><td>Label</td><td><code>lblResultado</code></td><td>Fonte grande</td></tr></table><h4>Código</h4><pre><code>// ---------- Conversor.cs ----------
+public static class Conversor                            // static: funções utilitárias, sem estado
+{
+    public static double CelsiusParaFahrenheit(double c) =&gt; c * 9 / 5 + 32;
+    public static double CelsiusParaKelvin(double c) =&gt; c + 273.15;
+    public static double FahrenheitParaCelsius(double f) =&gt; (f - 32) * 5 / 9;
+}
+
+// ---------- FrmTemperatura.cs ----------
+public FrmTemperatura()
+{
+    InitializeComponent();
+    // UM método para VÁRIOS eventos: sempre que o texto OU a opção mudar, refaz a conversão
+    txtValor.TextChanged += ValorOuModoAlterado;
+    rdoCF.CheckedChanged += ValorOuModoAlterado;
+    rdoCK.CheckedChanged += ValorOuModoAlterado;
+    rdoFC.CheckedChanged += ValorOuModoAlterado;
+}
+
+private void ValorOuModoAlterado(object? sender, EventArgs e)    // object? : sender pode ser nulo (assinatura padrão atual)
+{
+    AtualizarResultado();                                // toda a lógica fica em um único lugar
+}
+
+private void AtualizarResultado()
+{
+    if (!double.TryParse(txtValor.Text, out double valor))       // vazio ou inválido
+    {
+        lblResultado.Text = "—";
+        return;
+    }
+
+    double resultado;
+    string unidade;
+    if (rdoCF.Checked)                                   // Checked = true na opção selecionada
+    {
+        resultado = Conversor.CelsiusParaFahrenheit(valor);
+        unidade = "°F";
+    }
+    else if (rdoCK.Checked)
+    {
+        resultado = Conversor.CelsiusParaKelvin(valor);
+        unidade = "K";
+    }
+    else
+    {
+        resultado = Conversor.FahrenheitParaCelsius(valor);
+        unidade = "°C";
+    }
+    lblResultado.Text = $"{resultado:F2} {unidade}";
+}
+
+// Evento KeyPress do txtValor (ícone ⚡ &gt; KeyPress): impede teclas inválidas ANTES de aparecerem
+private void txtValor_KeyPress(object sender, KeyPressEventArgs e)
+{
+    char tecla = e.KeyChar;                              // a tecla pressionada
+    bool ehDigito = char.IsDigit(tecla);                 // 0 a 9
+    bool ehControle = char.IsControl(tecla);             // Backspace, Delete, Enter...
+    bool virgulaValida = tecla == ',' &amp;&amp; !txtValor.Text.Contains(',');   // uma vírgula só
+    bool sinalValido = tecla == '-' &amp;&amp; txtValor.SelectionStart == 0 &amp;&amp; !txtValor.Text.Contains('-');   // sinal só no início
+
+    if (!(ehDigito || ehControle || virgulaValida || sinalValido))
+    {
+        e.Handled = true;                                // "já tratei": a tecla é descartada
+    }
+}</code></pre><div class="desafio">🧪 <b>Teste:</b> digite letras (nada aparece), duas vírgulas, o sinal de menos no meio. 0 °C → 32 °F e 273,15 K; 100 °F → 37,78 °C. <b>Pergunta:</b> qual a vantagem de um único método <code>AtualizarResultado</code> em vez de código em cada evento?</div></div><div class="step"><h3>Projeto 4 · Lista de Tarefas (ListBox, teclado e duplo clique)</h3><p><b>Objetivo:</b> manipular uma lista de objetos com <code>ListBox</code>, <code>DoubleClick</code>, <code>KeyDown</code> e feedback na barra de status.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>Form</td><td><code>FrmTarefas</code></td><td><code>AcceptButton</code>=btnAdicionar; <code>MinimumSize</code> para não quebrar o layout</td></tr><tr><td>Label + TextBox</td><td><code>lblTarefa / txtTarefa</code></td><td>“Nova tarefa”</td></tr><tr><td>Button</td><td><code>btnAdicionar / btnRemover</code></td><td>“&amp;Adicionar” / “&amp;Remover”</td></tr><tr><td>ListBox</td><td><code>lstTarefas</code></td><td><code>Dock</code> ou <code>Anchor</code> nos 4 lados; <code>IntegralHeight</code>=False</td></tr><tr><td>Label</td><td><code>lblContador</code></td><td>“0 de 0 concluída(s)”</td></tr><tr><td>StatusStrip + ToolStripStatusLabel</td><td><code>statusBar / tslStatus</code></td><td>Mensagens ao usuário</td></tr></table><p>Dica de uso: <b>duplo clique</b> alterna concluída; tecla <b>Delete</b> remove.</p><h4>Código</h4><pre><code>// ---------- Tarefa.cs ----------
+public class Tarefa
+{
+    public string Descricao { get; }
+    public bool Concluida { get; private set; }          // só a classe altera
+
+    public Tarefa(string descricao)
+    {
+        if (string.IsNullOrWhiteSpace(descricao))
+            throw new ArgumentException("Descreva a tarefa.");
+        Descricao = descricao.Trim();
+    }
+
+    public void AlternarConclusao() =&gt; Concluida = !Concluida;   // ! inverte true/false
+
+    public override string ToString()                    // o ListBox exibe o resultado do ToString()
+        =&gt; (Concluida ? "[X] " : "[  ] ") + Descricao;
+}
+
+// ---------- FrmTarefas.cs ----------
+private readonly List&lt;Tarefa&gt; tarefas = new();           // os DADOS ficam na lista; o ListBox só EXIBE
+
+private void btnAdicionar_Click(object sender, EventArgs e)
+{
+    try
+    {
+        tarefas.Add(new Tarefa(txtTarefa.Text));         // a classe valida
+        txtTarefa.Clear();
+        txtTarefa.Focus();                               // pronto para a próxima tarefa
+        tslStatus.Text = "Tarefa adicionada.";
+        AtualizarLista();
+    }
+    catch (ArgumentException ex)
+    {
+        tslStatus.Text = ex.Message;                     // feedback sem janela: não interrompe o usuário
+    }
+}
+
+private void lstTarefas_DoubleClick(object sender, EventArgs e)   // duplo clique na lista
+{
+    if (lstTarefas.SelectedItem is Tarefa tarefa)        // is: confere o tipo e já cria a variável
+    {
+        tarefa.AlternarConclusao();                      // muda o objeto
+        AtualizarLista(lstTarefas.SelectedIndex);        // redesenha mantendo a seleção
+    }
+}
+
+private void lstTarefas_KeyDown(object sender, KeyEventArgs e)    // tecla pressionada com a lista em foco
+{
+    if (e.KeyCode == Keys.Delete)                        // tecla Delete
+    {
+        RemoverSelecionada();
+    }
+}
+
+private void btnRemover_Click(object sender, EventArgs e) =&gt; RemoverSelecionada();
+
+private void RemoverSelecionada()                        // reaproveitado por botão E tecla (sem repetir código)
+{
+    if (lstTarefas.SelectedItem is not Tarefa tarefa)    // nada selecionado
+    {
+        tslStatus.Text = "Selecione uma tarefa.";
+        return;
+    }
+    int indice = lstTarefas.SelectedIndex;
+    tarefas.Remove(tarefa);
+    AtualizarLista(Math.Min(indice, tarefas.Count - 1)); // seleciona o vizinho
+    tslStatus.Text = "Tarefa removida.";
+}
+
+private void AtualizarLista(int selecionar = -1)         // reconstrói o ListBox a partir da lista
+{
+    lstTarefas.Items.Clear();
+    foreach (var t in tarefas)
+        lstTarefas.Items.Add(t);                         // Add(objeto): o controle guarda o objeto inteiro
+
+    if (selecionar &gt;= 0 &amp;&amp; selecionar &lt; lstTarefas.Items.Count)
+        lstTarefas.SelectedIndex = selecionar;
+
+    int feitas = tarefas.Count(t =&gt; t.Concluida);        // LINQ: conta as concluídas
+    lblContador.Text = $"{feitas} de {tarefas.Count} concluída(s)";
+}</code></pre><div class="desafio">🧪 <b>Perguntas:</b> por que existe a lista <code>tarefas</code> se o <code>ListBox</code> já guarda os itens? <b>Desafio:</b> mostre as tarefas concluídas em cinza (dica: <code>DrawMode = OwnerDrawFixed</code> e o evento <code>DrawItem</code>).</div></div><div class="step"><h3>Projeto 5 · Controle de Estoque (DataGridView e BindingList)</h3><p><b>Objetivo:</b> exibir objetos em grade, formatar colunas, destacar linhas e atuar sobre o item selecionado.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>Form</td><td><code>FrmEstoque</code></td><td><code>Text</code>=“Controle de Estoque”, <code>AcceptButton</code>=btnAdicionar</td></tr><tr><td>Label + TextBox</td><td><code>lblNome / txtNome</code></td><td>“Produto *”</td></tr><tr><td>Label + NumericUpDown</td><td><code>lblPreco / nudPreco</code></td><td>“Preço (R$) *”; <code>DecimalPlaces</code>=2; <code>Maximum</code>=100000</td></tr><tr><td>Label + NumericUpDown</td><td><code>lblQtd / nudQuantidade</code></td><td>“Quantidade inicial”; <code>Maximum</code>=100000</td></tr><tr><td>Button</td><td><code>btnAdicionar</code></td><td>“&amp;Adicionar produto”</td></tr><tr><td>DataGridView</td><td><code>dgvProdutos</code></td><td><code>ReadOnly</code>=True, <code>AllowUserToAddRows</code>=False, <code>SelectionMode</code>=FullRowSelect, <code>MultiSelect</code>=False, <code>AutoSizeColumnsMode</code>=Fill</td></tr><tr><td>NumericUpDown + 2 Buttons</td><td><code>nudMovimento / btnEntrada / btnSaida</code></td><td>“Entrada” e “Saída” do produto selecionado; <code>Minimum</code>=1</td></tr><tr><td>StatusStrip</td><td><code>tslStatus</code></td><td>Mensagens</td></tr></table><p>No topo do arquivo do formulário, acrescente <code>using System.ComponentModel;</code> (para <code>BindingList</code>).</p><h4>Código</h4><pre><code>// ---------- Produto.cs ----------
+public class Produto
+{
+    public string Nome { get; }
+    public decimal Preco { get; }
+    public int Quantidade { get; private set; }
+    public bool EstoqueBaixo =&gt; Quantidade &lt; 5;          // regra no lugar certo: na classe
+
+    public Produto(string nome, decimal preco, int quantidade)
+    {
+        if (string.IsNullOrWhiteSpace(nome)) throw new ArgumentException("Informe o nome do produto.");
+        if (preco &lt;= 0) throw new ArgumentException("O preço deve ser maior que zero.");
+        if (quantidade &lt; 0) throw new ArgumentException("A quantidade não pode ser negativa.");
+        Nome = nome.Trim();
+        Preco = preco;
+        Quantidade = quantidade;
+    }
+
+    public void Entrada(int qtd)
+    {
+        if (qtd &lt;= 0) throw new ArgumentException("A quantidade deve ser maior que zero.");
+        Quantidade += qtd;
+    }
+
+    public void Saida(int qtd)
+    {
+        if (qtd &lt;= 0) throw new ArgumentException("A quantidade deve ser maior que zero.");
+        if (qtd &gt; Quantidade) throw new InvalidOperationException("Estoque insuficiente para essa saída.");
+        Quantidade -= qtd;
+    }
+}
+
+// ---------- FrmEstoque.cs ----------
+private readonly BindingList&lt;Produto&gt; produtos = new();   // a grade ATUALIZA SOZINHA ao adicionar/remover itens
+
+private Produto? Selecionado =&gt; dgvProdutos.CurrentRow?.DataBoundItem as Produto;   // propriedade auxiliar; ?. evita nulo
+
+private void FrmEstoque_Load(object sender, EventArgs e)
+{
+    dgvProdutos.DataSource = produtos;                   // liga a grade à lista
+    dgvProdutos.Columns[nameof(Produto.Nome)].HeaderText = "Produto";        // nameof evita erro de digitação
+    dgvProdutos.Columns[nameof(Produto.Preco)].HeaderText = "Preço";
+    dgvProdutos.Columns[nameof(Produto.Preco)].DefaultCellStyle.Format = "C2";   // moeda: R$ 9,50
+    dgvProdutos.Columns[nameof(Produto.Quantidade)].HeaderText = "Qtd.";
+    dgvProdutos.Columns[nameof(Produto.EstoqueBaixo)].Visible = false;       // coluna técnica: oculta
+}
+
+// Executa uma ação e transforma exceções de REGRA em mensagem na barra de status (evita repetir try/catch)
+private void Tentar(Action acao)
+{
+    try
+    {
+        acao();
+    }
+    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+    {
+        tslStatus.Text = ex.Message;
+    }
+}
+
+private void btnAdicionar_Click(object sender, EventArgs e)
+{
+    Tentar(() =&gt;
+    {
+        produtos.Add(new Produto(txtNome.Text, nudPreco.Value, (int)nudQuantidade.Value));   // Value é decimal
+        tslStatus.Text = $"Produto \"{txtNome.Text.Trim()}\" adicionado.";
+        txtNome.Clear();
+        nudPreco.Value = 0;
+        nudQuantidade.Value = 0;
+        txtNome.Focus();
+    });
+}
+
+private void btnEntrada_Click(object sender, EventArgs e) =&gt; Movimentar(entrada: true);
+private void btnSaida_Click(object sender, EventArgs e) =&gt; Movimentar(entrada: false);
+
+private void Movimentar(bool entrada)                    // um só método para as duas operações
+{
+    if (Selecionado is not Produto produto)
+    {
+        tslStatus.Text = "Selecione um produto na grade.";
+        return;
+    }
+    Tentar(() =&gt;
+    {
+        if (entrada) produto.Entrada((int)nudMovimento.Value);
+        else produto.Saida((int)nudMovimento.Value);
+        dgvProdutos.Refresh();                           // a propriedade mudou: pede para redesenhar as células
+        tslStatus.Text = $"{produto.Nome}: {produto.Quantidade} unidade(s) em estoque.";
+    });
+}
+
+// Evento CellFormatting: roda para cada célula antes de desenhar. Destaca estoque baixo.
+private void dgvProdutos_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+{
+    if (e.RowIndex &lt; 0) return;                          // -1 = cabeçalho
+    if (dgvProdutos.Rows[e.RowIndex].DataBoundItem is Produto p)
+    {
+        dgvProdutos.Rows[e.RowIndex].DefaultCellStyle.BackColor =
+            p.EstoqueBaixo ? Color.MistyRose : Color.White;      // rosa claro para estoque baixo
+    }
+}</code></pre><div class="desafio">🧪 <b>Perguntas:</b> por que a grade atualiza ao <code>Add</code> mas não ao mudar a <code>Quantidade</code> (precisamos do <code>Refresh</code>)? O que seria preciso para atualizar sozinha (<code>INotifyPropertyChanged</code>)? <b>Desafio:</b> botão “Remover produto” com confirmação e ordenação ao clicar no cabeçalho.</div></div><div class="step"><div class="tip" id="trilha-aprofundamento-winforms"><span class="callout-title">🚀 A partir daqui: consolidação e aprofundamento</span>Os Projetos 1 a 5 formam o núcleo mínimo do módulo. Os Projetos 6 a 10 e os laboratórios ampliam repertório e devem ser selecionados conforme o tempo da turma. Não avance apenas para “terminar a lista”: priorize compreender eventos, validação, coleções e separação de responsabilidades.</div><h3>Projeto 6 · Contas Bancárias (herança, polimorfismo e segundo formulário)</h3><p><b>Objetivo:</b> aplicar herança e polimorfismo em uma tela e abrir um <b>segundo formulário modal</b> passando dados pelo construtor.</p><p><b>Formulário principal</b> <code>FrmContas</code>:</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>Label + TextBox</td><td><code>lblTitular / txtTitular</code></td><td>“Titular *”</td></tr><tr><td>Label + ComboBox</td><td><code>lblTipo / cmbTipo</code></td><td>“Tipo”; <code>DropDownList</code>; itens “Corrente” e “Poupança”</td></tr><tr><td>Button</td><td><code>btnCriar</code></td><td>“&amp;Criar conta”</td></tr><tr><td>DataGridView</td><td><code>dgvContas</code></td><td>Somente leitura, linha inteira</td></tr><tr><td>NumericUpDown</td><td><code>nudValor</code></td><td><code>DecimalPlaces</code>=2; <code>Maximum</code>=1000000</td></tr><tr><td>Buttons</td><td><code>btnDepositar / btnSacar / btnRendimento / btnExtrato</code></td><td>Ações sobre a conta selecionada</td></tr><tr><td>StatusStrip</td><td><code>tslStatus</code></td><td>Mensagens</td></tr></table><p><b>Segundo formulário:</b> clique direito no projeto → <b>Adicionar → Formulário (Windows Forms)</b> → <code>FrmExtrato</code>, com um <code>ListBox</code> <code>lstExtrato</code> (<code>Dock</code>=Fill, fonte <code>Consolas</code>), um <code>Label</code> <code>lblSaldo</code> e um botão <code>btnFechar</code> (<code>DialogResult</code>=OK; formulário com <code>AcceptButton</code> e <code>CancelButton</code>=btnFechar, <code>FormBorderStyle</code>=FixedDialog, <code>StartPosition</code>=CenterParent).</p><h4>Código</h4><pre><code>// ---------- Conta.cs (classe base abstrata e filhas) ----------
+public abstract class Conta
+{
+    private readonly List&lt;string&gt; extrato = new();       // linhas do extrato (privada)
+
+    public string Titular { get; }
+    public decimal Saldo { get; protected set; }         // protected set: a base E as filhas alteram
+    public abstract decimal Limite { get; }              // cada tipo define o seu limite (POLIMORFISMO)
+    public abstract string Tipo { get; }                 // texto mostrado na grade
+    public IReadOnlyList&lt;string&gt; Extrato =&gt; extrato;     // visão somente leitura
+
+    protected Conta(string titular)
+    {
+        if (string.IsNullOrWhiteSpace(titular)) throw new ArgumentException("Informe o titular.");
+        Titular = titular.Trim();
+    }
+
+    public void Depositar(decimal valor)
+    {
+        ValidarValor(valor);
+        Saldo += valor;
+        Registrar("Depósito", valor);
+    }
+
+    public void Sacar(decimal valor)
+    {
+        ValidarValor(valor);
+        if (valor &gt; Saldo + Limite)                      // usa o Limite da classe REAL (corrente ou poupança)
+            throw new InvalidOperationException($"Saldo insuficiente. Disponível: {Saldo + Limite:C2}.");
+        Saldo -= valor;
+        Registrar("Saque", valor);
+    }
+
+    protected void Registrar(string operacao, decimal valor)   // as filhas também registram
+        =&gt; extrato.Add($"{DateTime.Now:dd/MM HH:mm}  {operacao,-10} {valor,12:C2}   Saldo {Saldo,12:C2}");
+
+    private static void ValidarValor(decimal valor)
+    {
+        if (valor &lt;= 0) throw new ArgumentException("O valor deve ser maior que zero.");
+    }
+}
+
+public class ContaCorrente : Conta
+{
+    public ContaCorrente(string titular) : base(titular) { }
+    public override decimal Limite =&gt; 500m;              // cheque especial
+    public override string Tipo =&gt; "Corrente";
+}
+
+public class ContaPoupanca : Conta
+{
+    public ContaPoupanca(string titular) : base(titular) { }
+    public override decimal Limite =&gt; 0m;                // poupança não tem limite
+    public override string Tipo =&gt; "Poupança";
+
+    public void AplicarRendimento(decimal percentual)    // método EXCLUSIVO da poupança
+    {
+        if (percentual &lt;= 0) throw new ArgumentException("O percentual deve ser maior que zero.");
+        decimal rendimento = Saldo * percentual / 100;
+        if (rendimento &gt; 0)
+        {
+            Saldo += rendimento;
+            Registrar("Rendimento", rendimento);
+        }
+    }
+}
+
+// ---------- FrmContas.cs ----------
+private readonly BindingList&lt;Conta&gt; contas = new();      // using System.ComponentModel;
+private Conta? Selecionada =&gt; dgvContas.CurrentRow?.DataBoundItem as Conta;
+
+private void FrmContas_Load(object sender, EventArgs e)
+{
+    cmbTipo.SelectedIndex = 0;                           // já começa em "Corrente"
+    dgvContas.DataSource = contas;
+    dgvContas.Columns[nameof(Conta.Saldo)].DefaultCellStyle.Format = "C2";
+    dgvContas.Columns[nameof(Conta.Limite)].DefaultCellStyle.Format = "C2";
+    dgvContas.Columns[nameof(Conta.Extrato)].Visible = false;   // lista não cabe numa célula
+}
+
+private void Tentar(Action acao)                         // mesmo padrão do Projeto 5
+{
+    try { acao(); }
+    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+    {
+        tslStatus.Text = ex.Message;
+    }
+}
+
+private void btnCriar_Click(object sender, EventArgs e)
+{
+    Tentar(() =&gt;
+    {
+        Conta conta = cmbTipo.SelectedIndex == 0         // escolhe a classe concreta; a variável é do tipo BASE
+            ? new ContaCorrente(txtTitular.Text)
+            : new ContaPoupanca(txtTitular.Text);
+        contas.Add(conta);
+        txtTitular.Clear();
+        tslStatus.Text = $"Conta {conta.Tipo} criada para {conta.Titular}.";
+    });
+}
+
+private void btnDepositar_Click(object sender, EventArgs e)
+{
+    if (Selecionada is not Conta conta) { tslStatus.Text = "Selecione uma conta."; return; }
+    Tentar(() =&gt; { conta.Depositar(nudValor.Value); dgvContas.Refresh(); tslStatus.Text = "Depósito realizado."; });
+}
+
+private void btnSacar_Click(object sender, EventArgs e)
+{
+    if (Selecionada is not Conta conta) { tslStatus.Text = "Selecione uma conta."; return; }
+    Tentar(() =&gt; { conta.Sacar(nudValor.Value); dgvContas.Refresh(); tslStatus.Text = "Saque realizado."; });
+}
+
+private void btnRendimento_Click(object sender, EventArgs e)
+{
+    if (Selecionada is ContaPoupanca poupanca)           // só vale para poupança: o "is" confere o tipo real
+    {
+        Tentar(() =&gt; { poupanca.AplicarRendimento(0.5m); dgvContas.Refresh(); tslStatus.Text = "Rendimento de 0,5% aplicado."; });
+    }
+    else
+    {
+        tslStatus.Text = "Selecione uma conta poupança.";
+    }
+}
+
+private void btnExtrato_Click(object sender, EventArgs e)
+{
+    if (Selecionada is not Conta conta) { tslStatus.Text = "Selecione uma conta."; return; }
+    using var frm = new FrmExtrato(conta);               // passa o objeto pelo CONSTRUTOR do outro formulário
+    frm.ShowDialog(this);                                // MODAL: bloqueia esta janela até fechar a outra
+}
+
+// ---------- FrmExtrato.cs ----------
+public partial class FrmExtrato : Form
+{
+    public FrmExtrato(Conta conta)                       // recebe os dados de que precisa
+    {
+        InitializeComponent();
+        Text = $"Extrato · {conta.Titular} ({conta.Tipo})";                // título da janela
+        lstExtrato.Items.AddRange(conta.Extrato.ToArray());                // joga as linhas na lista
+        lblSaldo.Text = $"Saldo atual: {conta.Saldo:C2}";
+    }
+}</code></pre><div class="desafio">🧪 <b>Teste:</b> crie as duas contas; saque R$ 400 de uma corrente sem saldo (usa o limite); tente sacar R$ 100 da poupança vazia; aplique rendimento; abra o extrato. <b>Pergunta:</b> onde está o polimorfismo neste projeto? (dica: <code>Sacar</code> e <code>Limite</code>).</div></div><div class="step"><h3>Projeto 7 · Formas Geométricas (desenho com GDI+ e o evento Paint)</h3><p><b>Objetivo:</b> classe abstrata, polimorfismo e <b>desenho na tela</b> com <code>Graphics</code> no evento <code>Paint</code> de um <code>PictureBox</code>.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>Label + ComboBox</td><td><code>lblForma / cmbForma</code></td><td>“Forma”; <code>DropDownList</code>; itens “Círculo” e “Retângulo”</td></tr><tr><td>Label + NumericUpDown</td><td><code>lblA / nudA</code></td><td>“Raio”; <code>Minimum</code>=1; <code>Maximum</code>=20; <code>DecimalPlaces</code>=1</td></tr><tr><td>Label + NumericUpDown</td><td><code>lblB / nudB</code></td><td>“Altura”; mesmos limites</td></tr><tr><td>Button</td><td><code>btnAdicionar / btnLimpar</code></td><td>“&amp;Adicionar” / “&amp;Limpar”</td></tr><tr><td>ListBox</td><td><code>lstFormas</code></td><td>Fonte <code>Consolas</code></td></tr><tr><td>Label</td><td><code>lblTotal</code></td><td>“Área total: 0”</td></tr><tr><td>PictureBox</td><td><code>picDesenho</code></td><td><code>BackColor</code>=White; <code>BorderStyle</code>=FixedSingle; altura ~200</td></tr></table><h4>Código</h4><pre><code>// ---------- Forma.cs ----------
+public abstract class Forma
+{
+    protected const int Escala = 3;                      // pixels por unidade (para caber na tela)
+
+    public string Nome { get; }
+    public Color Cor { get; }
+
+    protected Forma(string nome, Color cor)
+    {
+        Nome = nome;
+        Cor = cor;
+    }
+
+    public abstract double Area();                       // cada forma calcula do seu jeito
+    public abstract double Perimetro();
+    public abstract int Desenhar(Graphics g, int x, int y);   // desenha e devolve a LARGURA ocupada em pixels
+
+    public override string ToString() =&gt; $"{Nome,-10} área {Area(),8:F2}  perím. {Perimetro(),8:F2}";
+}
+
+public class Circulo : Forma
+{
+    private readonly double raio;
+
+    public Circulo(double raio, Color cor) : base("Círculo", cor)
+    {
+        if (raio &lt;= 0) throw new ArgumentException("O raio deve ser maior que zero.");
+        this.raio = raio;
+    }
+
+    public override double Area() =&gt; Math.PI * raio * raio;
+    public override double Perimetro() =&gt; 2 * Math.PI * raio;
+
+    public override int Desenhar(Graphics g, int x, int y)
+    {
+        int diametro = (int)(2 * raio * Escala);         // converte unidades em pixels
+        using var pincel = new SolidBrush(Cor);          // "pincel" com a cor da forma (using libera o recurso)
+        g.FillEllipse(pincel, x, y, diametro, diametro); // elipse com largura = altura = círculo
+        return diametro;
+    }
+}
+
+public class Retangulo : Forma
+{
+    private readonly double largura, altura;
+
+    public Retangulo(double largura, double altura, Color cor) : base("Retângulo", cor)
+    {
+        if (largura &lt;= 0 || altura &lt;= 0) throw new ArgumentException("Largura e altura devem ser maiores que zero.");
+        this.largura = largura;
+        this.altura = altura;
+    }
+
+    public override double Area() =&gt; largura * altura;
+    public override double Perimetro() =&gt; 2 * (largura + altura);
+
+    public override int Desenhar(Graphics g, int x, int y)
+    {
+        int larguraPx = (int)(largura * Escala);
+        using var pincel = new SolidBrush(Cor);
+        g.FillRectangle(pincel, x, y, larguraPx, (int)(altura * Escala));
+        return larguraPx;
+    }
+}
+
+// ---------- FrmFormas.cs ----------
+private readonly List&lt;Forma&gt; formas = new();
+private readonly Color[] paleta = { Color.SteelBlue, Color.Teal, Color.Orange, Color.IndianRed, Color.MediumPurple };
+
+private void FrmFormas_Load(object sender, EventArgs e)
+{
+    cmbForma.SelectedIndex = 0;                          // dispara SelectedIndexChanged e ajusta os campos
+}
+
+private void cmbForma_SelectedIndexChanged(object sender, EventArgs e)
+{
+    bool circulo = cmbForma.SelectedIndex == 0;
+    lblA.Text = circulo ? "Raio" : "Largura";            // rótulos que acompanham o contexto (UX)
+    lblB.Visible = !circulo;                             // o círculo não precisa do segundo campo
+    nudB.Visible = !circulo;
+}
+
+private void btnAdicionar_Click(object sender, EventArgs e)
+{
+    Color cor = paleta[formas.Count % paleta.Length];    // % : repete as cores quando acabam
+    Forma forma = cmbForma.SelectedIndex == 0
+        ? new Circulo((double)nudA.Value, cor)           // (double) converte decimal -&gt; double
+        : new Retangulo((double)nudA.Value, (double)nudB.Value, cor);
+
+    formas.Add(forma);
+    lstFormas.Items.Add(forma);                          // o ListBox mostra o ToString() da forma
+    lblTotal.Text = $"Área total: {formas.Sum(f =&gt; f.Area()):F2}";
+    picDesenho.Invalidate();                             // "redesenhe": dispara o evento Paint
+}
+
+private void btnLimpar_Click(object sender, EventArgs e)
+{
+    formas.Clear();
+    lstFormas.Items.Clear();
+    lblTotal.Text = "Área total: 0";
+    picDesenho.Invalidate();
+}
+
+// Evento Paint do picDesenho: o Windows chama sempre que a área precisa ser pintada
+private void picDesenho_Paint(object sender, PaintEventArgs e)
+{
+    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;   // bordas suaves
+    int x = 10;                                          // posição horizontal da próxima forma
+    foreach (Forma forma in formas)                      // POLIMORFISMO: cada forma se desenha sozinha
+    {
+        int largura = forma.Desenhar(e.Graphics, x, 10);
+        x += largura + 10;                               // próxima forma ao lado, com espaço
+    }
+}</code></pre><div class="desafio">🧪 <b>Teste:</b> círculo de raio 5 (área 78,54); retângulo 4 × 6 (área 24). Adicione várias formas. <b>Desafio:</b> faça as formas “quebrarem linha” quando passarem da largura do <code>PictureBox</code> e acrescente <code>Triangulo</code> sem alterar nenhuma outra classe.</div></div><div class="step"><h3>Projeto 8 · Agenda de Contatos (menus, ListView, arquivos e FormClosing)</h3><p><b>Objetivo:</b> menus, <code>ListView</code> com colunas, busca em tempo real, caixas de diálogo de arquivo, salvar/abrir em <b>JSON</b> e confirmação ao fechar com alterações pendentes.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>MenuStrip</td><td><code>menuPrincipal</code></td><td>Menu “Arquivo” com “Abrir...”, “Salvar como...” e “Sair” (nomes <code>mnuAbrir</code>, <code>mnuSalvar</code>, <code>mnuSair</code>)</td></tr><tr><td>Label + TextBox (3)</td><td><code>txtNome / txtTelefone / txtEmail</code></td><td>Rótulos “Nome *”, “Telefone”, “E-mail *”</td></tr><tr><td>Button</td><td><code>btnAdicionar</code></td><td>“&amp;Adicionar”</td></tr><tr><td>Label + TextBox</td><td><code>txtBusca</code></td><td>“Buscar”</td></tr><tr><td>ListView</td><td><code>lvContatos</code></td><td><code>View</code>=Details; <code>FullRowSelect</code>=True; <code>MultiSelect</code>=False; colunas: Nome, Telefone, E-mail; <code>ContextMenuStrip</code>=menuContexto</td></tr><tr><td>ContextMenuStrip</td><td><code>menuContexto</code></td><td>Item “Excluir” (<code>mnuExcluir</code>)</td></tr><tr><td>StatusStrip</td><td><code>tslStatus</code></td><td>Quantidade de contatos</td></tr></table><p>No topo dos arquivos, acrescente <code>using System.Text.Json;</code>.</p><h4>Código</h4><pre><code>// ---------- Contato.cs e Agenda.cs ----------
+public class Contato
+{
+    public string Nome { get; set; } = "";               // set público: necessário para o JSON reconstruir o objeto
+    public string Telefone { get; set; } = "";
+    public string Email { get; set; } = "";
+}
+
+public class Agenda
+{
+    private readonly List&lt;Contato&gt; contatos = new();
+
+    public int Total =&gt; contatos.Count;
+
+    public void Adicionar(Contato c)
+    {
+        if (string.IsNullOrWhiteSpace(c.Nome)) throw new ArgumentException("Informe o nome.");
+        if (!c.Email.Contains('@')) throw new ArgumentException("Informe um e-mail válido.");
+        if (contatos.Any(x =&gt; x.Email.Equals(c.Email, StringComparison.OrdinalIgnoreCase)))   // ignora maiúsculas
+            throw new InvalidOperationException("Já existe um contato com esse e-mail.");
+        contatos.Add(c);
+    }
+
+    public bool Remover(Contato c) =&gt; contatos.Remove(c);
+
+    public IEnumerable&lt;Contato&gt; Buscar(string termo)     // LINQ: filtra e ordena
+        =&gt; contatos
+            .Where(c =&gt; c.Nome.Contains(termo, StringComparison.OrdinalIgnoreCase)
+                     || c.Email.Contains(termo, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(c =&gt; c.Nome);
+
+    public void Salvar(string caminho)
+    {
+        string json = JsonSerializer.Serialize(contatos, new JsonSerializerOptions { WriteIndented = true });   // objetos -&gt; texto
+        File.WriteAllText(caminho, json);                // grava o arquivo
+    }
+
+    public void Carregar(string caminho)
+    {
+        var lista = JsonSerializer.Deserialize&lt;List&lt;Contato&gt;&gt;(File.ReadAllText(caminho)) ?? new();   // texto -&gt; objetos
+        contatos.Clear();
+        contatos.AddRange(lista);
+    }
+}
+
+// ---------- FrmAgenda.cs ----------
+private readonly Agenda agenda = new();
+private bool alterado = false;                           // há mudanças ainda não salvas em arquivo?
+
+private void Atualizar()                                 // reconstrói o ListView conforme a busca
+{
+    lvContatos.BeginUpdate();                            // evita "piscar" durante a carga
+    lvContatos.Items.Clear();
+    foreach (Contato c in agenda.Buscar(txtBusca.Text.Trim()))
+    {
+        var item = new ListViewItem(c.Nome) { Tag = c }; // 1ª coluna; Tag guarda o OBJETO inteiro
+        item.SubItems.Add(c.Telefone);                   // 2ª coluna
+        item.SubItems.Add(c.Email);                      // 3ª coluna
+        lvContatos.Items.Add(item);
+    }
+    lvContatos.EndUpdate();
+    tslStatus.Text = $"{lvContatos.Items.Count} contato(s) exibido(s) de {agenda.Total}.";
+}
+
+private void btnAdicionar_Click(object sender, EventArgs e)
+{
+    try
+    {
+        agenda.Adicionar(new Contato { Nome = txtNome.Text.Trim(), Telefone = txtTelefone.Text.Trim(), Email = txtEmail.Text.Trim() });
+        alterado = true;
+        txtNome.Clear(); txtTelefone.Clear(); txtEmail.Clear();
+        txtNome.Focus();
+        Atualizar();
+    }
+    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+    {
+        MessageBox.Show(ex.Message, "Não foi possível adicionar", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    }
+}
+
+private void txtBusca_TextChanged(object sender, EventArgs e) =&gt; Atualizar();   // busca em tempo real
+
+private void mnuExcluir_Click(object sender, EventArgs e)        // item do menu de contexto (botão direito)
+{
+    if (lvContatos.SelectedItems.Count == 0) return;
+    var contato = (Contato)lvContatos.SelectedItems[0].Tag!;     // recupera o objeto guardado no Tag
+    if (MessageBox.Show($"Excluir {contato.Nome}?", "Confirmar", MessageBoxButtons.YesNo,
+        MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
+    agenda.Remover(contato);
+    alterado = true;
+    Atualizar();
+}
+
+private void mnuSalvar_Click(object sender, EventArgs e)
+{
+    using var dlg = new SaveFileDialog { Filter = "Agenda (*.json)|*.json", Title = "Salvar agenda", FileName = "agenda.json" };
+    if (dlg.ShowDialog() != DialogResult.OK) return;     // usuário cancelou
+    try
+    {
+        agenda.Salvar(dlg.FileName);
+        alterado = false;                                // agora está salvo
+        tslStatus.Text = "Agenda salva.";
+    }
+    catch (IOException ex)                               // disco cheio, arquivo em uso...
+    {
+        MessageBox.Show(ex.Message, "Erro ao salvar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+}
+
+private void mnuAbrir_Click(object sender, EventArgs e)
+{
+    using var dlg = new OpenFileDialog { Filter = "Agenda (*.json)|*.json", Title = "Abrir agenda" };
+    if (dlg.ShowDialog() != DialogResult.OK) return;
+    try
+    {
+        agenda.Carregar(dlg.FileName);
+        alterado = false;
+        Atualizar();
+    }
+    catch (Exception ex) when (ex is IOException or JsonException)   // arquivo inacessível ou JSON inválido
+    {
+        MessageBox.Show("Não foi possível abrir o arquivo.\n" + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+}
+
+private void mnuSair_Click(object sender, EventArgs e) =&gt; Close();   // Close dispara o FormClosing
+
+// Evento FormClosing: dá a chance de CANCELAR o fechamento
+private void FrmAgenda_FormClosing(object sender, FormClosingEventArgs e)
+{
+    if (alterado &amp;&amp; MessageBox.Show("Há alterações não salvas. Sair mesmo assim?", "Sair",
+        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+    {
+        e.Cancel = true;                                 // cancela: a janela continua aberta
+    }
+}</code></pre><div class="desafio">🧪 <b>Teste:</b> adicione contatos, busque por parte do nome, salve, feche, abra de novo; tente fechar com alterações pendentes; abra um arquivo qualquer (não JSON). <b>Desafio:</b> botão “Editar” e atalho <b>Ctrl+S</b> para salvar (propriedade <code>ShortcutKeys</code> do item de menu).</div></div><div class="step"><h3>Projeto 9 · Jogo de Adivinhação (Timer, ProgressBar e estado)</h3><p><b>Objetivo:</b> usar <code>Timer</code> e <code>ProgressBar</code>, guardar o estado do jogo em uma classe e controlar o estado dos controles (habilitar e desabilitar).</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>Label</td><td><code>lblDica</code></td><td>Mensagem principal; fonte grande</td></tr><tr><td>TextBox</td><td><code>txtPalpite</code></td><td><code>MaxLength</code>=3; filtre dígitos no <code>KeyPress</code></td></tr><tr><td>Button</td><td><code>btnTentar / btnNovo</code></td><td>“&amp;Tentar” (<code>AcceptButton</code>) / “&amp;Novo jogo”</td></tr><tr><td>Label</td><td><code>lblTentativas</code></td><td>“Tentativas: 0”</td></tr><tr><td>ProgressBar</td><td><code>pgbTempo</code></td><td><code>Minimum</code>=0</td></tr><tr><td>Label</td><td><code>lblTempo</code></td><td>“60s”</td></tr><tr><td>Timer</td><td><code>tmrJogo</code></td><td><code>Interval</code>=1000 (1 s); <code>Enabled</code>=False</td></tr></table><h4>Código</h4><pre><code>// ---------- Jogo.cs ----------
+public enum Resultado { Acertou, MuitoBaixo, MuitoAlto }   // valores nomeados em vez de números soltos
+
+public class Jogo
+{
+    public const int Maximo = 100;                       // maior número possível
+    private readonly int segredo;
+
+    public int Tentativas { get; private set; }          // o objeto "lembra" seu estado
+    public int Segredo =&gt; segredo;
+
+    public Jogo()
+    {
+        segredo = Random.Shared.Next(1, Maximo + 1);     // sorteia de 1 a 100 (o limite superior não entra)
+    }
+
+    public Resultado Tentar(int palpite)
+    {
+        Tentativas++;
+        if (palpite == segredo) return Resultado.Acertou;
+        return palpite &lt; segredo ? Resultado.MuitoBaixo : Resultado.MuitoAlto;
+    }
+}
+
+// ---------- FrmJogo.cs ----------
+private const int TempoTotal = 60;                       // segundos
+private Jogo jogo = new();
+private int segundosRestantes;
+
+private void FrmJogo_Load(object sender, EventArgs e) =&gt; NovoJogo();
+
+private void NovoJogo()                                  // coloca a tela e os dados no estado inicial
+{
+    jogo = new Jogo();                                   // objeto novo = estado zerado
+    segundosRestantes = TempoTotal;
+    pgbTempo.Maximum = TempoTotal;
+    pgbTempo.Value = TempoTotal;
+    lblTempo.Text = $"{TempoTotal}s";
+    lblDica.Text = $"Adivinhe o número de 1 a {Jogo.Maximo}.";
+    lblDica.ForeColor = SystemColors.ControlText;        // cor padrão do sistema
+    lblTentativas.Text = "Tentativas: 0";
+    txtPalpite.Enabled = true;                           // reabilita os controles
+    btnTentar.Enabled = true;
+    txtPalpite.Clear();
+    txtPalpite.Focus();
+    tmrJogo.Start();                                     // liga o cronômetro
+}
+
+private void tmrJogo_Tick(object sender, EventArgs e)    // roda a cada 1 segundo enquanto o Timer estiver ligado
+{
+    segundosRestantes--;
+    pgbTempo.Value = Math.Max(0, segundosRestantes);     // Value não pode ficar negativo
+    lblTempo.Text = $"{Math.Max(0, segundosRestantes)}s";
+    if (segundosRestantes &lt;= 0)
+    {
+        Encerrar(venceu: false);                         // tempo esgotado
+    }
+}
+
+private void btnTentar_Click(object sender, EventArgs e)
+{
+    if (!int.TryParse(txtPalpite.Text, out int palpite) || palpite &lt; 1 || palpite &gt; Jogo.Maximo)
+    {
+        lblDica.Text = $"Digite um número inteiro de 1 a {Jogo.Maximo}.";
+        txtPalpite.SelectAll();                          // seleciona o texto para facilitar a correção
+        txtPalpite.Focus();
+        return;                                          // palpite inválido NÃO gasta tentativa
+    }
+
+    Resultado resultado = jogo.Tentar(palpite);
+    lblTentativas.Text = $"Tentativas: {jogo.Tentativas}";
+
+    switch (resultado)
+    {
+        case Resultado.Acertou:
+            Encerrar(venceu: true);
+            return;
+        case Resultado.MuitoBaixo:
+            lblDica.Text = "Tente um número MAIOR ⬆";
+            break;
+        case Resultado.MuitoAlto:
+            lblDica.Text = "Tente um número MENOR ⬇";
+            break;
+    }
+    txtPalpite.Clear();
+    txtPalpite.Focus();
+}
+
+private void Encerrar(bool venceu)                       // fim de jogo: para o relógio e bloqueia a entrada
+{
+    tmrJogo.Stop();
+    txtPalpite.Enabled = false;
+    btnTentar.Enabled = false;
+    lblDica.Text = venceu
+        ? $"Parabéns! Acertou em {jogo.Tentativas} tentativa(s)!"
+        : $"Tempo esgotado! O número era {jogo.Segredo}.";
+    lblDica.ForeColor = venceu ? Color.SeaGreen : Color.Firebrick;
+}
+
+private void btnNovo_Click(object sender, EventArgs e) =&gt; NovoJogo();
+
+private void txtPalpite_KeyPress(object sender, KeyPressEventArgs e)
+{
+    if (!char.IsDigit(e.KeyChar) &amp;&amp; !char.IsControl(e.KeyChar)) e.Handled = true;   // só dígitos e teclas de controle
+}</code></pre><div class="desafio">🧪 <b>Perguntas:</b> o que acontece com o <code>Timer</code> se esquecermos de chamar <code>Stop()</code>? Por que o estado do jogo fica numa classe e não em variáveis do formulário? <b>Desafio:</b> pontuação que considera tentativas e tempo restante, com ranking guardado em arquivo.</div></div><div class="step"><h3>Projeto 10 · Boletim Escolar (TabControl, CSV e visão geral)</h3><p><b>Objetivo:</b> organizar a tela em <b>abas</b>, validar entradas numéricas com <code>NumericUpDown</code>, exibir resultados calculados e <b>exportar CSV</b>.</p><table><tr><th>Controle</th><th>Name</th><th>Propriedades</th></tr><tr><td>TabControl</td><td><code>tabControle</code></td><td>Duas abas: <code>tabCadastro</code> (“Cadastro”) e <code>tabRelatorio</code> (“Relatório”)</td></tr><tr><td>Aba Cadastro: Label + TextBox</td><td><code>txtAluno</code></td><td>“Aluno *”</td></tr><tr><td>Aba Cadastro: 3 × Label + NumericUpDown</td><td><code>nudNota1 / nudNota2 / nudNota3</code></td><td><code>Minimum</code>=0; <code>Maximum</code>=10; <code>DecimalPlaces</code>=1; <code>Increment</code>=0,5</td></tr><tr><td>Aba Cadastro: Button</td><td><code>btnAdicionar</code></td><td>“&amp;Adicionar aluno”</td></tr><tr><td>Aba Relatório: DataGridView</td><td><code>dgvAlunos</code></td><td>Somente leitura; linha inteira</td></tr><tr><td>Aba Relatório: Label</td><td><code>lblResumo</code></td><td>Média da turma, aprovados...</td></tr><tr><td>Aba Relatório: Button</td><td><code>btnExportar</code></td><td>“&amp;Exportar CSV...”</td></tr><tr><td>StatusStrip</td><td><code>tslStatus</code></td><td>Mensagens</td></tr></table><p>Acrescente <code>using System.ComponentModel;</code> e <code>using System.Text;</code> no formulário.</p><h4>Código</h4><pre><code>// ---------- Aluno.cs ----------
+public class Aluno
+{
+    public string Nome { get; }
+    public decimal Nota1 { get; }
+    public decimal Nota2 { get; }
+    public decimal Nota3 { get; }
+
+    public Aluno(string nome, decimal n1, decimal n2, decimal n3)
+    {
+        if (string.IsNullOrWhiteSpace(nome)) throw new ArgumentException("Informe o nome do aluno.");
+        foreach (decimal nota in new[] { n1, n2, n3 })   // percorre as três notas com a MESMA regra (sem repetir código)
+            if (nota &lt; 0 || nota &gt; 10) throw new ArgumentException("As notas devem estar entre 0 e 10.");
+        Nome = nome.Trim();
+        Nota1 = n1; Nota2 = n2; Nota3 = n3;
+    }
+
+    public decimal Media =&gt; decimal.Round((Nota1 + Nota2 + Nota3) / 3, 2);   // calculada, 2 casas
+
+    public string Situacao =&gt; Media &gt;= 7 ? "Aprovado" : Media &gt;= 5 ? "Recuperação" : "Reprovado";
+}
+
+// ---------- FrmBoletim.cs ----------
+private readonly BindingList&lt;Aluno&gt; alunos = new();
+
+private void FrmBoletim_Load(object sender, EventArgs e)
+{
+    dgvAlunos.DataSource = alunos;
+    dgvAlunos.Columns[nameof(Aluno.Media)].DefaultCellStyle.Format = "F2";   // 2 casas decimais
+}
+
+private void btnAdicionar_Click(object sender, EventArgs e)
+{
+    try
+    {
+        alunos.Add(new Aluno(txtAluno.Text, nudNota1.Value, nudNota2.Value, nudNota3.Value));   // a classe valida
+        tslStatus.Text = $"Aluno \"{txtAluno.Text.Trim()}\" adicionado.";
+        txtAluno.Clear();
+        nudNota1.Value = nudNota2.Value = nudNota3.Value = 0;   // atribuição encadeada
+        txtAluno.Focus();
+    }
+    catch (ArgumentException ex)
+    {
+        tslStatus.Text = ex.Message;
+        txtAluno.Focus();
+    }
+}
+
+private void tabControle_SelectedIndexChanged(object sender, EventArgs e)   // ao trocar de aba
+{
+    if (tabControle.SelectedTab == tabRelatorio)         // entrou no relatório: recalcula o resumo
+    {
+        AtualizarResumo();
+    }
+}
+
+private void AtualizarResumo()
+{
+    if (alunos.Count == 0)                               // Average() de lista vazia lançaria exceção
+    {
+        lblResumo.Text = "Nenhum aluno cadastrado.";
+        return;
+    }
+    decimal mediaTurma = alunos.Average(a =&gt; a.Media);   // LINQ
+    int aprovados = alunos.Count(a =&gt; a.Situacao == "Aprovado");
+    lblResumo.Text = $"Alunos: {alunos.Count} | Média da turma: {mediaTurma:F2} | Aprovados: {aprovados}";
+}
+
+private void btnExportar_Click(object sender, EventArgs e)
+{
+    if (alunos.Count == 0) { tslStatus.Text = "Não há dados para exportar."; return; }
+
+    using var dlg = new SaveFileDialog { Filter = "CSV (*.csv)|*.csv", FileName = "boletim.csv" };
+    if (dlg.ShowDialog() != DialogResult.OK) return;
+
+    var linhas = new List&lt;string&gt; { "Nome;Nota1;Nota2;Nota3;Media;Situacao" };      // cabeçalho (";" abre direto no Excel pt-BR)
+    linhas.AddRange(alunos.Select(a =&gt; $"{a.Nome};{a.Nota1};{a.Nota2};{a.Nota3};{a.Media:F2};{a.Situacao}"));   // 1 linha por aluno
+
+    try
+    {
+        File.WriteAllLines(dlg.FileName, linhas, Encoding.UTF8);   // UTF8 preserva os acentos
+        tslStatus.Text = "Arquivo exportado.";
+    }
+    catch (IOException ex)                               // arquivo aberto em outro programa, por exemplo
+    {
+        MessageBox.Show(ex.Message, "Erro ao exportar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+}</code></pre><div class="desafio">🧪 <b>Teste:</b> (8; 7; 9) → 8,00 Aprovado; (5; 6; 4) → 5,00 Recuperação; (2; 3; 4) → 3,00 Reprovado; exporte e abra no Excel. <b>Desafio:</b> pinte a linha de “Reprovado” de vermelho claro (como no Projeto 5) e acrescente um gráfico de pizza de situações com o controle <code>Chart</code> (pacote NuGet <code>System.Windows.Forms.DataVisualization</code>).</div></div><div class="step"><h3>Laboratório · Layout que acompanha a janela</h3><p>Abra o <b>Projeto 4 (Lista de Tarefas)</b> e faça o formulário se adaptar ao redimensionar:</p><ol><li>Defina <code>MinimumSize</code> do formulário (ex.: 360 × 300).</li><li><code>txtTarefa</code>: <code>Anchor</code> = Top, Left, Right (estica na horizontal).</li><li><code>btnAdicionar</code> e <code>btnRemover</code>: <code>Anchor</code> = Top, Right (acompanham a borda direita).</li><li><code>lstTarefas</code>: <code>Anchor</code> = Top, Bottom, Left, Right (cresce nos dois sentidos).</li><li><code>lblContador</code>: <code>Anchor</code> = Bottom, Left.</li><li>O <code>StatusStrip</code> já usa <code>Dock</code> = Bottom.</li></ol><p><b>Alternativa profissional:</b> coloque tudo em um <code>TableLayoutPanel</code> (<code>Dock</code>=Fill) com 2 colunas (a primeira em <i>Percent</i> 100% e a segunda <i>AutoSize</i>) e linhas <i>AutoSize</i>, mais a lista em uma linha <i>Percent</i>. O layout se mantém alinhado em qualquer tamanho de janela e escala de DPI. Teste maximizando e reduzindo a janela, e mudando a escala do Windows (Configurações → Sistema → Vídeo).</p></div><div class="step"><h3>Laboratório · Interface travada × responsiva</h3><p>Crie um projeto <code>FrmResponsivo</code> com <code>btnBloquear</code>, <code>btnAsync</code>, <code>btnCalculo</code>, um <code>ProgressBar</code> <code>pgbProgresso</code>, um <code>Label</code> <code>lblStatus</code> e um <code>TextBox</code> para você tentar digitar durante os testes. Clique em cada botão e tente <b>digitar, arrastar a janela e clicar</b> enquanto ele trabalha.</p><pre><code>// ---------- Formulário FrmResponsivo ----------
+private void btnBloquear_Click(object sender, EventArgs e)
+{
+    lblStatus.Text = "Trabalhando (bloqueado)...";       // o texto NÃO aparece, pois a tela só é repintada depois
+    Thread.Sleep(5000);                                  // BLOQUEIA a thread da interface por 5 s: tela congelada
+    lblStatus.Text = "Concluído!";
+}
+
+private async void btnAsync_Click(object sender, EventArgs e)    // async: o método pode "esperar" sem travar a tela
+{
+    btnAsync.Enabled = false;                            // evita cliques repetidos durante a operação
+    lblStatus.Text = "Trabalhando (assíncrono)...";
+    for (int i = 1; i &lt;= 50; i++)
+    {
+        await Task.Delay(100);                           // await: libera a interface e volta aqui depois de 100 ms
+        pgbProgresso.Value = i * 2;                      // atualiza a barra; a janela continua viva
+    }
+    lblStatus.Text = "Concluído!";
+    btnAsync.Enabled = true;
+}
+
+private async void btnCalculo_Click(object sender, EventArgs e)
+{
+    lblStatus.Text = "Calculando...";
+    long soma = await Task.Run(() =&gt;                     // Task.Run executa em OUTRA thread; await aguarda sem travar
+    {
+        long total = 0;
+        for (long i = 1; i &lt;= 2_000_000_000; i++) total += i;     // cálculo pesado
+        // lblStatus.Text = "x";                         // DESCOMENTE: InvalidOperationException (acesso entre threads)
+        return total;
+    });
+    lblStatus.Text = $"Soma: {soma:N0}";                 // aqui já voltamos à thread da interface: pode mexer nos controles
+}</code></pre></div><div class="step"><h3>Laboratório · Depuração de eventos e erros globais</h3><ol><li>Coloque um ponto de interrupção (<b>F9</b>) dentro de <code>btnCadastrar_Click</code> (Projeto 1) e execute com <b>F5</b>. Clique no botão: a execução para na linha.</li><li>Passe o mouse sobre <code>txtIdade.Text</code> e <code>idade</code>; use <b>F10</b> linha a linha e <b>F11</b> para entrar no construtor de <code>Pessoa</code>.</li><li>Abra <b>Depurar → Janelas → Pilha de Chamadas</b>: veja a cadeia <i>Application.Run → ... → seu evento</i>.</li><li>Provoque um erro <b>não tratado</b> (por exemplo, <code>int.Parse("abc")</code> sem <code>try</code>) e observe o que acontece com e sem o tratamento global abaixo (execute o <code>.exe</code> da pasta <code>bin\\Debug</code> fora do Visual Studio para ver o comportamento do usuário).</li></ol><pre><code>// ---------- Program.cs ----------
+static class Program
+{
+    [STAThread]
+    static void Main()
+    {
+        ApplicationConfiguration.Initialize();
+
+        // Deve vir ANTES de criar o primeiro formulário: manda as exceções da interface para o nosso manipulador
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
+        Application.ThreadException += (sender, e) =&gt;    // roda quando uma exceção NÃO tratada acontece em um evento
+        {
+            File.AppendAllText("erros.log",              // registra em arquivo para investigar depois
+                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {e.Exception}\n\n");
+            MessageBox.Show("Ocorreu um erro inesperado e foi registrado.\n" + e.Exception.Message,
+                "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        };
+
+        Application.Run(new FrmCadastroPessoa());        // troque pelo formulário inicial do seu projeto
+    }
+}</code></pre></div><div class="step"><h3>Laboratório · Publicar o aplicativo</h3><ol><li>Mude a configuração para <b>Release</b> (lista na barra de ferramentas).</li><li>Clique direito no projeto → <b>Publicar</b> → <b>Destino: Pasta</b> → escolha a pasta (ex.: <code>C:\\Publicacao\\Estoque</code>) → <b>Concluir</b>.</li><li>Em <b>Mostrar todas as configurações</b>, escolha: <b>Modo de implantação</b> (<i>dependente de framework</i> ou <i>autocontido</i>) e o <b>Runtime de destino</b> (<code>win-x64</code>).</li><li>Clique em <b>Publicar</b> e abra a pasta: localize o <code>.exe</code>.</li><li>Copie a pasta para <b>outro computador</b> (ou uma máquina virtual) e execute. Se for <i>dependente de framework</i> e der erro, instale o <b>.NET Desktop Runtime</b> correspondente.</li><li>Anote o tamanho da pasta nos dois modos e compare.</li></ol><p>Opcional: defina um <b>ícone</b> do aplicativo (Propriedades do projeto → Aplicativo → Ícone) e a versão (Pacote).</p></div></div><div class="common-error"><span class="callout-title">🐞 Antes de pedir ajuda</span>Confira o nome do arquivo, o namespace, o <code>Name</code> dos controles, referências do projeto, pacotes NuGet e a mensagem completa do erro. Use <code>Ctrl+Shift+B</code> para compilar e identifique a primeira mensagem de erro da lista.</div><div class="pager"><a href="teoria.html">← Teoria</a><a href="avaliacao.html">Avaliação →</a></div></main><footer>Módulo 3 · Interfaces Windows Forms com C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

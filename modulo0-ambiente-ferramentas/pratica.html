@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Prática · Módulo 0 · Ambiente e Ferramentas</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="0" data-page="pratica"><header><nav><a class="logo" href="index.html">🎓 Módulo 0 · Ambiente e Ferramentas</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 0</a><span>›</span><strong>Prática guiada</strong></div><h1>Prática guiada · Do zero ao ambiente verificado</h1><div class="tip practice-contract"><span class="callout-title">🧭 Como executar esta prática</span>Digite o código, execute a cada etapa e compare o comportamento com o resultado descrito. Se houver erro, leia a mensagem antes de alterar o código e use o depurador quando indicado.</div>
+<p>Faça as etapas na ordem e <b>anote cada resultado</b> na Ficha do Ambiente (modelo na Avaliação). Se algo falhar, não pule: consulte a seção de solução de problemas e registre o que aconteceu.</p>
+<div class="tip">💡 <b>Versões mudam.</b> Os números e nomes de menus deste módulo foram conferidos na época da escrita (Visual Studio 2026 e .NET 10). Antes de instalar, confirme nas páginas oficiais da Microsoft, do Git, do GitHub e do Laragon; o professor deve validar o roteiro em uma máquina do laboratório.</div><div class="steps"><div class="step"><h3>Levante as características do seu computador</h3><p>Abra o <b>PowerShell</b> (menu Iniciar → digite PowerShell) e rode os comandos abaixo, um por vez. Anote os resultados.</p><pre><code># Rode no PowerShell (menu Iniciar -&gt; PowerShell). Linhas com # são comentários.
+
+# 1) Versão do Windows e arquitetura (precisa ser 64 bits)
+Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, OSArchitecture
+
+# 2) Processador: nome, núcleos físicos e núcleos lógicos
+Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors
+
+# 3) Memória RAM total em GB (dividimos os bytes por 1GB; Round arredonda para 1 casa)
+[math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
+
+# 4) Espaço livre no disco C: em GB
+[math]::Round((Get-PSDrive C).Free / 1GB, 1)
+
+# 5) Tipo de cada disco (SSD ou HDD) e tamanho
+Get-PhysicalDisk | Select-Object FriendlyName, MediaType, Size</code></pre></div><div class="step"><h3>Compare com os requisitos</h3><p>Preencha a tabela e conclua: <b>atende ao mínimo? atende ao recomendado?</b> O que fazer se não atender (liberar espaço, fechar programas, usar outra máquina)?</p><table><tr><th>Item</th><th>Mínimo</th><th>Recomendado</th><th>Minha máquina</th><th>Situação</th></tr><tr><td>Windows 64 bits</td><td>Win 10/11 64 bits</td><td>Win 11</td><td></td><td></td></tr><tr><td>Processador</td><td>64 bits</td><td>4 núcleos</td><td></td><td></td></tr><tr><td>RAM</td><td>4 GB</td><td>16 GB</td><td></td><td></td></tr><tr><td>Disco livre</td><td>20 a 50 GB</td><td>SSD com folga</td><td></td><td></td></tr><tr><td>Administrador</td><td>Sim</td><td>Sim</td><td></td><td></td></tr><tr><td>Internet</td><td>Sim</td><td>Estável</td><td></td><td></td></tr></table></div><div class="step"><h3>Planeje o ambiente</h3><p>Liste o que será instalado e em qual ordem. Sugestão: <b>1) Visual Studio</b> (com o SDK do .NET) → <b>2) Git</b> → <b>3) conta no GitHub</b> → <b>4) Laragon</b> → <b>5) verificação</b>. Crie a pasta de projetos no PowerShell:</p><pre><code>mkdir C:\Projetos</code></pre><p>Escolha <b>onde</b> instalar (prefira o SSD) e defina quem é o responsável por documentar cada etapa, se estiver em grupo.</p></div><div class="step"><h3>Instale o Visual Studio</h3><ol><li>Baixe o <b>Visual Studio Community</b> no site oficial da Microsoft (visualstudio.microsoft.com).</li><li>Execute o instalador (será pedida permissão de administrador). Ele instala primeiro o <b>Visual Studio Installer</b>.</li><li>Na tela de cargas de trabalho, marque <b>Desenvolvimento para desktop com .NET</b>. Observe, no painel à direita, o <b>espaço total necessário</b>.</li><li>Na aba <b>Componentes individuais</b>, confirme que <b>Git para Windows</b> está marcado (se aparecer na lista). Na aba <b>Pacotes de idiomas</b>, escolha Português (Brasil) ou Inglês.</li><li>Na aba <b>Locais de instalação</b>, confira a unidade (prefira o SSD).</li><li>Clique em <b>Instalar</b> e aguarde (pode demorar; o tempo depende da internet e do disco). Reinicie se solicitado.</li><li>Ao abrir pela primeira vez, entre com sua conta Microsoft (ou pule) e escolha o <b>tema</b> de cores.</li></ol></div><div class="step"><h3>Configure a IDE</h3><p>Menu <b>Ferramentas → Opções</b> e ajuste:</p><table><tr><th>Onde</th><th>O que ajustar</th></tr><tr><td>Ambiente → Geral</td><td>Tema de cores (Claro, Escuro ou Azul)</td></tr><tr><td>Ambiente → Fontes e Cores</td><td>Fonte Consolas ou Cascadia Code, tamanho 11 ou 12</td></tr><tr><td>Editor de Texto → C# → Tabulações</td><td>Tamanho da tabulação 4 e <b>Inserir espaços</b></td></tr><tr><td>Editor de Texto → Todos os Idiomas → Geral</td><td>Marque <b>Números de linha</b></td></tr><tr><td>Projetos e Soluções → Locais</td><td>Local padrão dos projetos: <code>C:\Projetos</code></td></tr><tr><td>Ferramentas → Importar e Exportar Configurações</td><td>Exporte suas configurações (backup)</td></tr></table><p>Em <b>Extensões → Gerenciar Extensões</b> você pode ver as extensões instaladas; neste curso não é necessário instalar nenhuma.</p></div><div class="step"><h3>Verifique o SDK do .NET</h3><p>O Visual Studio instala o SDK junto com a carga de trabalho. Confira pelo terminal:</p><pre><code># Abra o PowerShell (ou o terminal do Visual Studio: Exibir &gt; Terminal)
+
+dotnet --version        # mostra a versão do SDK que está em uso
+dotnet --list-sdks      # lista todos os SDKs instalados (podem existir vários)
+dotnet --list-runtimes  # lista os runtimes instalados
+dotnet --info           # relatório completo: SDK, runtimes, sistema operacional</code></pre></div><div class="step"><h3>Crie e execute o primeiro projeto de console</h3><p>Pelo terminal (e depois repita pela IDE: <b>Arquivo → Novo → Projeto → Aplicativo de Console</b>):</p><pre><code>cd C:\Projetos                      # entra na pasta de projetos (crie com: mkdir C:\Projetos)
+dotnet new console -n OlaConsole    # cria um projeto de console chamado OlaConsole
+cd OlaConsole                       # entra na pasta do projeto criado
+dotnet run                          # compila e executa; deve aparecer "Hello, World!"
+dotnet build                        # só compila (útil para ver erros sem executar)</code></pre></div><div class="step"><h3>Crie o primeiro projeto Windows Forms</h3><ol><li>Visual Studio → <b>Criar um projeto</b> → <b>Aplicativo do Windows Forms</b> (C#) → <b>Avançar</b>.</li><li>Nome <code>OlaMundo</code>, local <code>C:\Projetos</code> → <b>Avançar</b> → escolha o .NET LTS oferecido → <b>Criar</b>.</li><li>No formulário, adicione (Caixa de Ferramentas): um <code>TextBox</code> (<code>Name</code> = <code>txtNome</code>), um <code>Button</code> (<code>Name</code> = <code>btnOla</code>, <code>Text</code> = “Cumprimentar”) e um <code>Label</code> (<code>Name</code> = <code>lblSaudacao</code>, <code>Text</code> vazio).</li><li>Dê <b>clique duplo no botão</b> para criar o evento e escreva:</li></ol><pre><code>// Evento de clique do botão btnOla (clique duplo no botão, no designer, cria este método).
+private void btnOla_Click(object sender, EventArgs e)
+{
+    string nome = txtNome.Text.Trim();          // lê o texto digitado; Trim remove espaços das pontas
+
+    if (nome == "")                             // se o campo estiver vazio...
+    {
+        MessageBox.Show(                        // ...mostra uma janelinha de aviso
+            "Digite seu nome primeiro.",        // mensagem
+            "Atenção",                          // título da janela
+            MessageBoxButtons.OK,               // só o botão OK
+            MessageBoxIcon.Information);        // ícone de informação
+        return;                                 // sai do método, sem fazer mais nada
+    }
+
+    lblSaudacao.Text = $"Olá, {nome}! Seu ambiente está funcionando.";  // $"..." insere a variável no texto
+}</code></pre></div><div class="step"><h3>Execute e confira</h3><p>Pressione <b>F5</b>. Digite seu nome e clique no botão. Teste também com o campo vazio. <b>Se aparecer a saudação, o Visual Studio, o SDK e o Windows Forms estão funcionando.</b> Feche a janela, e depois use <b>Ctrl+F5</b> para executar sem depurar.</p></div><div class="step"><h3>Instale e configure o Git</h3><ol><li>Se o Git ainda não estiver instalado, baixe o <b>Git para Windows</b> no site oficial (git-scm.com) e instale aceitando as opções padrão (inclui o <b>Git Credential Manager</b>).</li><li>Feche e reabra o PowerShell, e rode:</li></ol><pre><code>git --version                                   # confirma que o Git está instalado (mostra a versão)
+
+# Em computador de laboratório, NÃO grave sua identidade com --global.
+# A identidade será configurada com --local dentro de cada repositório.
+# Isso evita deixar seus dados configurados para o próximo usuário.</code></pre><div class="warning"><span class="callout-title">⚠ Computador compartilhado</span>Nunca salve senha ou token no navegador/sistema. Se a máquina solicitar permanência da autenticação, recuse. Ao terminar, confirme o push, faça logout do GitHub e remova suas credenciais. Se utilizar um Personal Access Token, prefira um token com menor privilégio, expiração curta e revogue-o após a atividade.</div></div><div class="step"><h3>Crie a conta e o repositório no GitHub</h3><ol><li>Acesse github.com e crie sua conta (use e-mail válido e senha forte; ative a <b>verificação em duas etapas</b>).</li><li>Clique em <b>New repository</b>. Nome: <code>ola-mundo</code>. Marque <b>Public</b> ou <b>Private</b> (conforme orientação do professor). <b>Não</b> marque “Add a README” agora (vamos criar na prática). Clique em <b>Create repository</b>.</li><li>Copie o endereço HTTPS do repositório (algo como <code>https://github.com/seu-usuario/ola-mundo.git</code>).</li></ol></div><div class="step"><h3>Seu primeiro ciclo de Git</h3><p>Rode no PowerShell, dentro da pasta do projeto. Na primeira vez que fizer o <code>push</code>, o <b>Git Credential Manager</b> abrirá o navegador para você entrar no GitHub e autorizar. Antes de começar, crie um <code>README.md</code> com uma linha (por exemplo, <code># OlaMundo</code>) e adicione um <code>.gitignore</code> adequado ao Visual Studio (pelo menu <b>Git → Criar Repositório Git</b> no Visual Studio, que gera o arquivo, ou copie o modelo “VisualStudio” do repositório github/gitignore). Esse arquivo evita enviar as pastas <code>bin/</code> e <code>obj/</code>.</p><pre><code>cd C:\Projetos\OlaMundo                          # entra na pasta do projeto Windows Forms
+
+git init -b main                                 # cria o repositório já usando a branch main
+
+git config --local user.name "Seu Nome Completo"       # identidade SOMENTE deste repositório
+git config --local user.email "seu-email@exemplo.com"  # use o e-mail associado à sua conta GitHub
+git config --local --list                        # confira antes de continuar
+
+git status                                       # mostra o que mudou; arquivos novos aparecem em vermelho
+
+git add .                                        # "." = tudo; coloca os arquivos na área de preparação
+git status                                       # agora aparecem em verde, prontos para o commit
+git commit -m "chore: projeto inicial OlaMundo"  # registra o primeiro commit com uma mensagem clara
+
+git branch -M main                               # garante que a branch se chama "main"
+git remote add origin https://github.com/SEU-USUARIO/ola-mundo.git   # liga ao repositório do GitHub (nome "origin")
+git push -u origin main                          # envia os commits; -u lembra o destino para os próximos push</code></pre></div><div class="step"><h3>Pratique commit, histórico, branch e pull</h3><p>Repita o ciclo várias vezes até ficar natural. Depois, faça o mesmo <b>pelo Visual Studio</b>: janela <b>Alterações do Git</b> (menu <b>Git → Alterações do Git</b>): escreva a mensagem, clique em <b>Confirmar Tudo</b> e depois em <b>Enviar</b>; veja o histórico em <b>Git → Exibir Histórico de Branch</b>. Compare: é o mesmo que os comandos.</p><pre><code># --- 1) Fazer uma mudança e registrá-la ---
+# (altere o texto de um Label no designer ou edite o README.md)
+git status                                       # confirma quais arquivos mudaram
+git diff                                         # mostra linha a linha o que mudou (aperte q para sair)
+git add .
+git commit -m "feat: mensagem de boas-vindas na tela"
+git push                                         # envia ao GitHub
+
+# --- 2) Ver o histórico ---
+git log --oneline                                # um commit por linha, mais recente primeiro
+
+# --- 3) Trabalhar em uma branch ---
+git switch -c feature/botao-limpar               # cria a branch e já entra nela
+# ... faça mudanças e commits ...
+git switch main                                  # volta para a main
+git merge feature/botao-limpar                   # junta a branch na main
+git push
+
+# --- 4) Trazer mudanças feitas no GitHub (simulando um colega) ---
+# No site do GitHub, edite o README.md e salve (commit).
+git pull                                         # baixa e junta o commit do GitHub no seu computador</code></pre></div><div class="step"><h3>Instale o Laragon e inicie o MySQL</h3><ol><li>Baixe o <b>Laragon Full</b> no site oficial (laragon.org) e execute o instalador com as opções padrão.</li><li>Abra o Laragon e clique em <b>Iniciar tudo</b> (<i>Start All</i>). Aparecem os números das portas do Apache e do MySQL.</li><li><b>Janelas de licença:</b> versões recentes podem exibir avisos pedindo chave de licença. Leia os termos no site oficial; o professor deve confirmar se o uso na escola está de acordo com eles. Para os exercícios deste curso, qualquer servidor MySQL ou MariaDB local funciona.</li><li>Clique em <b>Banco de dados</b> para abrir o <b>HeidiSQL</b> e conecte à sessão (servidor <code>127.0.0.1</code>, usuário <code>root</code>, senha vazia, porta <code>3306</code>; confira os valores na sua instalação). Execute <code>SELECT VERSION();</code>.</li></ol><p>Se o MySQL não iniciar, provavelmente a <b>porta 3306 está ocupada</b> por outro programa (outro MySQL, XAMPP...). Descubra quem usa:</p><pre><code># Descobrir quem está usando a porta 3306 (rode no PowerShell ou Prompt de Comando)
+netstat -ano | findstr :3306                     # lista conexões na porta; o último número é o PID do processo
+
+# Descobrir o nome do programa a partir do PID (troque 1234 pelo número encontrado)
+tasklist /FI "PID eq 1234"                       # mostra o nome do processo, por exemplo mysqld.exe</code></pre></div><div class="step"><h3>Escreva o programa de verificação do ambiente</h3><p>Crie um novo projeto de <b>Aplicativo de Console</b> chamado <code>VerificaAmbiente</code> em <code>C:\Projetos</code>. Instale o driver do MySQL e substitua o conteúdo de <code>Program.cs</code> pelo código que vem depois dos comandos. Rode com <b>F5</b> ou pelo terminal.</p><pre><code>cd C:\Projetos\VerificaAmbiente                 # entra na pasta do projeto de console
+dotnet add package MySqlConnector                # instala o driver do MySQL via NuGet no projeto
+dotnet run                                       # executa o programa de verificação</code></pre><pre><code>using System.Runtime.InteropServices;                                  // dá acesso a RuntimeInformation (informações da máquina)
+using MySqlConnector;                                                  // driver do MySQL (instale: dotnet add package MySqlConnector)
+
+Console.WriteLine("=== Verificação do ambiente ===");                  // título do relatório
+
+Console.WriteLine($".NET em execução: {RuntimeInformation.FrameworkDescription}"); // versão do .NET que roda este programa
+Console.WriteLine($"Sistema operacional: {RuntimeInformation.OSDescription}");    // nome e versão do Windows
+Console.WriteLine($"Arquitetura do processo: {RuntimeInformation.ProcessArchitecture}"); // X64, Arm64...
+Console.WriteLine($"Núcleos lógicos: {Environment.ProcessorCount}");  // quantos "processadores" o Windows enxerga
+Console.WriteLine($"Computador: {Environment.MachineName}");          // nome da máquina
+
+const string conexao = "Server=localhost;Port=3306;User ID=root;Password=;"; // sem Database: só testa o servidor
+
+try                                                                    // tenta conectar ao MySQL
+{
+    using var con = new MySqlConnection(conexao);                      // using var: fecha a conexão sozinho no fim
+    con.Open();                                                        // abre a conexão de fato
+    Console.WriteLine($"MySQL: conectado (versão {con.ServerVersion})"); // mostra a versão do servidor
+}
+catch (MySqlException ex)                                              // se a conexão falhar...
+{
+    Console.WriteLine("MySQL: FALHA na conexão -&gt; " + ex.Message);     // ...mostra o motivo técnico
+    Console.WriteLine("Dica: o MySQL está iniciado no Laragon?");      // ...e uma pista do que verificar
+}
+
+Console.WriteLine("Pressione qualquer tecla para sair...");            // evita fechar a janela de uma vez
+Console.ReadKey();                                                     // espera uma tecla</code></pre></div><div class="step"><h3>Interprete o resultado</h3><p>Se tudo estiver certo, você verá a versão do .NET, o Windows, a arquitetura <code>X64</code> (ou <code>Arm64</code>) e “MySQL: conectado”. Anote as versões na Ficha do Ambiente. Se aparecer <b>FALHA</b>, confira se o MySQL está iniciado no Laragon e se a porta e a senha estão corretas.</p></div><div class="step"><h3>Documente e versione</h3><ol><li>Crie o repositório <code>meu-ambiente</code> no GitHub e coloque nele o projeto <code>VerificaAmbiente</code> e um <code>README.md</code> com a <b>Ficha do Ambiente</b> preenchida (versões e parâmetros).</li><li>Faça commits com mensagens claras (<code>docs: ficha do ambiente</code>, <code>feat: programa de verificação</code>).</li><li>Peça a um colega para <b>clonar</b> o repositório (<code>git clone endereço</code>) e executar o programa na máquina dele. Funcionou? O que faltou no README?</li></ol></div><div class="step"><h3>Manutenção do ambiente</h3><p>Faça, e registre, a rotina de manutenção:</p><ul><li><b>Atualizar o Visual Studio:</b> abra o <b>Visual Studio Installer</b> → botão <b>Atualizar</b>.</li><li><b>Atualizar o Git:</b> baixe o instalador novo; o comando <code>git update-git-for-windows</code> também funciona nas versões recentes.</li><li><b>Backup das configurações:</b> exporte as configurações da IDE.</li><li><b>Limpeza:</b> apague as pastas <code>bin</code> e <code>obj</code> de projetos antigos (o Visual Studio recria ao compilar).</li><li><b>Reparar:</b> no Installer, o botão <b>Mais → Reparar</b> corrige instalações com problemas.</li></ul></div></div><div class="common-error"><span class="callout-title">🐞 Antes de pedir ajuda</span>Confira o nome do arquivo, o namespace, o <code>Name</code> dos controles, referências do projeto, pacotes NuGet e a mensagem completa do erro. Use <code>Ctrl+Shift+B</code> para compilar e identifique a primeira mensagem de erro da lista.</div><div class="pager"><a href="teoria.html">← Teoria</a><a href="avaliacao.html">Avaliação →</a></div></main><footer>Módulo 0 · Preparação do Ambiente de Desenvolvimento · C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Avaliação · Módulo 6 · Qualidade do Código</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="6" data-page="avaliacao"><header><nav><a class="logo" href="index.html">🎓 Módulo 6 · Qualidade do Código</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 6</a><span>›</span><strong>Avaliação</strong></div><h1>Avaliação e verificação</h1><div class="assessment-contract"><span class="callout-title">🧠 Como usar esta avaliação</span>Faça primeiro sem consultar a teoria. Marque as questões em que teve dúvida, volte ao conteúdo apenas depois da primeira tentativa e corrija suas respostas explicando <i>por que</i> a solução correta funciona. A rubrica serve para autoavaliação e para feedback do professor.</div><div class="uc-box assessment-note"><span class="callout-title">✅ Evidência de aprendizagem</span>Resolva sem copiar a resposta dos exemplos. Quando houver código, execute e teste. O objetivo é demonstrar que você consegue explicar, aplicar e diagnosticar os conceitos deste módulo.</div>
+<h2>1. Checklist de revisão de código</h2><p>Use para revisar o seu código e o de um colega. ✔ atende · ✖ não atende.</p>
+<table><tr><th>#</th><th>Critério</th><th>Situação</th></tr>
+<tr><td>1</td><td>O código cumpre cada requisito listado?</td><td></td></tr>
+<tr><td>2</td><td>Nomes de classes, métodos e variáveis seguem o padrão e são claros?</td><td></td></tr>
+<tr><td>3</td><td>Não há números ou textos “mágicos” repetidos?</td><td></td></tr>
+<tr><td>4</td><td>Cada método faz uma única coisa e é curto?</td><td></td></tr>
+<tr><td>5</td><td>Não existe código repetido (DRY)?</td><td></td></tr>
+<tr><td>6</td><td>Membros públicos têm comentário <code>///</code>?</td><td></td></tr>
+<tr><td>7</td><td>Comentários explicam o porquê e não o óbvio? Não há código comentado?</td><td></td></tr>
+<tr><td>8</td><td>Entradas inválidas são tratadas com exceções adequadas?</td><td></td></tr>
+<tr><td>9</td><td>Há testes para cada requisito, incluindo casos limite?</td><td></td></tr>
+<tr><td>10</td><td>Todos os testes passam?</td><td></td></tr>
+<tr><td>11</td><td>Commits pequenos e com mensagem que cita o requisito?</td><td></td></tr></table>
+<h2>2. Exercícios</h2><ol>
+<li><b>TDD (Red-Green-Refactor).</b> Novo requisito: <i>“RF07: a conta poupança rende juros: <code>AplicarRendimento(decimal taxa)</code> soma ao saldo o valor de saldo × taxa, desde que o saldo seja positivo e a taxa maior que zero. Em conta corrente, o método lança <code>InvalidOperationException</code>.”</i> Escreva primeiro os testes (devem falhar), depois o código mínimo para passar e, por fim, refatore.</li>
+<li><b>Identifique o erro pelo requisito.</b> Para cada trecho, diga qual requisito viola e como corrigir:<table><tr><th>Trecho</th><th>Requisito</th></tr>
+<tr><td><code>if (valor &gt; Saldo) throw ...;</code> no <code>Sacar</code> de uma conta corrente</td><td>RF03/RF04</td></tr>
+<tr><td><code>Limite =&gt; 500;</code> para qualquer tipo de conta</td><td>RF04</td></tr>
+<tr><td><code>movimentacoes.Insert(0, mov);</code> em <code>Registrar</code></td><td>RF06</td></tr>
+<tr><td><code>Titular = titular;</code> sem <code>Trim()</code> (aceita “  A  ”)</td><td>RF01</td></tr></table></li>
+<li><b>Documente.</b> Adicione comentários XML completos a uma classe sua (summary, param, returns e exception) e confira o texto que aparece no IntelliSense ao usar o método.</li>
+<li><b>Refatore.</b> O código abaixo repete uma regra. Aplique <b>Extrair Método</b> e rode os testes:<pre><code>public void Debitar(decimal valor)
+{
+    if (valor &lt;= 0) throw new ArgumentException("Valor inválido.");
+    Saldo -= valor;
+}
+public void Creditar(decimal valor)
+{
+    if (valor &lt;= 0) throw new ArgumentException("Valor inválido.");
+    Saldo += valor;
+}</code></pre></li>
+<li><b>Depure e registre.</b> Introduza um defeito novo de propósito na classe (por exemplo, troque <code>-=</code> por <code>+=</code> no saque), troque o código com um colega, e peça para ele encontrar o defeito usando só testes e depurador, preenchendo o diário de depuração.</li>
+<li><b>Meça.</b> Crie um teste de desempenho no console comparando <code>List.Contains</code> e <code>HashSet.Contains</code> com 100.000 itens e escreva uma conclusão.</li></ol>
+<h2>3. Modelo de registro de defeito</h2><table><tr><th>ID</th><th>Requisito</th><th>Esperado</th><th>Obtido</th><th>Como reproduzir</th><th>Causa</th><th>Status</th></tr><tr><td>BUG-01</td><td>RF03</td><td>Sacar 600 com saldo 100 (corrente) é permitido</td><td>Exceção “Saldo insuficiente”</td><td>Teste <code>Sacar_ExatamenteSaldoMaisLimite_Permite</code></td><td>Operador <code>&gt;=</code></td><td>Corrigido</td></tr></table>
+<h2>4. Atalhos do Visual Studio usados no módulo</h2><table><tr><th>Ação</th><th>Atalho</th></tr>
+<tr><td>Formatar documento</td><td>Ctrl+K, Ctrl+D</td></tr>
+<tr><td>Renomear</td><td>F2 ou Ctrl+R, R</td></tr>
+<tr><td>Extrair método</td><td>Ctrl+R, M</td></tr>
+<tr><td>Ações rápidas e refatorações</td><td>Ctrl+.</td></tr>
+<tr><td>Ir para a definição</td><td>F12</td></tr>
+<tr><td>Localizar todas as referências</td><td>Shift+F12</td></tr>
+<tr><td>Hierarquia de chamadas</td><td>Ctrl+K, Ctrl+T</td></tr>
+<tr><td>Ir para tudo</td><td>Ctrl+T</td></tr>
+<tr><td>Ponto de interrupção</td><td>F9</td></tr>
+<tr><td>Iniciar depuração / continuar</td><td>F5</td></tr>
+<tr><td>Passar por cima / entrar / sair</td><td>F10 / F11 / Shift+F11</td></tr>
+<tr><td>Executar até o cursor</td><td>Ctrl+F10</td></tr>
+<tr><td>Janela de exceções</td><td>Ctrl+Alt+E</td></tr>
+<tr><td>Gerenciador de Testes</td><td>Ctrl+E, T</td></tr>
+<tr><td>Executar todos os testes</td><td>Ctrl+R, V</td></tr>
+<tr><td>Executar sem depurar</td><td>Ctrl+F5</td></tr></table>
+<h2>5. Solução de problemas</h2><table><tr><th>Sintoma</th><th>Causa provável</th><th>O que fazer</th></tr>
+<tr><td>Gerenciador de Testes vazio</td><td>Projeto não compilou</td><td>Compilar a solução (Ctrl+Shift+B) e abrir o gerenciador de novo</td></tr>
+<tr><td>Erro CS0246 ou CS0122 nos testes (“tipo não encontrado” ou “inacessível”)</td><td>Falta referência ao projeto, <code>using</code>, ou a classe não é <code>public</code></td><td>Adicionar a referência de projeto, <code>using Banco.Core;</code> e conferir <code>public class</code></td></tr>
+<tr><td>Ponto de interrupção “oco” (não para)</td><td>Compilação em Release ou código desatualizado</td><td>Usar a configuração <b>Debug</b> e recompilar</td></tr>
+<tr><td>Teste passa sozinho mas falha junto com outros</td><td>Testes dependem de estado compartilhado</td><td>Criar os objetos dentro de cada teste (isolamento)</td></tr>
+<tr><td>Tempos do Stopwatch muito diferentes a cada rodada</td><td>Medição em Debug ou com outros programas abertos</td><td>Usar Release (Ctrl+F5), repetir e comparar a média</td></tr>
+<tr><td>Warning de documentação XML (CS1591)</td><td>Membro público sem <code>///</code></td><td>Documentar ou desativar o aviso apenas se justificado</td></tr></table>
+<h2>6. Rubrica de avaliação</h2><table><tr><th>Critério</th><th>Insuficiente</th><th>Adequado</th><th>Excelente</th></tr>
+<tr><td>Testes unitários</td><td>Poucos ou sem padrão AAA</td><td>Cobrem todos os requisitos</td><td>Cobrem requisitos e casos limite, nomes claros</td></tr>
+<tr><td>Depuração</td><td>Corrige por tentativa e erro</td><td>Usa ponto de interrupção e inspeção</td><td>Diário completo com hipótese e verificação</td></tr>
+<tr><td>Documentação</td><td>Sem comentários</td><td><code>///</code> nos membros públicos</td><td>Documentação completa e comentários que explicam o porquê</td></tr>
+<tr><td>Refatoração e reutilização</td><td>Código repetido</td><td>Métodos extraídos e constantes</td><td>Código limpo com testes sempre verdes</td></tr>
+<tr><td>Rastreabilidade</td><td>Sem relação entre requisito e código</td><td>Matriz preenchida</td><td>Matriz e histórico de commits coerentes</td></tr>
+<tr><td>Otimização</td><td>Sem medição</td><td>Mede e compara</td><td>Mede, conclui e justifica quando otimizar</td></tr></table>
+<h2>7. Glossário</h2><table><tr><th>Termo</th><th>Significado</th></tr>
+<tr><td>Refatoração</td><td>Melhorar a estrutura do código sem alterar o comportamento</td></tr>
+<tr><td>DRY</td><td>Don't Repeat Yourself: cada regra em um só lugar</td></tr>
+<tr><td>Teste unitário</td><td>Teste automático de uma pequena unidade de código</td></tr>
+<tr><td>AAA</td><td>Arrange, Act, Assert: estrutura de um teste</td></tr>
+<tr><td>TDD</td><td>Desenvolvimento guiado por testes (Red, Green, Refactor)</td></tr>
+<tr><td>Regressão</td><td>Defeito que reaparece depois de uma mudança; os testes o detectam</td></tr>
+<tr><td>Ponto de interrupção</td><td>Marca que pausa a execução em uma linha</td></tr>
+<tr><td>Rastreabilidade</td><td>Ligação entre requisito, código, teste e commit</td></tr>
+<tr><td>Commit</td><td>Registro de um conjunto de mudanças no histórico do Git</td></tr>
+<tr><td>Code smell</td><td>Sinal de que o código pode ter um problema de estrutura</td></tr></table><div class="pager"><a href="pratica.html">← Prática</a><a href="index.html">Início ↑</a></div></main><footer>Módulo 6 · Qualidade do Código em C# · Programação de Aplicativos</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Avaliação · Módulo 2 · POO</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="2" data-page="avaliacao"><header><nav><a class="logo" href="index.html">🎓 Módulo 2 · POO</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 2</a><span>›</span><strong>Avaliação</strong></div><h1>Avaliação e verificação</h1><div class="assessment-contract"><span class="callout-title">🧠 Como usar esta avaliação</span>Faça primeiro sem consultar a teoria. Marque as questões em que teve dúvida, volte ao conteúdo apenas depois da primeira tentativa e corrija suas respostas explicando <i>por que</i> a solução correta funciona. A rubrica serve para autoavaliação e para feedback do professor.</div><div class="uc-box assessment-note"><span class="callout-title">✅ Evidência de aprendizagem</span>Resolva sem copiar a resposta dos exemplos. Quando houver código, execute e teste. O objetivo é demonstrar que você consegue explicar, aplicar e diagnosticar os conceitos deste módulo.</div>
+<h2>1. Exercícios de modelagem</h2><p>Para cada enunciado entregue: <b>diagrama de classes</b>, <b>código comentado</b>, um <code>Program.cs</code> que demonstre o uso e <b>casos de teste</b> (inclusive entradas inválidas).</p>
+<table><tr><th>#</th><th>Enunciado</th><th>Conceitos</th><th>Nível</th></tr>
+<tr><td>1</td><td><b>Retângulo:</b> largura e altura positivas; calcular área, perímetro e se é quadrado.</td><td>Classe, validação</td><td>★</td></tr>
+<tr><td>2</td><td><b>Conta Bancária:</b> saldo, depósito, saque com regras, extrato e exceção própria <code>SaldoInsuficienteException</code>.</td><td>Encapsulamento, exceções</td><td>★★</td></tr>
+<tr><td>3</td><td><b>Aluno e Turma:</b> aluno com notas; turma com lista de alunos, média geral e ranking (<code>IComparable</code>).</td><td>Composição, coleções</td><td>★★</td></tr>
+<tr><td>4</td><td><b>Formas geométricas:</b> classe abstrata <code>Forma</code> com <code>Area()</code> e <code>Perimetro()</code>; <code>Circulo</code>, <code>Retangulo</code>, <code>Triangulo</code>; lista polimórfica e soma das áreas.</td><td>Abstração, polimorfismo</td><td>★★</td></tr>
+<tr><td>5</td><td><b>Animais:</b> <code>Animal</code> (abstrata) com <code>EmitirSom()</code> e <code>Mover()</code>; <code>Cachorro</code>, <code>Gato</code>, <code>Passaro</code>; interface <code>IVoador</code> só para quem voa.</td><td>Herança, interface</td><td>★★</td></tr>
+<tr><td>6</td><td><b>Biblioteca:</b> <code>Livro</code>, <code>Leitor</code> (aluno e professor com limites diferentes), <code>Emprestimo</code>; regras de limite e atraso.</td><td>Herança, composição, regras</td><td>★★★</td></tr>
+<tr><td>7</td><td><b>Estacionamento:</b> <code>Veiculo</code> (carro, moto, caminhão) com tarifa diferente por tipo; tempo de permanência; relatório por tipo (LINQ).</td><td>Polimorfismo, LINQ</td><td>★★★</td></tr>
+<tr><td>8</td><td><b>Meios de pagamento:</b> interface <code>IPagamento</code> com <code>Processar(decimal)</code>; <code>Pix</code>, <code>Cartao</code> (taxa), <code>Boleto</code>; checkout que recebe qualquer um.</td><td>Interface, baixo acoplamento</td><td>★★★</td></tr>
+<tr><td>9</td><td><b>Agenda de contatos:</b> <code>Contato</code>, <code>Agenda</code> com busca por nome (LINQ), sem duplicados por e-mail e ordenação.</td><td>Coleções, encapsulamento</td><td>★★★</td></tr>
+<tr><td>10</td><td><b>Hotel:</b> <code>Quarto</code> (simples, luxo), <code>Reserva</code> com datas, <code>Hotel</code> que impede reserva sobreposta e calcula a diária por tipo.</td><td>Herança, composição, regras</td><td>★★★</td></tr></table>
+<h2>2. Revisão de design: o que está errado?</h2><table><tr><th>Trecho</th><th>Problema</th><th>Como melhorar</th></tr>
+<tr><td><code>public decimal Saldo;</code></td><td>Campo público: qualquer código altera sem regras</td><td>Propriedade com <code>private set</code> e métodos <code>Depositar</code>/<code>Sacar</code></td></tr>
+<tr><td><code>if (animal is Cachorro) ... else if (animal is Gato) ...</code> repetido em vários lugares</td><td>Falta polimorfismo; cada novo animal exige editar vários lugares</td><td>Método <code>virtual</code>/<code>abstract</code> na base</td></tr>
+<tr><td><code>class Pedido : Cliente</code></td><td>Herança errada: pedido <b>não é</b> um cliente</td><td>Composição: o pedido <b>tem</b> um cliente</td></tr>
+<tr><td>Classe <code>Sistema</code> com 800 linhas que valida, calcula, imprime e grava</td><td>Viola a responsabilidade única</td><td>Dividir em classes coesas</td></tr>
+<tr><td><code>public List&lt;Item&gt; Itens { get; set; }</code></td><td>Qualquer um troca ou altera a lista, burlando as regras</td><td>Lista privada + <code>IReadOnlyList&lt;Item&gt;</code> + métodos de adição</td></tr>
+<tr><td><code>new NotificadorEmail()</code> dentro do serviço</td><td>Acoplamento a uma implementação</td><td>Receber <code>INotificador</code> pelo construtor</td></tr>
+<tr><td>Classe base com 12 métodos, e as filhas lançam <code>NotImplementedException</code> em vários</td><td>A herança não representa um “é um” real</td><td>Separar em interfaces menores ou rever a hierarquia</td></tr>
+<tr><td>Números mágicos (<code>0.15m</code>) espalhados</td><td>Regra repetida e difícil de mudar</td><td>Constante nomeada na classe certa</td></tr></table>
+<h2>3. Teste de mesa e perguntas conceituais</h2><ol>
+<li>Qual a diferença entre <b>classe</b> e <b>objeto</b>? Dê um exemplo fora da informática.</li>
+<li>Por que <code>Pessoa p2 = p1;</code> não cria uma cópia? Como criar uma cópia de verdade?</li>
+<li>Quando usar <code>private</code>, <code>protected</code> e <code>public</code>?</li>
+<li>Qual a diferença entre sobrecarga (<i>overload</i>) e sobrescrita (<i>override</i>)?</li>
+<li>Classe abstrata ou interface? Dê um caso para cada.</li>
+<li>Herança ou composição? Justifique para “Carro e Motor” e “Gerente e Funcionário”.</li>
+<li>O que significa “programar para interfaces”? Que benefício isso traz?</li>
+<li>Por que membros <code>static</code> não acessam membros de instância diretamente?</li>
+<li>O que acontece se uma classe filha não implementar um método <code>abstract</code> da base?</li>
+<li>Explique, com suas palavras, “diga, não pergunte”.</li></ol>
+<h2>4. Erros comuns do compilador e de execução</h2><table><tr><th>Mensagem</th><th>Causa provável</th><th>Correção</th></tr>
+<tr><td><b>CS0120</b>: referência de objeto necessária para membro não estático</td><td>Chamar método de instância pela classe, ou membro estático usando membro de instância</td><td>Criar o objeto, ou tornar o membro <code>static</code> se fizer sentido</td></tr>
+<tr><td><b>CS0122</b>: inacessível devido ao nível de proteção</td><td>Acessar membro <code>private</code>/<code>protected</code> de fora</td><td>Expor por propriedade/método ou rever o design</td></tr>
+<tr><td><b>CS1729</b>: não contém construtor que receba N argumentos</td><td>Criou objeto com argumentos que nenhum construtor aceita</td><td>Conferir os construtores ou criar a sobrecarga</td></tr>
+<tr><td><b>CS7036</b>: nenhum argumento corresponde ao parâmetro obrigatório</td><td>Faltou argumento (ou <code>base(...)</code> na filha)</td><td>Passar o argumento ou chamar <code>: base(...)</code></td></tr>
+<tr><td><b>CS0534</b> / <b>CS0535</b>: não implementa o membro abstrato / da interface</td><td>Filha ou classe que implementa a interface sem criar o membro</td><td>Implementar com <code>override</code> (abstract) ou assinatura igual (interface)</td></tr>
+<tr><td><b>CS0506</b>: não pode substituir porque não é <code>virtual</code></td><td>Faltou <code>virtual</code>/<code>abstract</code> na base</td><td>Marcar o método da base como <code>virtual</code></td></tr>
+<tr><td><b>CS0144</b>: não é possível criar instância de classe abstrata ou interface</td><td><code>new</code> em tipo abstrato</td><td>Instanciar uma classe concreta filha</td></tr>
+<tr><td><b>CS0200</b> / <b>CS8852</b>: propriedade somente leitura / <code>init</code></td><td>Atribuição fora do construtor ou da inicialização</td><td>Passar pelo construtor ou criar um método de alteração</td></tr>
+<tr><td><b>CS8618</b> (aviso): propriedade não anulável sem valor</td><td>Propriedade <code>string</code> sem inicializar</td><td><code>= "";</code> ou inicializar no construtor</td></tr>
+<tr><td><b>CS0266</b> / <b>CS0019</b>: conversão ou operador entre tipos incompatíveis</td><td>Misturar <code>decimal</code> com <code>double</code></td><td>Usar o sufixo <code>m</code> (<code>0.5m</code>)</td></tr>
+<tr><td><code>NullReferenceException</code></td><td>Usar membro de uma referência <code>null</code></td><td>Inicializar, validar ou usar <code>?.</code></td></tr>
+<tr><td><code>InvalidCastException</code></td><td>Cast para tipo que o objeto real não é</td><td>Usar <code>is</code> ou <code>as</code></td></tr>
+<tr><td><code>StackOverflowException</code></td><td>Propriedade que usa a si mesma (<code>get =&gt; Nome;</code> em <code>Nome</code>) ou recursão sem parada</td><td>Usar campo privado separado; conferir condição de parada</td></tr></table>
+<h2>5. Checklist de qualidade do design</h2><table><tr><th>#</th><th>Critério</th><th>OK?</th></tr>
+<tr><td>1</td><td>Cada classe tem uma responsabilidade clara e um nome de substantivo?</td><td></td></tr>
+<tr><td>2</td><td>Campos são privados e há validação nas propriedades/construtores?</td><td></td></tr>
+<tr><td>3</td><td>Nenhuma coleção interna é exposta para alteração externa?</td><td></td></tr>
+<tr><td>4</td><td>Herança só onde existe “é um” real?</td><td></td></tr>
+<tr><td>5</td><td>Comportamento que varia está em métodos polimórficos (sem cadeias de <code>if/is</code>)?</td><td></td></tr>
+<tr><td>6</td><td>Dependências recebidas por interface?</td><td></td></tr>
+<tr><td>7</td><td>Regras de negócio ficam nas classes, e não no <code>Program.cs</code>?</td><td></td></tr>
+<tr><td>8</td><td>Exceções claras para regras violadas?</td><td></td></tr>
+<tr><td>9</td><td>Sem código repetido e sem números mágicos?</td><td></td></tr>
+<tr><td>10</td><td>Comentários <code>///</code> nos membros públicos e diagrama de classes atualizado?</td><td></td></tr></table>
+<h2>6. Rubrica de avaliação</h2><table><tr><th>Critério</th><th>Insuficiente</th><th>Adequado</th><th>Excelente</th></tr>
+<tr><td>Classes e encapsulamento</td><td>Campos públicos, sem validação</td><td>Propriedades e validações básicas</td><td>Objetos sempre em estado válido, API enxuta</td></tr>
+<tr><td>Herança e polimorfismo</td><td>Herança forçada ou <code>if</code> por tipo</td><td>Hierarquia correta com <code>virtual</code>/<code>override</code></td><td>Hierarquia enxuta e extensível sem editar classes antigas</td></tr>
+<tr><td>Abstração e interfaces</td><td>Ausentes</td><td>Uso correto de abstract ou interface</td><td>Baixo acoplamento e injeção pelo construtor</td></tr>
+<tr><td>Composição e coleções</td><td>Listas públicas, lógica no <code>Program</code></td><td>Composição com listas privadas</td><td>LINQ bem aplicado e coleções somente leitura</td></tr>
+<tr><td>Tratamento de erros</td><td>Programa quebra</td><td>Exceções e mensagens</td><td>Exceções próprias e mensagens claras</td></tr>
+<tr><td>Modelagem e documentação</td><td>Sem diagrama</td><td>Diagrama e comentários</td><td>Diagrama coerente com o código e <code>///</code> completo</td></tr></table>
+<h2>7. Glossário</h2><table><tr><th>Termo</th><th>Significado</th></tr>
+<tr><td>Classe</td><td>Molde que define dados e comportamentos</td></tr>
+<tr><td>Objeto (instância)</td><td>Item criado a partir de uma classe</td></tr>
+<tr><td>Propriedade</td><td>Acesso controlado a um dado (get/set)</td></tr>
+<tr><td>Construtor</td><td>Método que prepara o objeto ao ser criado</td></tr>
+<tr><td>Encapsulamento</td><td>Proteger os dados e expor só o necessário</td></tr>
+<tr><td>Herança</td><td>Reuso de uma classe base por classes filhas</td></tr>
+<tr><td>Polimorfismo</td><td>Mesmo método com comportamentos diferentes conforme o objeto</td></tr>
+<tr><td>Abstração</td><td>Foco no essencial; classes abstratas e interfaces</td></tr>
+<tr><td>Interface</td><td>Contrato com os membros que a classe deve ter</td></tr>
+<tr><td>Composição</td><td>Objeto formado por outros objetos (“tem um”)</td></tr>
+<tr><td>Acoplamento / Coesão</td><td>Dependência entre classes / afinidade interna de uma classe</td></tr>
+<tr><td>Sobrecarga / Sobrescrita</td><td>Mesmo nome com parâmetros diferentes / nova versão de um método herdado</td></tr>
+<tr><td>UML</td><td>Linguagem gráfica para modelar sistemas (diagrama de classes)</td></tr></table><div class="pager"><a href="pratica.html">← Prática</a><a href="index.html">Início ↑</a></div></main><footer>Módulo 2 · Programação Orientada a Objetos em C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

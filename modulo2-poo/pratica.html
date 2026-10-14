@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Prática · Módulo 2 · POO</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="2" data-page="pratica"><header><nav><a class="logo" href="index.html">🎓 Módulo 2 · POO</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 2</a><span>›</span><strong>Prática guiada</strong></div><h1>Prática guiada · 8 projetos de console</h1><div class="tip practice-contract"><span class="callout-title">🧭 Como executar esta prática</span>Digite o código, execute a cada etapa e compare o comportamento com o resultado descrito. Se houver erro, leia a mensagem antes de alterar o código e use o depurador quando indicado.</div>
+<p>Cada projeto é um <b>Aplicativo de Console</b> novo. Em cada um você <b>digita o código</b> (um arquivo <code>.cs</code> por classe: clique direito no projeto → <b>Adicionar → Classe</b>), executa, experimenta, <b>descomenta de propósito as linhas marcadas com ERRO</b> para ver a mensagem do compilador e responde às perguntas. Os comentários explicam cada linha importante.</p>
+<div class="tip">💡 Códigos para .NET 6 ou superior. Para simplificar, <b>não declaramos <code>namespace</code></b>: apague a linha de namespace que o Visual Studio coloca nas classes novas (ou use o modelo sem namespace). As instruções do <code>Program.cs</code> ficam sem classe e sem <code>Main</code> (instruções de nível superior).</div>
+<div class="steps"><div class="step"><h3>Prepare a solução</h3><ol><li>Crie uma <b>solução</b> chamada <code>Modulo2</code> com um projeto de console por exercício (<code>P1Pessoa</code>, <code>P2Produto</code>... ).</li><li>Para escolher qual projeto executa: clique direito no projeto → <b>Definir como Projeto de Inicialização</b>.</li><li>Inicie um repositório Git e faça um commit ao final de cada projeto, com mensagens como <code>feat: classe Pessoa e referências</code>.</li></ol></div><div class="step"><h3>Projeto 1 · Classe, objeto e referência</h3><p><b>Objetivo:</b> criar sua primeira classe, instanciar objetos e entender que variáveis de classe guardam <b>referências</b>. <b>Pergunta:</b> por que <code>p1.Nome</code> mudou quando alteramos <code>p3</code>?</p><pre><code>// ---------- Pessoa.cs ----------
+public class Pessoa                                   // class: define o MOLDE de uma pessoa; public: visível em todo o projeto
+{
+    public string Nome { get; set; } = "";            // propriedade auto-implementada; = "" evita o valor nulo
+    public int Idade { get; set; }                    // o C# cria o campo escondido que guarda o valor
+
+    public void Apresentar()                          // MÉTODO: uma ação que o objeto sabe fazer
+    {
+        Console.WriteLine($"Olá, eu sou {Nome} e tenho {Idade} anos.");   // usa os dados do PRÓPRIO objeto
+    }
+
+    public bool EhMaiorDeIdade() =&gt; Idade &gt;= 18;      // método de uma linha (=&gt;) que devolve true ou false
+}
+
+// ---------- Program.cs ----------
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+Pessoa p1 = new Pessoa();                             // new cria um OBJETO a partir da classe
+p1.Nome = "Ana";                                      // altera a propriedade com o operador ponto
+p1.Idade = 20;
+
+Pessoa p2 = new Pessoa { Nome = "Bruno", Idade = 15 };   // inicializador de objeto: cria e preenche de uma vez
+
+p1.Apresentar();                                      // cada objeto usa os SEUS dados
+p2.Apresentar();
+Console.WriteLine($"{p2.Nome} é maior de idade? {p2.EhMaiorDeIdade()}");
+
+// ---------- REFERÊNCIA: o ponto mais importante do projeto ----------
+Pessoa p3 = p1;                                       // NÃO cria outra pessoa: copia a REFERÊNCIA (o "endereço")
+p3.Nome = "Ana Maria";                                // altera o objeto para quem aponta para ele
+Console.WriteLine($"p1.Nome = {p1.Nome}");            // mostra "Ana Maria": p1 e p3 são o MESMO objeto
+Console.WriteLine($"p1 e p3 são o mesmo objeto? {ReferenceEquals(p1, p3)}");   // True
+Console.WriteLine($"p1 e p2 são o mesmo objeto? {ReferenceEquals(p1, p2)}");   // False
+
+Pessoa? ninguem = null;                               // Pessoa? permite null: "não aponta para objeto nenhum"
+Console.WriteLine(ninguem?.Nome ?? "(ninguém)");      // ?. só acessa se não for null; ?? dá um valor alternativo
+// Console.WriteLine(ninguem.Nome);                   // DESCOMENTE para ver a NullReferenceException</code></pre></div><div class="step"><h3>Projeto 2 · Encapsulamento (Produto)</h3><p><b>Objetivo:</b> proteger os dados com campo privado, propriedade com validação, construtor e métodos de regra. <b>Experimentos:</b> descomente a linha de ERRO e leia o código <b>CS0200</b>; tente criar o produto com preço zero; deixe o estoque baixo e veja o aviso no <code>ToString</code>.</p><pre><code>// ---------- Produto.cs ----------
+public class Produto
+{
+    private decimal preco;                            // CAMPO PRIVADO: só a classe enxerga
+    private int quantidade;
+
+    public string Nome { get; }                       // só get: definido no construtor e nunca mais muda
+
+    public decimal Preco                              // propriedade com VALIDAÇÃO: a única porta de acesso ao preço
+    {
+        get =&gt; preco;                                 // leitura livre
+        set
+        {
+            if (value &lt;= 0)                           // "value" = valor que tentaram atribuir
+                throw new ArgumentException("O preço deve ser maior que zero.");   // recusa o valor inválido
+            preco = value;                            // só guarda se for válido
+        }
+    }
+
+    public int Quantidade =&gt; quantidade;              // lê de fora, mas NÃO dá para alterar de fora (sem set)
+    public bool EstoqueBaixo =&gt; quantidade &lt; 5;       // propriedade CALCULADA: não guarda nada
+    public decimal ValorEmEstoque =&gt; preco * quantidade;
+
+    public Produto(string nome, decimal preco, int quantidade = 0)   // CONSTRUTOR; quantidade é opcional (padrão 0)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new ArgumentException("O nome é obrigatório.");
+        if (quantidade &lt; 0)
+            throw new ArgumentException("A quantidade não pode ser negativa.");
+
+        Nome = nome.Trim();                           // guarda o nome sem espaços nas pontas
+        Preco = preco;                                // usa a PROPRIEDADE (e portanto a validação do set)
+        this.quantidade = quantidade;                 // this.quantidade = o campo; quantidade = o parâmetro (mesmo nome)
+    }
+
+    public void Entrada(int qtd)                      // regra de negócio dentro da classe
+    {
+        if (qtd &lt;= 0)
+            throw new ArgumentException("A quantidade de entrada deve ser maior que zero.");
+        quantidade += qtd;
+    }
+
+    public bool Saida(int qtd)                        // devolve false se não puder retirar
+    {
+        if (qtd &lt;= 0 || qtd &gt; quantidade) return false;   // não deixa o estoque ficar negativo
+        quantidade -= qtd;
+        return true;
+    }
+
+    public override string ToString()                 // define como o objeto vira texto
+        =&gt; $"{Nome,-15} {preco,10:C2}  {quantidade,4} un.{(EstoqueBaixo ? "  (ESTOQUE BAIXO)" : "")}";
+}
+
+// ---------- Program.cs ----------
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+var arroz = new Produto("Arroz 5kg", 28.90m, 10);     // var: o compilador deduz o tipo (Produto)
+Console.WriteLine(arroz);                             // WriteLine usa o ToString() sobrescrito
+
+Console.WriteLine($"Retirar 4: {arroz.Saida(4)}");    // True
+Console.WriteLine($"Retirar 50: {arroz.Saida(50)}");  // False: a classe PROTEGEU o estoque
+Console.WriteLine(arroz);                             // agora com 6 un.
+
+arroz.Saida(2);                                       // fica com 4 unidades
+Console.WriteLine($"Estoque baixo? {arroz.EstoqueBaixo}");   // True
+
+// arroz.Quantidade = 999;                            // DESCOMENTE: erro de compilação CS0200 (propriedade só de leitura)
+
+try
+{
+    arroz.Preco = -5;                                 // o set da propriedade lança exceção
+}
+catch (ArgumentException ex)                          // captura o erro de validação
+{
+    Console.WriteLine($"Preço recusado: {ex.Message}");
+}
+
+try
+{
+    var invalido = new Produto("", 10);               // o construtor recusa nome vazio
+}
+catch (ArgumentException ex)
+{
+    Console.WriteLine($"Produto recusado: {ex.Message}");
+}</code></pre></div><div class="step"><h3>Projeto 3 · Construtores, sobrecarga e static (Livro)</h3><p><b>Objetivo:</b> várias formas de criar o mesmo objeto, construtor encadeado, <code>init</code> e membros estáticos. <b>Pergunta:</b> qual é a diferença prática entre <code>Id</code> e <code>TotalCriados</code>? Por que <code>proximoId</code> é <code>static</code>?</p><pre><code>// ---------- Livro.cs ----------
+public class Livro
+{
+    private static int proximoId = 1;                 // STATIC: UMA cópia compartilhada por TODOS os livros
+
+    public static int TotalCriados { get; private set; }   // estática: pertence à CLASSE, não ao objeto
+
+    public int Id { get; }                            // cada livro tem o seu Id (membro de instância)
+    public string Titulo { get; }
+    public string Autor { get; }
+    public int Paginas { get; }
+    public string Editora { get; init; } = "Não informada";   // init: só pode ser definida na CRIAÇÃO do objeto
+
+    public Livro(string titulo, string autor, int paginas)    // construtor principal (o mais completo)
+    {
+        Id = proximoId++;                             // usa o valor atual e depois soma 1: Id sequencial automático
+        Titulo = titulo;
+        Autor = autor;
+        Paginas = paginas;
+        TotalCriados++;                               // atualiza o contador da classe
+    }
+
+    public Livro(string titulo, string autor) : this(titulo, autor, 0)   // SOBRECARGA; ": this(...)" reaproveita o principal
+    {
+    }
+
+    public Livro(string titulo) : this(titulo, "Autor desconhecido")     // encadeia no construtor anterior
+    {
+    }
+
+    public static bool PaginasValidas(int paginas) =&gt; paginas &gt; 0;       // método ESTÁTICO: chamado pela classe
+
+    public string Resumo()
+        =&gt; $"#{Id} {Titulo} - {Autor} ({(Paginas &gt; 0 ? Paginas + " págs." : "págs. n/d")}) - {Editora}";
+}
+
+// ---------- Program.cs ----------
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+var l1 = new Livro("Dom Casmurro", "Machado de Assis", 256);           // 3 argumentos: usa o 1º construtor
+var l2 = new Livro("O Cortiço", "Aluísio Azevedo");                    // 2 argumentos: usa o 2º
+var l3 = new Livro("Livro sem autor");                                  // 1 argumento: usa o 3º
+var l4 = new Livro("Capitães da Areia", "Jorge Amado", 280) { Editora = "Companhia das Letras" };   // init na criação
+
+Console.WriteLine(l1.Resumo());
+Console.WriteLine(l2.Resumo());
+Console.WriteLine(l3.Resumo());
+Console.WriteLine(l4.Resumo());
+
+Console.WriteLine($"\nLivros criados: {Livro.TotalCriados}");          // membro estático: Classe.Membro
+Console.WriteLine($"Páginas válidas (0)? {Livro.PaginasValidas(0)}");   // False
+// Console.WriteLine(l1.TotalCriados);                                  // ERRO CS0176: estático não é acessado pelo objeto
+// l1.Editora = "X";                                                    // ERRO CS8852: init só vale na criação</code></pre></div><div class="step"><h3>Projeto 4 · Herança (Veículos)</h3><p><b>Objetivo:</b> reaproveitar código com herança, <code>protected</code>, <code>base</code>, <code>virtual</code>/<code>override</code> e um primeiro contato com polimorfismo. <b>Experimentos:</b> remova a palavra <code>virtual</code> da base e veja o erro <b>CS0506</b>; adicione uma classe <code>Caminhao</code> (com capacidade de carga e diária de 300).</p><pre><code>// ---------- Veiculo.cs ----------
+public class Veiculo                                  // CLASSE BASE
+{
+    protected double velocidadeAtual;                 // protected: a classe e as FILHAS enxergam; os de fora não
+
+    public string Placa { get; }
+    public string Modelo { get; }
+    public int Ano { get; }
+    public double VelocidadeAtual =&gt; velocidadeAtual; // leitura pública
+
+    public Veiculo(string placa, string modelo, int ano)
+    {
+        Placa = placa;
+        Modelo = modelo;
+        Ano = ano;
+    }
+
+    public void Acelerar(double incremento) =&gt; velocidadeAtual += incremento;
+
+    public virtual double CalcularDiaria() =&gt; 100;    // virtual: as filhas PODEM sobrescrever
+
+    public virtual string Descrever() =&gt; $"{Modelo} ({Placa}), {Ano}";
+}
+
+// ---------- Carro.cs ----------
+public class Carro : Veiculo                          // ": Veiculo" = Carro HERDA de Veiculo
+{
+    public int Portas { get; }
+
+    public Carro(string placa, string modelo, int ano, int portas)
+        : base(placa, modelo, ano)                    // base(...) chama o construtor da classe base
+    {
+        Portas = portas;
+    }
+
+    public void Frear(double reducao)                 // usa o campo protected da base
+        =&gt; velocidadeAtual = Math.Max(0, velocidadeAtual - reducao);   // Math.Max evita velocidade negativa
+
+    public override double CalcularDiaria()           // override: troca o comportamento herdado
+        =&gt; base.CalcularDiaria() + 50;                // base.Metodo() reaproveita o cálculo da base (100 + 50)
+
+    public override string Descrever()
+        =&gt; base.Descrever() + $" | {Portas} portas";  // acrescenta ao que a base já faz
+}
+
+// ---------- Moto.cs ----------
+public class Moto : Veiculo
+{
+    public int Cilindradas { get; }
+
+    public Moto(string placa, string modelo, int ano, int cilindradas)
+        : base(placa, modelo, ano)
+    {
+        Cilindradas = cilindradas;
+    }
+
+    public override double CalcularDiaria() =&gt; 70;    // moto é mais barata: ignora a regra da base
+
+    public override string Descrever() =&gt; base.Descrever() + $" | {Cilindradas} cc";
+}
+
+// ---------- Program.cs ----------
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+List&lt;Veiculo&gt; frota = new()                           // lista do tipo BASE guardando objetos de tipos DIFERENTES
+{
+    new Carro("ABC-1234", "Onix", 2022, 4),
+    new Moto("DEF-5678", "CG 160", 2023, 160),
+    new Veiculo("GHI-9012", "Veículo genérico", 2020)
+};
+
+foreach (Veiculo v in frota)                          // a variável é Veiculo, mas cada objeto tem seu tipo real
+{
+    Console.WriteLine($"{v.Descrever()} -&gt; diária {v.CalcularDiaria():C2}");   // CADA objeto executa a SUA versão
+
+    if (v is Carro c)                                 // "is" confere o tipo real e já cria a variável c
+    {
+        Console.WriteLine($"   (é um carro de {c.Portas} portas)");
+    }
+}
+
+var carro = new Carro("JKL-3456", "Polo", 2024, 4);
+carro.Acelerar(80);
+carro.Frear(30);
+Console.WriteLine($"\nVelocidade do {carro.Modelo}: {carro.VelocidadeAtual} km/h");   // 50
+// carro.velocidadeAtual = 10;                        // ERRO CS0122: protected não é acessível de fora</code></pre></div><div class="step"><h3>Projeto 5 · Classe abstrata e polimorfismo (Folha de pagamento)</h3><p><b>Objetivo:</b> definir um modelo com classe abstrata e deixar cada filha calcular do seu jeito. <b>Experimentos:</b> descomente o <code>new Funcionario(...)</code> (erro <b>CS0144</b>); apague o <code>CalcularSalario</code> de <code>Mensalista</code> (erro <b>CS0534</b>); crie <code>Estagiario</code> (bolsa fixa e imposto zero) <b>sem alterar</b> nenhuma outra classe.</p><p>Desenhe o <b>diagrama de classes</b> deste projeto (compare com o da Teoria).</p><pre><code>// ---------- Funcionario.cs ----------
+public abstract class Funcionario                     // abstract: NÃO dá para fazer "new Funcionario()"
+{
+    public string Nome { get; }
+
+    protected Funcionario(string nome)                // construtor protected: só as filhas chamam
+    {
+        Nome = nome;
+    }
+
+    public abstract decimal CalcularSalario();        // abstract: SEM corpo; toda filha É OBRIGADA a implementar
+
+    public virtual decimal CalcularImposto()          // virtual: tem comportamento padrão (10%), mas pode mudar
+        =&gt; CalcularSalario() * 0.10m;                 // chama o método abstrato: usa a versão da filha!
+
+    public override string ToString()
+        =&gt; $"{GetType().Name,-13} {Nome,-10} Salário {CalcularSalario(),10:C2} | Imposto {CalcularImposto(),9:C2}";   // GetType().Name = nome da classe real
+}
+
+// ---------- Mensalista.cs ----------
+public class Mensalista : Funcionario
+{
+    public decimal SalarioBase { get; }
+
+    public Mensalista(string nome, decimal salarioBase) : base(nome)
+    {
+        SalarioBase = salarioBase;
+    }
+
+    public override decimal CalcularSalario() =&gt; SalarioBase;   // implementação obrigatória
+}
+
+// ---------- Horista.cs ----------
+public class Horista : Funcionario
+{
+    public int HorasTrabalhadas { get; }
+    public decimal ValorHora { get; }
+
+    public Horista(string nome, int horas, decimal valorHora) : base(nome)
+    {
+        HorasTrabalhadas = horas;
+        ValorHora = valorHora;
+    }
+
+    public override decimal CalcularSalario()
+    {
+        const int JornadaMensal = 160;                // horas normais do mês
+        if (HorasTrabalhadas &lt;= JornadaMensal)
+            return HorasTrabalhadas * ValorHora;      // sem horas extras
+
+        int extras = HorasTrabalhadas - JornadaMensal;                      // horas acima da jornada
+        return JornadaMensal * ValorHora + extras * ValorHora * 1.5m;       // extras valem 50% a mais
+    }
+}
+
+// ---------- Comissionado.cs ----------
+public class Comissionado : Funcionario
+{
+    public decimal Fixo { get; }
+    public decimal Vendas { get; }
+    public decimal Percentual { get; }                // ex.: 5 significa 5%
+
+    public Comissionado(string nome, decimal fixo, decimal vendas, decimal percentual) : base(nome)
+    {
+        Fixo = fixo;
+        Vendas = vendas;
+        Percentual = percentual;
+    }
+
+    public override decimal CalcularSalario() =&gt; Fixo + Vendas * Percentual / 100;
+
+    public override decimal CalcularImposto() =&gt; CalcularSalario() * 0.15m;   // sobrescreve a regra padrão: 15%
+}
+
+// ---------- Program.cs ----------
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+// Funcionario f = new Funcionario("X");              // DESCOMENTE: ERRO CS0144 (classe abstrata não se instancia)
+
+List&lt;Funcionario&gt; folha = new()                       // POLIMORFISMO: uma lista, três tipos de funcionário
+{
+    new Mensalista("Ana", 4500m),
+    new Horista("Bruno", 180, 30m),                   // 160 normais + 20 extras
+    new Comissionado("Carla", 2000m, 50000m, 5m)      // fixo + 5% de 50 mil
+};
+
+foreach (var f in folha)
+{
+    Console.WriteLine(f);                             // ToString() usa os cálculos de cada tipo
+}
+
+decimal totalSalarios = folha.Sum(f =&gt; f.CalcularSalario());          // LINQ: soma usando o método polimórfico
+decimal totalImpostos = folha.Sum(f =&gt; f.CalcularImposto());
+Console.WriteLine($"\nTotal de salários: {totalSalarios:C2} | Total de impostos: {totalImpostos:C2}");
+
+var maisBemPago = folha.OrderByDescending(f =&gt; f.CalcularSalario()).First();   // ordena do maior para o menor e pega o 1º
+Console.WriteLine($"Maior salário: {maisBemPago.Nome}");</code></pre></div><div class="step"><h3>Projeto 6 · Interfaces (Notificadores e Ranking)</h3><p><b>Objetivo:</b> contrato com interface, baixo acoplamento e a interface <code>IComparable&lt;T&gt;</code> do próprio .NET. <b>Experimento:</b> crie <code>NotificadorWhatsApp</code> e use-o no <code>ServicoPedidos</code> <b>sem alterá-lo</b>. <b>Pergunta:</b> por que o serviço recebe <code>INotificador</code> no construtor, e não cria o notificador dentro dele?</p><pre><code>// ---------- INotificador.cs ----------
+public interface INotificador                         // INTERFACE: apenas o CONTRATO (o quê), sem implementação (como)
+{
+    void Enviar(string destinatario, string mensagem);
+}
+
+// ---------- NotificadorEmail.cs ----------
+public class NotificadorEmail : INotificador          // ": INotificador" = implementa o contrato
+{
+    public void Enviar(string destinatario, string mensagem)
+        =&gt; Console.WriteLine($"[E-MAIL para {destinatario}] {mensagem}");
+}
+
+// ---------- NotificadorSms.cs ----------
+public class NotificadorSms : INotificador
+{
+    public void Enviar(string destinatario, string mensagem)
+        =&gt; Console.WriteLine($"[SMS para {destinatario}] {mensagem.Substring(0, Math.Min(40, mensagem.Length))}...");   // SMS corta o texto
+}
+
+// ---------- ServicoPedidos.cs ----------
+public class ServicoPedidos
+{
+    private readonly INotificador notificador;        // depende da INTERFACE, e não de uma classe concreta (baixo acoplamento)
+
+    public ServicoPedidos(INotificador notificador)   // quem cria o serviço ESCOLHE o notificador ("injeção de dependência")
+    {
+        this.notificador = notificador;
+    }
+
+    public void Concluir(string cliente, int numeroPedido)
+    {
+        Console.WriteLine($"Pedido {numeroPedido} concluído.");              // regra do serviço
+        notificador.Enviar(cliente, $"Seu pedido {numeroPedido} foi concluído e já está a caminho!");   // não sabe se é e-mail ou SMS
+    }
+}
+
+// ---------- Aluno.cs (interface do .NET: IComparable&lt;T&gt;) ----------
+public class Aluno : IComparable&lt;Aluno&gt;               // permite ORDENAR objetos Aluno com Sort()
+{
+    public string Nome { get; }
+    public double Media { get; }
+
+    public Aluno(string nome, double media)
+    {
+        Nome = nome;
+        Media = media;
+    }
+
+    public int CompareTo(Aluno? outro)                // contrato da interface: &lt;0 antes, 0 igual, &gt;0 depois
+    {
+        if (outro is null) return 1;                  // qualquer aluno vem depois de "nada"
+        return outro.Media.CompareTo(Media);          // ordem DECRESCENTE de média (maior primeiro)
+    }
+
+    public override string ToString() =&gt; $"{Nome} ({Media:F1})";
+}
+
+// ---------- Program.cs ----------
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+INotificador porEmail = new NotificadorEmail();       // variável do tipo da INTERFACE
+INotificador porSms = new NotificadorSms();
+
+new ServicoPedidos(porEmail).Concluir("ana@exemplo.com", 101);   // mesmo serviço, comportamento diferente
+new ServicoPedidos(porSms).Concluir("(11) 91234-5678", 102);     // sem alterar uma linha de ServicoPedidos
+
+var turma = new List&lt;Aluno&gt;
+{
+    new Aluno("Bruno", 7.5), new Aluno("Ana", 9.0), new Aluno("Carla", 6.0)
+};
+turma.Sort();                                         // Sort usa o CompareTo que implementamos
+Console.WriteLine("\nRanking: " + string.Join(", ", turma));   // Ana (9,0), Bruno (7,5), Carla (6,0)</code></pre></div><div class="step"><h3>Projeto 7 · Composição e coleções (Pedido)</h3><p><b>Objetivo:</b> objetos que contêm outros, lista privada exposta como somente leitura e LINQ. <b>Pergunta:</b> por que <code>AdicionarItem</code> pede ao <code>Produto</code> para dar a saída, em vez de verificar o estoque no próprio <code>Pedido</code>? <b>Desafio:</b> adicione <code>RemoverItem</code>, que devolve a quantidade ao estoque (<code>Entrada</code>).</p><pre><code>// ---------- Cliente.cs ----------
+public class Cliente
+{
+    public string Nome { get; }
+    public string Email { get; }
+
+    public Cliente(string nome, string email)
+    {
+        if (string.IsNullOrWhiteSpace(nome)) throw new ArgumentException("Nome obrigatório.");
+        Nome = nome.Trim();
+        Email = email.Trim();
+    }
+}
+
+// ---------- ItemPedido.cs ----------
+public class ItemPedido
+{
+    public Produto Produto { get; }                   // COMPOSIÇÃO/ASSOCIAÇÃO: um item "tem um" produto
+    public int Quantidade { get; private set; }       // só a classe altera
+
+    public decimal Subtotal =&gt; Produto.Preco * Quantidade;   // calculada: usa o objeto Produto
+
+    public ItemPedido(Produto produto, int quantidade)
+    {
+        Produto = produto;
+        Quantidade = quantidade;
+    }
+
+    public void AumentarQuantidade(int qtd) =&gt; Quantidade += qtd;
+}
+
+// ---------- Pedido.cs ----------
+public class Pedido
+{
+    private readonly List&lt;ItemPedido&gt; itens = new();  // lista PRIVADA: ninguém de fora mexe nela diretamente
+
+    public Cliente Cliente { get; }                   // um pedido "tem um" cliente
+    public IReadOnlyList&lt;ItemPedido&gt; Itens =&gt; itens;  // visão SOMENTE LEITURA da lista
+    public decimal Total =&gt; itens.Sum(i =&gt; i.Subtotal);   // LINQ: soma os subtotais
+
+    public Pedido(Cliente cliente)
+    {
+        Cliente = cliente ?? throw new ArgumentNullException(nameof(cliente));   // ?? throw: recusa cliente nulo
+    }
+
+    public void AdicionarItem(Produto produto, int quantidade)
+    {
+        if (!produto.Saida(quantidade))               // pede ao Produto para baixar o estoque ("diga, não pergunte")
+            throw new InvalidOperationException($"Estoque insuficiente de {produto.Nome}.");
+
+        var existente = itens.FirstOrDefault(i =&gt; i.Produto == produto);   // procura o mesmo produto no pedido
+        if (existente != null)
+            existente.AumentarQuantidade(quantidade); // já existe: só aumenta a quantidade
+        else
+            itens.Add(new ItemPedido(produto, quantidade));   // não existe: cria um novo item
+    }
+
+    public void Imprimir()
+    {
+        Console.WriteLine($"\nPedido de {Cliente.Nome} &lt;{Cliente.Email}&gt;");
+        foreach (var item in itens)
+            Console.WriteLine($"  {item.Produto.Nome,-15} {item.Quantidade,3} x {item.Produto.Preco,9:C2} = {item.Subtotal,10:C2}");
+        Console.WriteLine($"  {"TOTAL",-15} {Total,29:C2}");
+    }
+}
+
+// ---------- Program.cs (copie Produto.cs do Projeto 2 para este projeto) ----------
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+var arroz = new Produto("Arroz 5kg", 28.90m, 10);
+var feijao = new Produto("Feijão 1kg", 8.50m, 20);
+var ana = new Cliente("Ana Souza", "ana@exemplo.com");
+
+var pedido = new Pedido(ana);
+pedido.AdicionarItem(arroz, 2);
+pedido.AdicionarItem(feijao, 3);
+pedido.AdicionarItem(arroz, 1);                       // mesmo produto: soma na linha existente (3 arroz)
+pedido.Imprimir();
+
+Console.WriteLine($"\nEstoque de arroz após o pedido: {arroz.Quantidade}");   // 10 - 3 = 7
+
+try
+{
+    pedido.AdicionarItem(feijao, 100);                // não há 100 em estoque
+}
+catch (InvalidOperationException ex)
+{
+    Console.WriteLine($"Não foi possível adicionar: {ex.Message}");
+}
+
+// pedido.Itens.Add(...);                             // ERRO: IReadOnlyList não tem Add: a lista está protegida</code></pre></div><div class="step"><h3>Teste de mesa de objetos (papel)</h3><p>Responda <b>antes</b> de executar. Desenhe duas “caixinhas” (objetos) e as variáveis apontando para elas.</p><pre><code>Pessoa a = new Pessoa { Nome = "Lia" };
+Pessoa b = a;
+Pessoa c = new Pessoa { Nome = "Lia" };
+b.Nome = "Teo";
+
+Console.WriteLine(a.Nome);                  // 1) o que aparece?
+Console.WriteLine(c.Nome);                  // 2) e aqui?
+Console.WriteLine(ReferenceEquals(a, b));   // 3) True ou False?
+Console.WriteLine(ReferenceEquals(a, c));   // 4) True ou False?</code></pre><details><summary>Ver respostas</summary><p>1) <b>Teo</b> (a e b apontam para o mesmo objeto). 2) <b>Lia</b> (c é outro objeto). 3) <b>True</b>. 4) <b>False</b> (mesmos dados, objetos diferentes).</p></details></div><div class="step"><h3>Depure objetos no Visual Studio</h3><ol><li>No Projeto 7, coloque um ponto de interrupção (<b>F9</b>) na linha <code>pedido.Imprimir();</code> e execute com <b>F5</b>.</li><li>Passe o mouse sobre <code>pedido</code> e expanda: veja <code>Cliente</code>, <code>Itens</code> e <code>Total</code> (DataTip).</li><li>Abra <b>Depurar → Janelas → Locais</b> e expanda <code>arroz</code>: observe <code>Quantidade</code> (já descontada).</li><li>Dê <b>F11</b> em <code>pedido.AdicionarItem(arroz, 1)</code>: acompanhe a execução dentro do método e veja a <b>Pilha de Chamadas</b>.</li><li>Clique direito em <code>arroz</code> → <b>Criar ID de Objeto</b> e compare com o <code>Produto</code> do item (<code>#1</code> em ambos?). É o mesmo objeto.</li></ol></div><div class="step"><h3>Caça aos defeitos de design</h3><p>Esta classe compila (quase), mas tem problemas de <b>design</b> e de <b>tipos</b>. Identifique e corrija usando o que aprendeu:</p><pre><code>public class ContaPoupanca
+{
+    public decimal Saldo;                            // Defeito 1?
+
+    public ContaPoupanca(decimal saldo)
+    {
+        Saldo = saldo;
+    }
+
+    public void Sacar(decimal valor)
+    {
+        Saldo -= valor;                              // Defeito 2?
+    }
+
+    public void AplicarRendimento()
+    {
+        Saldo = Saldo + Saldo * 0.005;               // Defeito 3? (compile e leia o erro)
+    }
+}</code></pre><details><summary>Ver os defeitos</summary><ol><li><b>Campo público:</b> qualquer um altera o saldo. Use <code>public decimal Saldo { get; private set; }</code>.</li><li><b>Sem validação no saque:</b> permite sacar mais que o saldo e valores negativos. Valide e lance exceção (<code>InvalidOperationException</code> para saldo insuficiente, <code>ArgumentException</code> para valor inválido).</li><li><b>Erro de tipo (CS0266/CS0019):</b> <code>0.005</code> é <code>double</code> e não pode se misturar com <code>decimal</code>. Use <code>0.005m</code>.</li><li>Extra: o construtor aceita saldo inicial negativo; valide.</li></ol></details></div><div class="step"><h3>Projeto 8 · Mini Loja (projeto integrador do módulo)</h3><p><b>Objetivo:</b> reunir tudo em um sistema de console: <b>encapsulamento</b> (Produto), <b>composição</b> (Pedido/ItemPedido), <b>interface e polimorfismo</b> (descontos) e <b>separação de responsabilidades</b> (Loja guarda e valida; Program só interage).</p><p><b>Montagem:</b> parta dos projetos 2 e 7 (copie <code>Produto</code>, <code>Cliente</code>, <code>ItemPedido</code>, <code>Pedido</code>) e acrescente os arquivos abaixo.</p><h4>8.1 · Políticas de desconto</h4><pre><code>// ---------- IDesconto.cs ----------
+public interface IDesconto                            // contrato: toda política de desconto calcula um VALOR a descontar
+{
+    string Nome { get; }
+    decimal Calcular(decimal total);
+}
+
+public class SemDesconto : IDesconto
+{
+    public string Nome =&gt; "Sem desconto";
+    public decimal Calcular(decimal total) =&gt; 0m;
+}
+
+public class DescontoPercentual : IDesconto
+{
+    private readonly decimal percentual;
+
+    public string Nome =&gt; $"{percentual}% de desconto";
+
+    public DescontoPercentual(decimal percentual)
+    {
+        if (percentual &lt;= 0 || percentual &gt; 50)       // regra de negócio: até 50%
+            throw new ArgumentException("O percentual deve estar entre 0 e 50.");
+        this.percentual = percentual;
+    }
+
+    public decimal Calcular(decimal total) =&gt; total * percentual / 100;
+}
+
+public class DescontoFixo : IDesconto
+{
+    private readonly decimal valor;
+
+    public string Nome =&gt; $"Desconto de {valor:C2}";
+
+    public DescontoFixo(decimal valor)
+    {
+        if (valor &lt;= 0) throw new ArgumentException("O valor deve ser maior que zero.");
+        this.valor = valor;
+    }
+
+    public decimal Calcular(decimal total) =&gt; Math.Min(valor, total);   // nunca desconta mais que o total
+}</code></pre></div><div class="step"><h3>Projeto 8 · Pedido com desconto e a classe Loja</h3><pre><code>// ---------- Pedido.cs: acrescente estes membros à classe Pedido do Projeto 7 ----------
+public IDesconto Desconto { get; set; } = new SemDesconto();            // por padrão, sem desconto
+
+public decimal ValorDesconto =&gt; Desconto.Calcular(Total);               // POLIMORFISMO: cada política calcula do seu jeito
+public decimal TotalComDesconto =&gt; Total - ValorDesconto;
+
+// No método Imprimir(), antes do TOTAL, acrescente:
+//   Console.WriteLine($"  {Desconto.Nome,-15} {-ValorDesconto,29:C2}");
+//   e troque {Total} por {TotalComDesconto} na linha do TOTAL.
+
+// ---------- Loja.cs ----------
+public class Loja                                     // "serviço": organiza os dados e as regras do sistema
+{
+    private readonly List&lt;Produto&gt; catalogo = new();
+    private readonly List&lt;Cliente&gt; clientes = new();
+    private readonly List&lt;Pedido&gt; pedidos = new();
+
+    public IReadOnlyList&lt;Produto&gt; Catalogo =&gt; catalogo;
+    public IReadOnlyList&lt;Cliente&gt; Clientes =&gt; clientes;
+    public IReadOnlyList&lt;Pedido&gt; Pedidos =&gt; pedidos;
+
+    public void CadastrarProduto(string nome, decimal preco, int quantidade)
+    {
+        if (catalogo.Any(p =&gt; p.Nome.Equals(nome.Trim(), StringComparison.OrdinalIgnoreCase)))   // sem diferenciar maiúsculas
+            throw new InvalidOperationException("Já existe um produto com esse nome.");
+        catalogo.Add(new Produto(nome, preco, quantidade));
+    }
+
+    public void CadastrarCliente(string nome, string email)
+    {
+        if (clientes.Any(c =&gt; c.Email.Equals(email.Trim(), StringComparison.OrdinalIgnoreCase)))
+            throw new InvalidOperationException("Já existe um cliente com esse e-mail.");
+        clientes.Add(new Cliente(nome, email));
+    }
+
+    public Pedido NovoPedido(Cliente cliente)
+    {
+        var pedido = new Pedido(cliente);
+        pedidos.Add(pedido);                          // a Loja guarda todos os pedidos
+        return pedido;
+    }
+
+    public decimal Faturamento() =&gt; pedidos.Sum(p =&gt; p.TotalComDesconto);
+
+    public IEnumerable&lt;Produto&gt; ProdutosComEstoqueBaixo() =&gt; catalogo.Where(p =&gt; p.EstoqueBaixo);
+}</code></pre></div><div class="step"><h3>Projeto 8 · Menu do sistema</h3><p>O menu usa funções auxiliares do Módulo 1 (<code>LerInteiro</code> etc.) e <b>um único</b> <code>try/catch</code> para transformar as exceções das regras em mensagens ao usuário. <b>Teste:</b> produto repetido, estoque insuficiente, desconto de 60%, cliente sem pedidos.</p><pre><code>// ---------- Program.cs ----------
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+var loja = new Loja();
+loja.CadastrarProduto("Arroz 5kg", 28.90m, 10);       // dados iniciais para testar
+loja.CadastrarProduto("Feijão 1kg", 8.50m, 20);
+loja.CadastrarCliente("Ana Souza", "ana@exemplo.com");
+
+int opcao;
+do
+{
+    Console.WriteLine("\n=== MINI LOJA ===");
+    Console.WriteLine("1 - Cadastrar produto   2 - Cadastrar cliente   3 - Novo pedido");
+    Console.WriteLine("4 - Listar produtos     5 - Relatório           0 - Sair");
+    opcao = LerInteiro("Escolha: ");
+
+    try                                               // UM try/catch para todo o menu: regras e validações viram mensagens
+    {
+        switch (opcao)
+        {
+            case 1: CadastrarProduto(loja); break;
+            case 2: CadastrarCliente(loja); break;
+            case 3: NovoPedido(loja); break;
+            case 4: foreach (var p in loja.Catalogo) Console.WriteLine(p); break;
+            case 5: Relatorio(loja); break;
+            case 0: Console.WriteLine("Até logo!"); break;
+            default: Console.WriteLine("Opção inválida."); break;
+        }
+    }
+    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)   // só as exceções de regra
+    {
+        Console.WriteLine($"Atenção: {ex.Message}");
+    }
+} while (opcao != 0);
+
+static int LerInteiro(string msg)
+{
+    Console.Write(msg);
+    int v;
+    while (!int.TryParse(Console.ReadLine(), out v)) Console.Write("Inválido. " + msg);
+    return v;
+}
+
+static decimal LerDecimal(string msg)
+{
+    Console.Write(msg);
+    decimal v;
+    while (!decimal.TryParse(Console.ReadLine(), out v)) Console.Write("Inválido. " + msg);
+    return v;
+}
+
+static string LerTexto(string msg)
+{
+    Console.Write(msg);
+    return (Console.ReadLine() ?? "").Trim();
+}
+
+static void CadastrarProduto(Loja loja)
+{
+    string nome = LerTexto("Nome: ");
+    decimal preco = LerDecimal("Preço: ");
+    int qtd = LerInteiro("Quantidade inicial: ");
+    loja.CadastrarProduto(nome, preco, qtd);          // a Loja e o Produto validam: o menu só pede os dados
+    Console.WriteLine("Produto cadastrado!");
+}
+
+static void CadastrarCliente(Loja loja)
+{
+    loja.CadastrarCliente(LerTexto("Nome: "), LerTexto("E-mail: "));
+    Console.WriteLine("Cliente cadastrado!");
+}
+
+static void NovoPedido(Loja loja)
+{
+    if (loja.Clientes.Count == 0 || loja.Catalogo.Count == 0)
+    {
+        Console.WriteLine("Cadastre ao menos um cliente e um produto.");
+        return;
+    }
+
+    for (int i = 0; i &lt; loja.Clientes.Count; i++)
+        Console.WriteLine($"{i + 1} - {loja.Clientes[i].Nome}");
+    int c = LerInteiro("Cliente: ");
+    if (c &lt; 1 || c &gt; loja.Clientes.Count) { Console.WriteLine("Cliente inválido."); return; }
+
+    var pedido = loja.NovoPedido(loja.Clientes[c - 1]);
+
+    while (true)                                      // laço infinito controlado por break
+    {
+        for (int i = 0; i &lt; loja.Catalogo.Count; i++)
+            Console.WriteLine($"{i + 1} - {loja.Catalogo[i]}");
+        int p = LerInteiro("Produto (0 para finalizar): ");
+        if (p == 0) break;                            // sai do laço
+        if (p &lt; 1 || p &gt; loja.Catalogo.Count) { Console.WriteLine("Produto inválido."); continue; }
+
+        int qtd = LerInteiro("Quantidade: ");
+        try
+        {
+            pedido.AdicionarItem(loja.Catalogo[p - 1], qtd);
+        }
+        catch (InvalidOperationException ex)          // erro de um item não perde o pedido inteiro
+        {
+            Console.WriteLine($"Atenção: {ex.Message}");
+        }
+    }
+
+    Console.WriteLine("Desconto: 1 - Nenhum   2 - Percentual   3 - Valor fixo");
+    switch (LerInteiro("Escolha: "))
+    {
+        case 2: pedido.Desconto = new DescontoPercentual(LerDecimal("Percentual (até 50): ")); break;
+        case 3: pedido.Desconto = new DescontoFixo(LerDecimal("Valor do desconto: ")); break;
+    }                                                 // POLIMORFISMO: o pedido não sabe qual desconto recebeu
+    pedido.Imprimir();
+}
+
+static void Relatorio(Loja loja)
+{
+    Console.WriteLine($"\nPedidos: {loja.Pedidos.Count} | Faturamento: {loja.Faturamento():C2}");
+    Console.WriteLine("Produtos com estoque baixo:");
+    foreach (var p in loja.ProdutosComEstoqueBaixo())
+        Console.WriteLine($"  {p.Nome} ({p.Quantidade} un.)");
+}</code></pre></div><div class="step"><h3>Documente e revise</h3><ol><li>Adicione comentários <code>///</code> (summary, param, returns, exception) às classes e métodos públicos do Projeto 8.</li><li>Desenhe o diagrama de classes completo (Produto, Cliente, ItemPedido, Pedido, Loja, IDesconto e as três políticas).</li><li>Revise com o checklist da Avaliação e faça o commit final.</li></ol></div></div><div class="common-error"><span class="callout-title">🐞 Antes de pedir ajuda</span>Confira o nome do arquivo, o namespace, o <code>Name</code> dos controles, referências do projeto, pacotes NuGet e a mensagem completa do erro. Use <code>Ctrl+Shift+B</code> para compilar e identifique a primeira mensagem de erro da lista.</div><div class="pager"><a href="teoria.html">← Teoria</a><a href="avaliacao.html">Avaliação →</a></div></main><footer>Módulo 2 · Programação Orientada a Objetos em C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

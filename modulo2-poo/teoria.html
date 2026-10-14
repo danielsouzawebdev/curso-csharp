@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Teoria · Módulo 2 · POO</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="2" data-page="teoria"><header><nav><a class="logo" href="index.html">🎓 Módulo 2 · POO</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 2</a><span>›</span><strong>Teoria</strong></div><h1>Teoria</h1><div class="lesson-contract"><span class="callout-title">🧭 Objetivo desta etapa</span>Entender como organizar estado e comportamento em objetos sem criar classes apenas por hábito.<br/><b>Estratégia:</b> leia uma seção por vez, execute mentalmente os exemplos e anote uma dúvida ou exemplo próprio antes de avançar para a prática.</div>
+<h2>1. Do estruturado ao orientado a objetos</h2><p>Na programação estruturada, <b>dados</b> (variáveis) e <b>funções</b> ficam separados. Conforme o sistema cresce, fica difícil saber quais funções mexem em quais dados. Na POO, juntamos os dois: um <b>objeto</b> guarda seus dados (<b>estado</b>) e as funções que agem sobre eles (<b>comportamento</b>).</p>
+<table><tr><th>Estruturado</th><th>Orientado a objetos</th></tr>
+<tr><td>Funções e variáveis soltas</td><td>Classes que reúnem dados e comportamento</td></tr>
+<tr><td>Dados acessíveis a todo o programa</td><td>Dados protegidos dentro do objeto</td></tr>
+<tr><td>Reuso por cópia de código ou funções</td><td>Reuso por herança, composição e interfaces</td></tr>
+<tr><td>Funciona bem para programas pequenos</td><td>Escala melhor para sistemas grandes</td></tr></table>
+<p>Um <b>objeto</b> tem três características: <b>identidade</b> (é único), <b>estado</b> (valores dos dados) e <b>comportamento</b> (o que ele sabe fazer). Dois produtos podem ter o mesmo nome e preço e ainda serem objetos diferentes.</p>
+<h2>2. Classe e objeto</h2><ul><li><b>Classe:</b> o <b>molde</b> (a planta da casa). Define quais dados e ações os objetos terão.</li><li><b>Objeto (instância):</b> o que é <b>criado</b> a partir da classe (a casa construída). Criamos com <code>new</code>.</li></ul><pre><code>public class Pessoa                       // classe: o molde
+{
+    public string Nome { get; set; } = "";
+    public int Idade { get; set; }
+    public void Apresentar() =&gt; Console.WriteLine($"Oi, sou {Nome}.");
+}
+
+Pessoa ana = new Pessoa();                // objeto: criado com new
+ana.Nome = "Ana";                         // acessa a propriedade com o ponto
+ana.Apresentar();                         // chama o método</code></pre>
+<h3>Referência e valor</h3><p>Classes são <b>tipos por referência</b>: a variável guarda o <b>endereço</b> do objeto, e não o objeto em si. Por isso, <code>Pessoa p2 = p1;</code> <b>não copia</b> a pessoa: as duas variáveis apontam para <b>o mesmo</b> objeto. Já <code>int</code>, <code>double</code>, <code>bool</code> e <code>struct</code> são <b>tipos por valor</b> (a cópia é independente). Uma referência pode valer <code>null</code> (“não aponta para nenhum objeto”), e usar um membro de uma referência nula causa <code>NullReferenceException</code>.</p>
+<h2>3. Membros de uma classe</h2><table><tr><th>Membro</th><th>O que é</th><th>Exemplo</th></tr>
+<tr><td><b>Campo</b></td><td>Variável dentro da classe (normalmente <code>private</code>)</td><td><code>private decimal preco;</code></td></tr>
+<tr><td><b>Propriedade</b></td><td>“Porta de acesso” a um dado, com <code>get</code> e <code>set</code></td><td><code>public string Nome { get; set; }</code></td></tr>
+<tr><td><b>Método</b></td><td>Ação que o objeto executa</td><td><code>public void Depositar(decimal v)</code></td></tr>
+<tr><td><b>Construtor</b></td><td>Método especial que prepara o objeto ao ser criado (mesmo nome da classe, sem retorno)</td><td><code>public Produto(string nome)</code></td></tr>
+<tr><td><b>Membro estático</b></td><td>Pertence à <b>classe</b>, e não a cada objeto</td><td><code>Math.PI</code>, <code>static int total;</code></td></tr></table>
+<h3>Tipos de propriedade</h3><table><tr><th>Forma</th><th>Efeito</th></tr>
+<tr><td><code>{ get; set; }</code></td><td>Lê e altera livremente</td></tr>
+<tr><td><code>{ get; }</code></td><td>Só leitura; valor definido no construtor</td></tr>
+<tr><td><code>{ get; private set; }</code></td><td>Qualquer um lê; só a própria classe altera</td></tr>
+<tr><td><code>{ get; init; }</code></td><td>Só pode ser definida na criação do objeto (inicializador de objeto ou construtor)</td></tr>
+<tr><td><code>{ get =&gt; ...; }</code> ou <code>=&gt; expressão;</code></td><td>Propriedade calculada, sem dado guardado (ex.: <code>Subtotal =&gt; Preco * Quantidade</code>)</td></tr>
+<tr><td><code>get</code>/<code>set</code> com corpo</td><td>Permite validar antes de guardar (encapsulamento)</td></tr></table>
+<h3>this e ToString</h3><ul><li><code>this</code> é a referência ao <b>próprio objeto</b>; útil quando o nome do parâmetro é igual ao do campo (<code>this.nome = nome;</code>).</li><li><code>ToString()</code> vem de <code>object</code> (toda classe herda dela). Sobrescreva para definir como o objeto vira texto: <code>public override string ToString() =&gt; $"{Nome} ({Idade})";</code></li><li><b>Inicializador de objeto:</b> <code>new Pessoa { Nome = "Ana", Idade = 20 }</code>.</li></ul>
+<h2>4. Modificadores de acesso</h2><table><tr><th>Modificador</th><th>Quem enxerga</th></tr>
+<tr><td><code>public</code></td><td>Qualquer código</td></tr>
+<tr><td><code>private</code></td><td>Somente a própria classe (padrão dos membros)</td></tr>
+<tr><td><code>protected</code></td><td>A própria classe e suas classes filhas</td></tr>
+<tr><td><code>internal</code></td><td>Todo o mesmo projeto (assembly); padrão das classes</td></tr></table>
+<p><b>Regra:</b> comece com o acesso <b>mais restrito possível</b> (<code>private</code>) e só abra o que for necessário.</p>
+<h2>5. Encapsulamento</h2><p>Esconder os <b>detalhes internos</b> e expor só o necessário, de forma <b>controlada</b>. Assim, o objeto <b>protege suas regras</b>: ninguém de fora consegue deixá-lo em estado inválido.</p>
+<table><tr><th>Sem encapsulamento</th><th>Com encapsulamento</th></tr>
+<tr><td class="bad"><code>public decimal Saldo;</code><br/>Qualquer um faz <code>conta.Saldo = -999;</code></td><td class="good"><code>public decimal Saldo { get; private set; }</code><br/>Só <code>Depositar()</code> e <code>Sacar()</code> alteram, aplicando as regras.</td></tr></table><pre><code>private decimal preco;                       // campo privado: guarda o dado
+public decimal Preco                         // propriedade: a única porta de acesso
+{
+    get =&gt; preco;                            // leitura livre
+    set
+    {
+        if (value &lt;= 0)                      // "value" é o valor que tentaram atribuir
+            throw new ArgumentException("O preço deve ser maior que zero.");
+        preco = value;                       // só guarda se for válido
+    }
+}</code></pre>
+<div class="tip">💡 Princípio “<b>diga, não pergunte</b>” (<i>tell, don't ask</i>): em vez de buscar o saldo, comparar e alterar por fora, <b>peça ao objeto</b> que faça: <code>conta.Sacar(100)</code>.</div>
+<h2>6. Sobrecarga e construtores</h2><ul><li><b>Sobrecarga:</b> vários métodos (ou construtores) com o <b>mesmo nome</b> e parâmetros diferentes (quantidade ou tipos).</li><li><b>Construtor encadeado:</b> <code>public Livro(string t) : this(t, "Desconhecido") { }</code> reaproveita outro construtor.</li><li>Se você não criar nenhum construtor, o C# cria um <b>sem parâmetros</b>. Se criar algum, aquele padrão deixa de existir.</li><li><b>Parâmetros opcionais e nomeados:</b> <code>new Produto("Arroz", 5m, quantidade: 10)</code>.</li></ul>
+<h2>7. Herança</h2><p>Uma classe <b>filha</b> (derivada) <b>reaproveita</b> tudo de uma classe <b>base</b> e acrescenta ou modifica o que for específico. Relação “<b>é um</b>”: um <code>Carro</code> <b>é um</b> <code>Veiculo</code>.</p>
+<table><tr><th>Recurso</th><th>Função</th></tr>
+<tr><td><code>class Carro : Veiculo</code></td><td>Declara a herança</td></tr>
+<tr><td><code>base(...)</code></td><td>Chama o construtor da classe base</td></tr>
+<tr><td><code>base.Metodo()</code></td><td>Chama a versão da classe base dentro de uma sobrescrita</td></tr>
+<tr><td><code>protected</code></td><td>Membro visível para as classes filhas</td></tr>
+<tr><td><code>sealed</code></td><td>Impede que uma classe seja herdada</td></tr></table>
+<p>O C# só permite <b>uma classe base</b> (herança simples), mas permite implementar <b>várias interfaces</b>. Toda classe herda, no fim, de <code>object</code>.</p>
+<h3>Herança ou composição?</h3><table><tr><th>Pergunta</th><th>Relação</th><th>Use</th></tr>
+<tr><td>X <b>é um</b> Y? (Carro é um Veículo)</td><td>Especialização</td><td>Herança</td></tr>
+<tr><td>X <b>tem um</b> Y? (Pedido tem itens)</td><td>Contém ou usa</td><td>Composição</td></tr></table>
+<p>“<b>Prefira composição à herança</b>”: hierarquias profundas são frágeis (mudar a base quebra as filhas). Use herança só quando a relação “é um” for verdadeira e estável.</p>
+<h2>8. Polimorfismo</h2><p>“Muitas formas”: o <b>mesmo método</b> chamado em objetos de classes diferentes executa <b>comportamentos diferentes</b>, escolhido em <b>tempo de execução</b> conforme o tipo real do objeto.</p>
+<table><tr><th>Palavra</th><th>Onde</th><th>Significado</th></tr>
+<tr><td><code>virtual</code></td><td>Método da classe base</td><td>“Pode ser sobrescrito”, com implementação padrão</td></tr>
+<tr><td><code>override</code></td><td>Método da classe filha</td><td>Sobrescreve o método <code>virtual</code> ou <code>abstract</code></td></tr>
+<tr><td><code>abstract</code></td><td>Classe ou método</td><td>“Sem implementação; as filhas são obrigadas a criar”</td></tr></table><pre><code>List&lt;Veiculo&gt; frota = new() { new Carro(...), new Moto(...) };   // variável do tipo base, objetos de tipos diferentes
+foreach (Veiculo v in frota)
+{
+    Console.WriteLine(v.CalcularDiaria());   // cada objeto executa a SUA versão de CalcularDiaria()
+}
+
+if (v is Carro carro)                         // pergunta o tipo real e já converte
+{
+    Console.WriteLine(carro.Portas);          // acessa algo exclusivo de Carro
+}</code></pre>
+<ul><li><b>Tipo da variável</b> (estático) × <b>tipo do objeto</b> (dinâmico): a variável é <code>Veiculo</code>, mas o objeto pode ser <code>Carro</code>. O método <code>virtual</code> usa o tipo do <b>objeto</b>.</li><li><code>is</code> testa o tipo; <code>as</code> converte e devolve <code>null</code> se não der; cast <code>(Carro)v</code> lança <code>InvalidCastException</code> se o tipo estiver errado.</li><li>Quando você precisar de muitos <code>if (x is A) ... else if (x is B)</code>, provavelmente falta um método polimórfico na base.</li></ul>
+<h2>9. Abstração: classes abstratas e interfaces</h2><p><b>Abstrair</b> é focar no essencial e ignorar os detalhes. Duas ferramentas:</p>
+<table><tr><th>Característica</th><th>Classe abstrata</th><th>Interface</th></tr>
+<tr><td>Pode ter código pronto e campos?</td><td>Sim (e membros abstratos)</td><td>Define, em geral, só o <b>contrato</b> (o que deve existir)</td></tr>
+<tr><td>Instanciar com <code>new</code></td><td>Não</td><td>Não</td></tr>
+<tr><td>Quantas uma classe pode usar?</td><td>Herda de <b>uma</b></td><td>Implementa <b>várias</b></td></tr>
+<tr><td>Relação</td><td>“é um” (família)</td><td>“sabe fazer” (capacidade)</td></tr>
+<tr><td>Exemplos</td><td><code>Funcionario</code>, <code>Forma</code></td><td><code>IComparable&lt;T&gt;</code>, <code>INotificador</code>, <code>IDesconto</code></td></tr></table><pre><code>public interface INotificador                // contrato: quem implementar PRECISA ter este método
+{
+    void Enviar(string destinatario, string mensagem);
+}
+
+public class NotificadorEmail : INotificador // ": INotificador" = implementa a interface
+{
+    public void Enviar(string destinatario, string mensagem) { /* envia e-mail */ }
+}</code></pre>
+<p><b>Programe para a interface, não para a implementação:</b> uma classe que recebe um <code>INotificador</code> funciona com e-mail, SMS ou qualquer outro que apareça depois, sem alteração. Isso reduz o <b>acoplamento</b> e facilita testes. Por convenção, nomes de interface começam com <code>I</code>.</p>
+<h2>10. Composição, associação e coleções de objetos</h2><p>Objetos podem <b>conter</b> ou <b>usar</b> outros: um <code>Pedido</code> tem uma lista de <code>ItemPedido</code> e um <code>Cliente</code>. Isso é <b>composição/associação</b> (“tem um”).</p>
+<table><tr><th>Conceito</th><th>Ideia</th><th>Exemplo</th></tr>
+<tr><td>Associação</td><td>Um objeto conhece/usa outro</td><td>Pedido → Cliente</td></tr>
+<tr><td>Composição</td><td>A parte não existe sem o todo</td><td>Pedido ◆ ItemPedido</td></tr>
+<tr><td>Multiplicidade</td><td>Quantos objetos se relacionam</td><td>1 Pedido tem 0..* itens</td></tr></table>
+<ul><li>Use <code>List&lt;T&gt;</code> para guardar vários objetos; exponha como <code>IReadOnlyList&lt;T&gt;</code> para que ninguém de fora altere a lista sem passar pelas regras da classe.</li><li><b>LINQ</b> consulta coleções: <code>Where</code> (filtra), <code>Select</code> (transforma), <code>OrderBy</code>, <code>Sum</code>, <code>Count</code>, <code>FirstOrDefault</code>, <code>Any</code>.</li></ul>
+<h2>11. Enum, struct e record (visão geral)</h2><div class="tip"><b>Profundidade esperada:</b> esta seção é uma visão geral. Para esta UC, o essencial é saber reconhecer quando esses tipos aparecem; o domínio de <code>struct</code> e <code>record</code> pode ser aprofundado em projetos posteriores.</div><table><tr><th>Tipo</th><th>Uso</th><th>Exemplo</th></tr>
+<tr><td><code>enum</code></td><td>Conjunto fixo de valores nomeados</td><td><code>enum Status { Aberto, Pago, Cancelado }</code></td></tr>
+<tr><td><code>struct</code></td><td>Tipo por valor, para dados pequenos</td><td><code>Point</code>, <code>DateTime</code></td></tr>
+<tr><td><code>record</code></td><td>Classe imutável com igualdade por valor, para dados</td><td><code>public record Endereco(string Rua, int Numero);</code></td></tr></table>
+<h2>12. Exceções e validação em classes</h2><p>A classe deve <b>proteger-se</b>: validar no construtor e nas propriedades e lançar exceção quando algo violar uma regra.</p>
+<table><tr><th>Exceção</th><th>Quando usar</th></tr>
+<tr><td><code>ArgumentException</code> / <code>ArgumentNullException</code></td><td>Argumento inválido ou nulo</td></tr>
+<tr><td><code>InvalidOperationException</code></td><td>A operação não é permitida no estado atual (ex.: sacar sem saldo)</td></tr></table><pre><code>public class SaldoInsuficienteException : Exception      // exceção PRÓPRIA do domínio
+{
+    public decimal SaldoAtual { get; }
+    public SaldoInsuficienteException(decimal saldoAtual)
+        : base($"Saldo insuficiente. Saldo atual: {saldoAtual:C2}")   // mensagem enviada à classe base
+    {
+        SaldoAtual = saldoAtual;
+    }
+}
+// uso:  throw new SaldoInsuficienteException(Saldo);
+// quem chama:  try { conta.Sacar(500); } catch (SaldoInsuficienteException ex) { Console.WriteLine(ex.Message); }</code></pre>
+<p>A classe <b>lança</b> a exceção; quem <b>usa</b> a classe (tela, menu) decide como mostrar a mensagem ao usuário.</p>
+<h2>13. Organização do código</h2><ul><li><b>Uma classe por arquivo</b>, com o mesmo nome (<code>Pessoa.cs</code>).</li><li><b>Namespace</b>: “pasta lógica” que agrupa classes e evita conflito de nomes (<code>namespace Loja.Dominio;</code>). Para usar de outro namespace: <code>using Loja.Dominio;</code>.</li><li>Para simplificar, os projetos deste módulo ficam no <b>namespace global</b> (sem declarar namespace).</li><li>Classes com nomes de <b>substantivos</b> (<code>Pedido</code>), métodos com nomes de <b>verbos</b> (<code>AdicionarItem</code>), propriedades em <code>PascalCase</code>.</li></ul>
+<h2>14. Princípios de bom design</h2><table><tr><th>Princípio</th><th>Significado</th></tr>
+<tr><td><b>Responsabilidade única (SRP)</b></td><td>Cada classe tem <b>um motivo para mudar</b>: <code>Pedido</code> cuida do pedido, e não de enviar e-mail</td></tr>
+<tr><td><b>Alta coesão</b></td><td>O que está dentro da classe tem a ver entre si</td></tr>
+<tr><td><b>Baixo acoplamento</b></td><td>Classes dependem pouco umas das outras (preferir interfaces)</td></tr>
+<tr><td><b>Aberto para extensão, fechado para modificação</b></td><td>Novo comportamento entra criando classes novas (polimorfismo), e não editando as antigas</td></tr>
+<tr><td><b>DRY</b></td><td>Não repetir regras: coloque na classe certa</td></tr>
+<tr><td><b>Composição sobre herança</b></td><td>Combine objetos em vez de criar hierarquias profundas</td></tr></table>
+<h2>15. Diagrama de classes (UML)</h2><p>Mostra <b>classes</b>, seus membros e as <b>relações</b>. Cada classe é uma caixa com três partes: nome, atributos e métodos.</p>
+<table><tr><th>Notação</th><th>Significado</th></tr>
+<tr><td><code>+</code> · <code>-</code> · <code>#</code></td><td>Visibilidade: público · privado · protegido</td></tr>
+<tr><td>Nome em <i>itálico</i> ou «abstract»</td><td>Classe abstrata</td></tr>
+<tr><td>Seta com triângulo vazado</td><td>Herança (aponta para a base)</td></tr>
+<tr><td>Linha tracejada com triângulo</td><td>Implementação de interface</td></tr>
+<tr><td>Linha simples (com 1, 0..*)</td><td>Associação e multiplicidade</td></tr>
+<tr><td>Losango preenchido</td><td>Composição</td></tr></table>
+<figure><svg aria-label="Diagrama de classes: Funcionario e suas filhas" role="img" style="font-family:system-ui,sans-serif;font-size:12px" viewbox="0 0 640 310" xmlns="http://www.w3.org/2000/svg"><defs><marker id="heran" markerheight="11" markerwidth="11" orient="auto" refx="11" refy="6" viewbox="0 0 12 12"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--card);stroke:var(--ink);stroke-width:1.5"></path></marker></defs><rect height="100" rx="4" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="260" x="190" y="14"></rect><text font-style="italic" font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="320.0" y="32">«abstract» Funcionario</text><line style="stroke:var(--p)" x1="190" x2="450" y1="40" y2="40"></line><text style="fill:var(--ink)" x="198" y="58">+ Nome : string</text><text style="fill:var(--ink)" x="198" y="74">+ CalcularSalario() : decimal  {abstract}</text><text style="fill:var(--ink)" x="198" y="90">+ CalcularImposto() : decimal  {virtual}</text><text style="fill:var(--ink)" x="198" y="106">+ ToString() : string  {override}</text><rect height="74" rx="4" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="190" x="20" y="196"></rect><text font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="115.0" y="214">Mensalista</text><line style="stroke:var(--p)" x1="20" x2="210" y1="222" y2="222"></line><text style="fill:var(--ink)" x="28" y="240">+ SalarioBase : decimal</text><text style="fill:var(--ink)" x="28" y="256">+ CalcularSalario() {override}</text><path d="M115,196 L115,160 L320,160 L320,115" marker-end="url(#heran)" style="stroke:var(--ink);stroke-width:1.5;fill:none"></path><rect height="90" rx="4" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="190" x="225" y="196"></rect><text font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="320.0" y="214">Horista</text><line style="stroke:var(--p)" x1="225" x2="415" y1="222" y2="222"></line><text style="fill:var(--ink)" x="233" y="240">+ HorasTrabalhadas : int</text><text style="fill:var(--ink)" x="233" y="256">+ ValorHora : decimal</text><text style="fill:var(--ink)" x="233" y="272">+ CalcularSalario() {override}</text><path d="M320,196 L320,160 L320,160 L320,115" marker-end="url(#heran)" style="stroke:var(--ink);stroke-width:1.5;fill:none"></path><rect height="106" rx="4" style="fill:var(--card);stroke:var(--p);stroke-width:2" width="190" x="430" y="196"></rect><text font-weight="700" style="fill:var(--ink)" text-anchor="middle" x="525.0" y="214">Comissionado</text><line style="stroke:var(--p)" x1="430" x2="620" y1="222" y2="222"></line><text style="fill:var(--ink)" x="438" y="240">+ Fixo, Vendas : decimal</text><text style="fill:var(--ink)" x="438" y="256">+ Percentual : decimal</text><text style="fill:var(--ink)" x="438" y="272">+ CalcularSalario() {override}</text><text style="fill:var(--ink)" x="438" y="288">+ CalcularImposto() {override}</text><path d="M525,196 L525,160 L320,160 L320,115" marker-end="url(#heran)" style="stroke:var(--ink);stroke-width:1.5;fill:none"></path></svg><figcaption>Diagrama de classes: Funcionario (abstrata) e três classes filhas (Projeto 5).</figcaption></figure>
+<h2>16. Depuração de objetos</h2><ul><li>Coloque um ponto de interrupção (<b>F9</b>) e passe o mouse sobre uma variável: o <b>DataTip</b> mostra as propriedades do objeto.</li><li>As janelas <b>Locais</b> e <b>Inspeção</b> permitem expandir objetos e listas.</li><li><b>F11</b> entra no método (ou no construtor) chamado; a <b>Pilha de Chamadas</b> mostra o caminho.</li><li>Quando duas variáveis apontam para o mesmo objeto, mudar uma muda a outra: confira pelo <b>Id do objeto</b> (clique direito na variável → <b>Criar ID de objeto</b>).</li></ul><div class="pager"><a href="index.html">← Início</a><a href="pratica.html">Prática →</a></div></main><footer>Módulo 2 · Programação Orientada a Objetos em C#</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

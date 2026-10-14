@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Teoria · Módulo 5 · Banco de Dados</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="5" data-page="teoria"><header><nav><a class="logo" href="index.html">🎓 Módulo 5 · Banco de Dados</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 5</a><span>›</span><strong>Teoria</strong></div><h1>Teoria</h1><div class="lesson-contract"><span class="callout-title">🧭 Objetivo desta etapa</span>Entender persistência relacional, SQL parametrizado e o papel da camada de acesso a dados antes de montar o CRUD.<br/><b>Estratégia:</b> leia uma seção por vez, execute mentalmente os exemplos e anote uma dúvida ou exemplo próprio antes de avançar para a prática.</div>
+<h2>1. Por que usar um banco de dados</h2><p>Variáveis e listas vivem na memória e somem quando o programa fecha. Arquivos de texto resolvem casos simples, mas ficam difíceis quando há muitos dados, vários usuários, buscas rápidas e regras de integridade. Um <b>SGBD</b> (Sistema Gerenciador de Banco de Dados) oferece:</p><ul><li><b>Persistência:</b> os dados continuam salvos.</li><li><b>Consulta eficiente</b> com a linguagem SQL.</li><li><b>Integridade:</b> regras que impedem dados inconsistentes.</li><li><b>Concorrência:</b> vários usuários ao mesmo tempo.</li><li><b>Segurança:</b> controle de quem pode fazer o quê.</li></ul>
+<h2>2. Conceitos do modelo relacional</h2><table><tr><th>Conceito</th><th>Significado</th><th>Exemplo</th></tr>
+<tr><td>Banco de dados</td><td>Conjunto organizado de tabelas</td><td><code>estoque</code></td></tr>
+<tr><td>Tabela</td><td>Coleção de registros do mesmo tipo (parecida com uma classe)</td><td><code>produtos</code></td></tr>
+<tr><td>Registro (linha)</td><td>Um item da tabela (parecido com um objeto)</td><td>O produto “Arroz 5kg”</td></tr>
+<tr><td>Campo (coluna)</td><td>Uma característica do registro (parecida com uma propriedade)</td><td><code>preco</code></td></tr>
+<tr><td>Chave primária (PK)</td><td>Identifica cada registro de forma única</td><td><code>id</code></td></tr>
+<tr><td>Chave estrangeira (FK)</td><td>Campo que aponta para a PK de outra tabela</td><td><code>produtos.categoria_id</code> → <code>categorias.id</code></td></tr>
+<tr><td>Relacionamento 1:N</td><td>Um registro se liga a vários de outra tabela</td><td>Uma categoria tem vários produtos</td></tr></table>
+<div class="tip">💡 Por que separar <code>categorias</code> de <code>produtos</code>? Para não repetir o texto “Bebidas” em cada produto. Se o nome mudar, altera-se em um só lugar. Esse é o princípio da <b>normalização</b>: não repetir informação.</div>
+<h2>3. Tipos de dados e restrições (MySQL/MariaDB)</h2><table><tr><th>Tipo</th><th>Uso</th><th>Equivalente em C#</th></tr>
+<tr><td><code>INT</code></td><td>Números inteiros</td><td><code>int</code></td></tr>
+<tr><td><code>VARCHAR(n)</code></td><td>Texto de até n caracteres</td><td><code>string</code></td></tr>
+<tr><td><code>DECIMAL(10,2)</code></td><td>Dinheiro: 10 dígitos, 2 depois da vírgula (exato)</td><td><code>decimal</code></td></tr>
+<tr><td><code>DATE</code> / <code>DATETIME</code></td><td>Data / data e hora</td><td><code>DateTime</code></td></tr>
+<tr><td><code>BOOLEAN</code> (TINYINT(1))</td><td>Verdadeiro ou falso</td><td><code>bool</code></td></tr></table>
+<table><tr><th>Restrição</th><th>Efeito</th></tr>
+<tr><td><code>PRIMARY KEY</code></td><td>Identificador único e obrigatório</td></tr>
+<tr><td><code>AUTO_INCREMENT</code></td><td>O banco gera o número sozinho (1, 2, 3...)</td></tr>
+<tr><td><code>NOT NULL</code></td><td>O campo não pode ficar vazio</td></tr>
+<tr><td><code>UNIQUE</code></td><td>Não permite valores repetidos</td></tr>
+<tr><td><code>DEFAULT</code></td><td>Valor usado quando nada é informado</td></tr>
+<tr><td><code>FOREIGN KEY</code></td><td>Garante que o valor aponta para um registro que existe</td></tr></table>
+<p><b>Dica:</b> use <code>DECIMAL</code> para dinheiro, nunca <code>FLOAT</code>/<code>DOUBLE</code>, que têm erros de arredondamento.</p>
+<h2>4. SQL em resumo</h2><table><tr><th>Grupo</th><th>Comando</th><th>Exemplo</th></tr>
+<tr><td rowspan="3">DDL (estrutura)</td><td>CREATE</td><td><code>CREATE TABLE categorias (...);</code></td></tr>
+<tr><td>ALTER</td><td><code>ALTER TABLE produtos ADD COLUMN marca VARCHAR(50);</code></td></tr>
+<tr><td>DROP</td><td><code>DROP TABLE produtos;</code> (apaga a tabela inteira!)</td></tr>
+<tr><td rowspan="3">DML (dados)</td><td>INSERT</td><td><code>INSERT INTO categorias (nome) VALUES ('Bebidas');</code></td></tr>
+<tr><td>UPDATE</td><td><code>UPDATE produtos SET preco = 10 WHERE id = 3;</code></td></tr>
+<tr><td>DELETE</td><td><code>DELETE FROM produtos WHERE id = 3;</code></td></tr>
+<tr><td>DQL (consulta)</td><td>SELECT</td><td><code>SELECT nome, preco FROM produtos WHERE preco &lt; 10 ORDER BY nome;</code></td></tr></table>
+<div class="desafio">⚠️ <b>Cuidado:</b> <code>UPDATE</code> e <code>DELETE</code> <b>sem WHERE</b> afetam <b>todas</b> as linhas da tabela. Sempre escreva o WHERE primeiro.</div>
+<h3>Consultas mais usadas</h3><table><tr><th>Objetivo</th><th>SQL</th></tr>
+<tr><td>Filtrar</td><td><code>SELECT * FROM produtos WHERE quantidade &lt; 10;</code></td></tr>
+<tr><td>Buscar parte do texto</td><td><code>SELECT * FROM produtos WHERE nome LIKE '%arroz%';</code> (<code>%</code> = qualquer texto)</td></tr>
+<tr><td>Ordenar</td><td><code>SELECT * FROM produtos ORDER BY preco DESC;</code></td></tr>
+<tr><td>Limitar</td><td><code>SELECT * FROM produtos LIMIT 5;</code></td></tr>
+<tr><td>Contar e somar</td><td><code>SELECT COUNT(*), SUM(preco * quantidade) FROM produtos;</code></td></tr>
+<tr><td>Agrupar</td><td><code>SELECT categoria_id, COUNT(*) FROM produtos GROUP BY categoria_id;</code></td></tr>
+<tr><td>Juntar tabelas (JOIN)</td><td><code>SELECT p.nome, c.nome FROM produtos p INNER JOIN categorias c ON c.id = p.categoria_id;</code></td></tr></table>
+<h2>5. O Laragon</h2><p>O <b>Laragon</b> é um ambiente de desenvolvimento para Windows que instala e inicia, com um clique, servidores como o MySQL/MariaDB. Ele também traz o <b>HeidiSQL</b>, programa gráfico para criar bancos, tabelas e testar SQL. Valores padrão comuns (confira na sua instalação): servidor <code>localhost</code> (ou <code>127.0.0.1</code>), porta <code>3306</code>, usuário <code>root</code>, senha vazia.</p>
+<div class="tip">💡 Esses padrões servem para <b>estudo</b> em máquina local. Em sistemas reais nunca se usa <code>root</code> sem senha; veremos como criar um usuário com permissões limitadas.</div>
+<h2>6. Como o C# conversa com o banco (ADO.NET)</h2><p>O C# usa um <b>driver</b> (aqui, o pacote <code>MySqlConnector</code>) com quatro peças principais:</p><table><tr><th>Classe</th><th>Função</th></tr>
+<tr><td><code>MySqlConnection</code></td><td>A conexão: abre e fecha o canal com o banco</td></tr>
+<tr><td><code>MySqlCommand</code></td><td>O comando SQL que será executado</td></tr>
+<tr><td><code>MySqlParameter</code></td><td>Valores enviados separados do SQL (segurança)</td></tr>
+<tr><td><code>MySqlDataReader</code></td><td>Leitor que percorre o resultado de um SELECT linha a linha</td></tr></table>
+<table><tr><th>Método do comando</th><th>Quando usar</th></tr>
+<tr><td><code>ExecuteNonQuery()</code></td><td>INSERT, UPDATE, DELETE (devolve quantas linhas foram afetadas)</td></tr>
+<tr><td><code>ExecuteScalar()</code></td><td>Consulta que devolve um único valor (ex.: <code>COUNT(*)</code>)</td></tr>
+<tr><td><code>ExecuteReader()</code></td><td>SELECT com várias linhas</td></tr></table>
+<p><b>Connection string:</b> texto que diz onde está o banco e como entrar: <code>Server=localhost;Port=3306;Database=estoque;User ID=root;Password=;</code></p><div class="warning db-lab-warning"><span class="callout-title">🔐 Configuração didática</span>O usuário <code>root</code> com senha vazia é usado aqui apenas para simplificar um servidor local de laboratório. Em um sistema real, crie um usuário específico, use senha forte, conceda somente as permissões necessárias e não mantenha credenciais diretamente no código-fonte.</div>
+<p><b>Regra de ouro:</b> abrir a conexão <b>o mais tarde possível</b> e fechá-la <b>o mais cedo possível</b>. O bloco <code>using</code> fecha automaticamente, mesmo se ocorrer erro.</p>
+<h2>7. Segurança: SQL Injection</h2><p>Ocorre quando o texto digitado pelo usuário é <b>colado dentro do SQL</b>, permitindo que ele altere o comando. É uma das falhas mais comuns e graves em sistemas.</p>
+<pre><code>// ❌ NUNCA FAÇA ISTO: concatenar o que o usuário digitou dentro do SQL
+string sql = "SELECT * FROM usuarios WHERE login = '" + txtLogin.Text
+           + "' AND senha = '" + txtSenha.Text + "'";
+
+// Se o usuário digitar:  ' OR '1'='1   nos dois campos, o SQL vira:
+// SELECT * FROM usuarios WHERE login = '' OR '1'='1' AND senha = '' OR '1'='1'
+// A condição '1'='1' é sempre verdadeira: o sistema liberaria o acesso sem senha.</code></pre><pre><code>// ✅ FAÇA ASSIM: use parâmetros (@nome). O valor viaja separado do comando SQL.
+var cmd = new MySqlCommand(
+    "SELECT COUNT(*) FROM usuarios WHERE login = @login AND senha = @senha", con); // @login e @senha são "buracos"
+cmd.Parameters.AddWithValue("@login", txtLogin.Text);  // o texto é tratado SEMPRE como dado, nunca como comando
+cmd.Parameters.AddWithValue("@senha", txtSenha.Text);  // mesmo que contenha aspas ou SQL, não altera a consulta</code></pre>
+<p><b>Outras boas práticas:</b> usar um usuário do banco com <b>permissões mínimas</b>; não guardar senhas de usuários em texto puro (usar hash); não deixar a senha do banco fixa no código em sistemas reais (usar arquivo de configuração ou variável de ambiente).</p>
+<h2>8. Organização em camadas</h2><table><tr><th>Camada</th><th>Responsabilidade</th><th>Neste módulo</th></tr>
+<tr><td><b>Modelo</b></td><td>Representar os dados (classes)</td><td><code>Categoria</code>, <code>Produto</code></td></tr>
+<tr><td><b>Acesso a dados (DAO)</b></td><td>Falar com o banco: SQL, comandos, leitura</td><td><code>Conexao</code>, <code>ProdutoDAO</code>, <code>CategoriaDAO</code></td></tr>
+<tr><td><b>Interface</b></td><td>Telas, eventos e mensagens</td><td><code>FrmProdutos</code></td></tr></table>
+<p>O formulário <b>nunca escreve SQL</b>. Se trocar de banco, só a camada DAO muda; se mudar a tela, o DAO continua igual. Isso é reutilização e baixo acoplamento.</p>
+<h2>9. Erros comuns do banco</h2><table><tr><th>Número (MySqlException.Number)</th><th>Significado</th><th>Mensagem amigável</th></tr>
+<tr><td>1062</td><td>Valor duplicado em campo <code>UNIQUE</code></td><td>“Já existe um registro com esse valor.”</td></tr>
+<tr><td>1451</td><td>Não dá para excluir: existem registros ligados (FK)</td><td>“Existem registros vinculados.”</td></tr>
+<tr><td>1452</td><td>FK aponta para registro inexistente</td><td>“A categoria informada não existe.”</td></tr>
+<tr><td>1045</td><td>Usuário ou senha incorretos</td><td>“Acesso negado ao banco.”</td></tr>
+<tr><td>1049</td><td>Banco de dados inexistente</td><td>“Banco não encontrado.”</td></tr></table>
+<p>O usuário final nunca deve ver mensagens técnicas. Capturamos a <code>MySqlException</code> e convertemos em texto claro, seguindo a fórmula <i>o que houve + como resolver</i>.</p><div class="pager"><a href="index.html">← Início</a><a href="pratica.html">Prática →</a></div></main><footer>Módulo 5 · Banco de Dados com C# e Laragon · Programação de Aplicativos</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

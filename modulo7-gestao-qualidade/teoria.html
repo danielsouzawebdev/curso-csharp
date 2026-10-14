@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Teoria · Módulo 7 · Gestão da Qualidade</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="7" data-page="teoria"><header><nav><a class="logo" href="index.html">🎓 Módulo 7 · Gestão da Qualidade</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 7</a><span>›</span><strong>Teoria</strong></div><h1>Teoria</h1><div class="lesson-contract"><span class="callout-title">🧭 Objetivo desta etapa</span>Entender qualidade como processo mensurável: registrar, priorizar, investigar, agir e verificar.<br/><b>Estratégia:</b> leia uma seção por vez, execute mentalmente os exemplos e anote uma dúvida ou exemplo próprio antes de avançar para a prática.</div>
+<h2>1. O que é qualidade</h2><p>Não existe uma única definição; cada uma destaca um aspecto:</p><table><tr><th>Visão</th><th>Ideia</th></tr>
+<tr><td>Conformidade com os requisitos (Crosby)</td><td>Qualidade é entregar o que foi especificado, sem defeitos.</td></tr>
+<tr><td>Adequação ao uso (Juran)</td><td>O produto serve de fato ao que o cliente precisa.</td></tr>
+<tr><td>Satisfação do cliente</td><td>O resultado atende ou supera a expectativa.</td></tr></table>
+<p>Em software, a qualidade vale para o <b>produto</b> (o sistema) e para o <b>processo</b> (como ele é construído). Bom processo tende a gerar bom produto.</p>
+<h3>Características de qualidade de produto (ISO/IEC 25010)</h3><table><tr><th>Característica</th><th>Pergunta</th></tr>
+<tr><td>Adequação funcional</td><td>Faz o que deve, de forma correta e completa?</td></tr>
+<tr><td>Eficiência de desempenho</td><td>Responde em tempo adequado e usa bem os recursos?</td></tr>
+<tr><td>Compatibilidade</td><td>Convive bem com outros sistemas e ambientes?</td></tr>
+<tr><td>Usabilidade</td><td>É fácil de aprender e de usar?</td></tr>
+<tr><td>Confiabilidade</td><td>Funciona sem falhar e se recupera de erros?</td></tr>
+<tr><td>Segurança</td><td>Protege dados e controla o acesso?</td></tr>
+<tr><td>Manutenibilidade</td><td>É fácil de corrigir e evoluir?</td></tr>
+<tr><td>Portabilidade</td><td>É fácil de instalar e migrar?</td></tr></table>
+<p class="tip">💡 A versão de 2023 da norma renomeou algumas características (por exemplo, usabilidade passou a se chamar “capacidade de interação”) e acrescentou outras. A ideia de avaliar por várias dimensões continua a mesma.</p>
+<h2>2. Controle, garantia e gestão da qualidade</h2><table><tr><th>Conceito</th><th>Foco</th><th>Exemplo em software</th></tr>
+<tr><td><b>Controle da qualidade</b></td><td>Detectar defeitos no produto</td><td>Executar testes, revisar código</td></tr>
+<tr><td><b>Garantia da qualidade</b></td><td>Prevenir defeitos, melhorando o processo</td><td>Padrões de código, checklists, integração contínua</td></tr>
+<tr><td><b>Gestão da qualidade</b></td><td>Planejar, controlar, garantir e melhorar, juntos</td><td>Política, metas, indicadores, auditorias</td></tr></table>
+<h2>3. Qualidade total</h2><p>A <b>Gestão da Qualidade Total</b> (TQM) considera que qualidade é responsabilidade de <b>todos</b>, em <b>todas</b> as etapas, sempre voltada ao cliente. Princípios:</p><ul><li><b>Foco no cliente:</b> o cliente define o que é qualidade.</li><li><b>Envolvimento de todos:</b> programadores, testadores, analistas e gestores.</li><li><b>Abordagem por processos:</b> melhorar o processo, e não apenas corrigir o resultado.</li><li><b>Decisões baseadas em fatos:</b> dados e registros, e não opiniões.</li><li><b>Melhoria contínua:</b> o trabalho nunca está “bom o bastante”.</li><li><b>Relação com fornecedores e parceiros.</b></li></ul>
+<h3>Pioneiros</h3><table><tr><th>Nome</th><th>Contribuição</th></tr>
+<tr><td>W. Edwards Deming</td><td>Ciclo PDCA e a ideia de que a maior parte dos problemas está no sistema, e não nas pessoas</td></tr>
+<tr><td>Joseph Juran</td><td>Trilogia: planejamento, controle e melhoria da qualidade; princípio de Pareto aplicado à qualidade</td></tr>
+<tr><td>Philip Crosby</td><td>“Zero defeito” e custo da não conformidade</td></tr>
+<tr><td>Kaoru Ishikawa</td><td>Diagrama de causa e efeito e círculos de controle da qualidade</td></tr>
+<tr><td>Armand Feigenbaum</td><td>Controle da qualidade total</td></tr></table>
+<h2>4. O custo da qualidade</h2><table><tr><th>Categoria</th><th>Exemplos</th></tr>
+<tr><td>Prevenção</td><td>Treinamento, padrões, revisão de requisitos</td></tr>
+<tr><td>Avaliação</td><td>Testes, inspeções, revisões de código</td></tr>
+<tr><td>Falhas internas</td><td>Retrabalho e correção antes da entrega</td></tr>
+<tr><td>Falhas externas</td><td>Defeitos encontrados pelo cliente, suporte, perda de confiança</td></tr></table>
+<p>Em geral, <b>quanto mais tarde um defeito é descoberto, mais caro costuma ser corrigi-lo</b>. Investir em prevenção e avaliação reduz as falhas.</p>
+<h2>5. Normas e modelos</h2><div class="tip"><b>Foco da UC:</b> use normas e modelos como referências para justificar critérios de qualidade; não é objetivo memorizar números, listas ou certificações. O aluno deve conseguir aplicar a ideia de qualidade a um software concreto.</div><table><tr><th>Referência</th><th>O que é</th></tr>
+<tr><td>ISO 9001</td><td>Requisitos para um sistema de gestão da qualidade: foco no cliente, processos, melhoria contínua e registros</td></tr>
+<tr><td>ISO/IEC 25010</td><td>Modelo de qualidade do produto de software (características acima)</td></tr>
+<tr><td>CMMI e MPS.BR</td><td>Modelos de maturidade de processos de desenvolvimento de software (este último é brasileiro)</td></tr></table>
+<h2>6. Ferramentas da qualidade</h2><h3>As 7 ferramentas básicas</h3><table><tr><th>Ferramenta</th><th>Para quê</th><th>Exemplo em software</th></tr>
+<tr><td><b>Folha de verificação</b></td><td>Coletar dados de forma organizada</td><td>Contar defeitos por tipo a cada semana</td></tr>
+<tr><td><b>Diagrama de Pareto</b></td><td>Mostrar quais poucas causas geram a maioria dos problemas (aprox. 80/20)</td><td>Tipos de defeito mais frequentes</td></tr>
+<tr><td><b>Diagrama de Ishikawa</b> (espinha de peixe)</td><td>Organizar as possíveis causas de um problema</td><td>Por que faltou validação de entrada?</td></tr>
+<tr><td><b>Histograma</b></td><td>Mostrar a distribuição dos dados</td><td>Tempo de correção dos defeitos</td></tr>
+<tr><td><b>Diagrama de dispersão</b></td><td>Ver a relação entre duas variáveis</td><td>Tamanho do módulo × número de defeitos</td></tr>
+<tr><td><b>Fluxograma</b></td><td>Representar um processo passo a passo</td><td>Fluxo de correção de um defeito</td></tr>
+<tr><td><b>Carta de controle</b></td><td>Acompanhar se um processo está estável</td><td>Defeitos por semana com limites</td></tr></table>
+<h3>Ferramentas de análise e planejamento</h3><table><tr><th>Ferramenta</th><th>Como funciona</th></tr>
+<tr><td><b>Brainstorming</b></td><td>A equipe levanta ideias sem críticas; depois agrupa e prioriza</td></tr>
+<tr><td><b>5 Porquês</b></td><td>Perguntar “por quê?” repetidas vezes até chegar à causa raiz</td></tr>
+<tr><td><b>5W2H</b></td><td>Plano de ação: What, Why, Where, When, Who, How, How much</td></tr>
+<tr><td><b>Matriz GUT</b></td><td>Prioriza problemas por Gravidade, Urgência e Tendência (notas de 1 a 5; multiplicam-se)</td></tr>
+<tr><td><b>Checklist</b></td><td>Lista de itens a conferir, para não esquecer passos</td></tr>
+<tr><td><b>PDCA</b></td><td>Ciclo de melhoria: Planejar, Fazer, Verificar, Agir</td></tr></table>
+<h3>Como construir cada uma</h3><ul>
+<li><b>Pareto:</b> conte as ocorrências por categoria → ordene da maior para a menor → calcule o percentual de cada → some os percentuais (acumulado) → desenhe barras (quantidade) e linha (acumulado) → foque nas categorias que somam cerca de 80%.</li>
+<li><b>Ishikawa:</b> escreva o problema à direita → crie “espinhas” com categorias de causas (em software: <b>Método</b>, <b>Ferramentas</b>, <b>Requisitos</b>, <b>Pessoas</b>, <b>Medição</b>, <b>Ambiente</b>) → liste as causas prováveis em cada uma.</li>
+<li><b>Carta de controle (tipo c, contagem de defeitos):</b> média = soma ÷ n; limite superior = média + 3√média; limite inferior = média − 3√média (se der negativo, use 0). Ponto fora dos limites indica <b>causa especial</b> que deve ser investigada.</li></ul>
+<h2>7. Indicadores, monitoramento e controle</h2><p><b>Monitorar</b> é acompanhar os dados ao longo do tempo; <b>controlar</b> é comparar com a meta e agir quando houver desvio. Para isso, precisamos de <b>indicadores</b> e <b>metas</b>.</p>
+<h3>Metas SMART</h3><p>Específica, Mensurável, Atingível, Relevante e com Prazo. Exemplo: “Reduzir os defeitos por semana de 8 para no máximo 4 até a semana 12.”</p>
+<h3>Método GQM (Goal, Question, Metric)</h3><table><tr><th>Etapa</th><th>Exemplo</th></tr>
+<tr><td><b>Objetivo</b></td><td>Reduzir os defeitos que chegam ao cliente</td></tr>
+<tr><td><b>Perguntas</b></td><td>Quantos defeitos aparecem? De que tipo? Quanto tempo levamos para corrigir?</td></tr>
+<tr><td><b>Métricas</b></td><td>Defeitos por semana; % por tipo; tempo médio de correção</td></tr></table>
+<h3>Exemplos de indicadores de software</h3><table><tr><th>Indicador</th><th>Cálculo</th><th>Observação</th></tr>
+<tr><td>Defeitos por semana</td><td>Quantidade registrada na semana</td><td>Base da carta de controle</td></tr>
+<tr><td>Densidade de defeitos</td><td>Defeitos ÷ tamanho (ex.: por 1.000 linhas ou por funcionalidade)</td><td>Permite comparar módulos</td></tr>
+<tr><td>Taxa de aprovação nos testes</td><td>Testes aprovados ÷ testes executados × 100</td><td>Meta típica: próximo de 100%</td></tr>
+<tr><td>Defeitos escapados</td><td>Defeitos achados após a entrega ÷ total de defeitos × 100</td><td>Mede a eficácia dos testes</td></tr>
+<tr><td>Tempo médio de correção</td><td>Soma dos tempos ÷ nº de defeitos</td><td>Mede a agilidade</td></tr>
+<tr><td>Retrabalho</td><td>Horas de correção ÷ horas totais × 100</td><td>Mede o custo da falha</td></tr></table>
+<div class="desafio">⚠️ <b>Cuidado:</b> indicadores servem para <b>melhorar o processo</b>, e não para punir pessoas. Se medir só uma coisa, as pessoas passam a “otimizar o número” e não a qualidade. Use um conjunto equilibrado.</div>
+<h2>8. Registro e documentação</h2><p>Sem registro não há como provar, aprender nem melhorar. Todo registro deve ter: <b>identificação única, data, responsável e versão</b>.</p><table><tr><th>Registro</th><th>Para quê</th></tr>
+<tr><td>Registro de defeitos</td><td>Histórico, análise de Pareto, indicadores</td></tr>
+<tr><td>Casos e resultados de teste</td><td>Evidência de que o requisito foi verificado</td></tr>
+<tr><td>Checklists preenchidos</td><td>Prova das revisões feitas</td></tr>
+<tr><td>Atas de reunião e retrospectivas</td><td>Decisões e ações combinadas</td></tr>
+<tr><td>Plano de ação (5W2H)</td><td>Quem faz o quê até quando</td></tr>
+<tr><td>Lições aprendidas</td><td>Conhecimento reaproveitado nos próximos projetos</td></tr></table>
+<h2>9. Melhoria contínua</h2><table><tr><th>Etapa do PDCA</th><th>O que fazer</th></tr>
+<tr><td><b>P</b> (Plan)</td><td>Identificar o problema, analisar causas (Pareto, Ishikawa, 5 Porquês), definir meta e plano (5W2H)</td></tr>
+<tr><td><b>D</b> (Do)</td><td>Executar o plano, de preferência em pequena escala</td></tr>
+<tr><td><b>C</b> (Check)</td><td>Medir os resultados e comparar com a meta</td></tr>
+<tr><td><b>A</b> (Act)</td><td>Se funcionou, padronizar (virar norma, checklist ou automação); se não, replanejar</td></tr></table>
+<p><b>Kaizen</b> é a filosofia de pequenas melhorias constantes feitas por todos. Na prática de equipes, a <b>retrospectiva</b> (reunião periódica: o que foi bem, o que melhorar, que ações tomar) é o momento de fechar e reiniciar o ciclo.</p>
+<h2>10. Qualidade e pessoas</h2><ul><li>Trate o erro como <b>oportunidade de melhorar o processo</b>, e não de culpar alguém.</li><li>Todos podem apontar problemas e propor melhorias.</li><li>Comunique resultados de forma transparente.</li></ul><div class="pager"><a href="index.html">← Início</a><a href="pratica.html">Prática →</a></div></main><footer>Módulo 7 · Gestão da Qualidade em Desenvolvimento de Software</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Prática · Módulo 6 · Qualidade do Código</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="6" data-page="pratica"><header><nav><a class="logo" href="index.html">🎓 Módulo 6 · Qualidade do Código</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 6</a><span>›</span><strong>Prática guiada</strong></div><h1>Prática guiada · Encontrando e corrigindo defeitos</h1><div class="tip practice-contract"><span class="callout-title">🧭 Como executar esta prática</span>Digite o código, execute a cada etapa e compare o comportamento com o resultado descrito. Se houver erro, leia a mensagem antes de alterar o código e use o depurador quando indicado.</div>
+<p><b>Cenário:</b> um colega entregou a classe <code>Conta</code> de um sistema bancário dizendo que “está tudo funcionando”. Seu trabalho: provar o que está certo e errado usando <b>testes</b>, encontrar as causas com o <b>depurador</b>, corrigir, documentar, refatorar e manter a <b>rastreabilidade</b>. Faça na ordem e digite os códigos lendo os comentários.</p>
+<div class="tip">💡 Códigos para .NET 6 ou superior. Não corrija nada antes da etapa 8: primeiro entenda o problema.</div>
+<div class="steps"><div class="step"><h3>Monte a solução</h3><p>No Visual Studio: <b>Criar um projeto</b> → <b>Biblioteca de Classes</b> (C#) → nome <code>Banco.Core</code>, nome da solução <code>QualidadeBanco</code>. Apague o arquivo <code>Class1.cs</code>. Depois, clique direito na <b>Solução → Adicionar → Novo Projeto</b>:</p><ul><li><b>Projeto de Teste xUnit</b> → <code>Banco.Tests</code>. Nele: clique direito em <b>Dependências → Adicionar Referência de Projeto</b> → marque <code>Banco.Core</code>. Apague <code>UnitTest1.cs</code>.</li><li><b>Aplicativo de Console</b> → <code>Banco.Console</code> (usaremos na etapa de otimização).</li></ul></div><div class="step"><h3>Inicie o controle de versão</h3><p>Menu <b>Git → Criar Repositório Git</b> (gera também o <code>.gitignore</code>) ou, no terminal da pasta da solução:</p><pre><code>git init                                    # cria o repositório Git na pasta da solução
+git add .                                   # marca todos os arquivos para entrar no próximo commit
+git commit -m "chore: estrutura inicial da solução QualidadeBanco"   # grava o primeiro ponto do histórico</code></pre></div><div class="step"><h3>Leia os requisitos</h3><p>Os requisitos são a <b>referência da verdade</b>. O código só está certo se cumprir o que está escrito aqui. Leia com atenção cada palavra (repare em “no mínimo”, “maior que zero” e “menor ou igual”).</p><table><tr><th>ID</th><th>Requisito</th></tr>
+<tr><td>RF01</td><td>A conta é criada com titular obrigatório de <b>no mínimo 3 caracteres</b> (sem contar espaços nas pontas) e saldo inicial zero.</td></tr>
+<tr><td>RF02</td><td>O depósito só é aceito para valor <b>maior que zero</b> e aumenta o saldo.</td></tr>
+<tr><td>RF03</td><td>O saque só é aceito para valor maior que zero e <b>menor ou igual ao saldo somado ao limite</b>; caso contrário, é recusado com erro.</td></tr>
+<tr><td>RF04</td><td>Conta corrente tem limite de R$ 500,00; conta poupança não tem limite.</td></tr>
+<tr><td>RF05</td><td>Transferência debita a origem e credita o destino. Se a origem não puder sacar, <b>nenhuma conta é alterada</b>.</td></tr>
+<tr><td>RF06</td><td>O extrato lista as operações em ordem cronológica, com tipo, valor e <b>saldo após cada operação</b>.</td></tr></table></div><div class="step"><h3>Crie o código recebido</h3><p>Em <code>Banco.Core</code>, adicione a classe <code>Conta.cs</code> com o conteúdo abaixo (é o código do colega). <b>Não procure defeitos ainda</b>: leia os comentários para entender o que cada linha faz.</p><pre><code>namespace Banco.Core;                                   // namespace da biblioteca: agrupa as classes
+
+public enum TipoConta { Corrente, Poupanca }            // enum: lista fixa de tipos de conta
+
+public class Movimentacao                               // uma linha do extrato
+{
+    public DateTime Data { get; init; }                 // quando ocorreu (init: só pode ser definido na criação)
+    public string Tipo { get; init; } = "";             // "Depósito" ou "Saque"
+    public decimal Valor { get; init; }                 // valor da operação
+    public decimal SaldoApos { get; init; }             // saldo da conta depois da operação
+}
+
+public class Conta
+{
+    public string Titular { get; }                      // só get: definido no construtor e nunca mais muda
+    public TipoConta Tipo { get; }                      // tipo da conta
+    public decimal Saldo { get; private set; }          // private set: só a própria classe altera o saldo
+
+    // Propriedade calculada: conta corrente tem R$ 500 de limite; poupança, nenhum.
+    public decimal Limite =&gt; Tipo == TipoConta.Corrente ? 500 : 0;
+
+    private readonly List&lt;Movimentacao&gt; movimentacoes = new(); // lista interna do extrato
+    public IReadOnlyList&lt;Movimentacao&gt; Movimentacoes =&gt; movimentacoes; // visão somente leitura para quem está fora
+
+    public Conta(string titular, TipoConta tipo)        // construtor: roda ao criar a conta
+    {
+        if (string.IsNullOrWhiteSpace(titular) || titular.Trim().Length &lt;= 3) // rejeita nome vazio ou curto
+            throw new ArgumentException("Titular inválido.");                 // interrompe a criação
+        Titular = titular.Trim();                       // guarda o nome sem espaços nas pontas
+        Tipo = tipo;                                    // guarda o tipo
+        Saldo = 0;                                      // conta nova começa zerada
+    }
+
+    public void Depositar(decimal valor)                // coloca dinheiro na conta
+    {
+        if (valor &lt; 0)                                  // rejeita valores negativos
+            throw new ArgumentException("Valor inválido.");
+        Registrar("Depósito", valor);                   // anota no extrato
+        Saldo += valor;                                 // soma ao saldo
+    }
+
+    public void Sacar(decimal valor)                    // tira dinheiro da conta
+    {
+        if (valor &lt;= 0)                                 // rejeita zero e negativos
+            throw new ArgumentException("Valor inválido.");
+        if (valor &gt;= Saldo + Limite)                    // rejeita se passar do disponível
+            throw new InvalidOperationException("Saldo insuficiente.");
+        Registrar("Saque", valor);                      // anota no extrato
+        Saldo -= valor;                                 // subtrai do saldo
+    }
+
+    public void Transferir(Conta destino, decimal valor) // passa dinheiro para outra conta
+    {
+        destino.Depositar(valor);                       // coloca o valor na conta de destino
+        Sacar(valor);                                   // tira o valor desta conta
+    }
+
+    private void Registrar(string tipo, decimal valor)  // cria uma linha no extrato
+    {
+        movimentacoes.Add(new Movimentacao              // adiciona ao final da lista (ordem cronológica)
+        {
+            Data = DateTime.Now,                        // data e hora atuais
+            Tipo = tipo,                                // tipo recebido
+            Valor = valor,                              // valor recebido
+            SaldoApos = Saldo                           // saldo no momento do registro
+        });
+    }
+}</code></pre></div><div class="step"><h3>Escreva os testes a partir dos requisitos</h3><p>Em <code>Banco.Tests</code>, crie <code>ContaTests.cs</code>. Cada teste verifica <b>uma regra</b> de um requisito, seguindo o padrão AAA e o nome <code>Metodo_Cenario_Resultado</code>.</p><pre><code>using Banco.Core;                                       // acesso às classes que serão testadas
+using Xunit;                                            // biblioteca de testes
+
+namespace Banco.Tests;
+
+public class ContaTests
+{
+    // ==================== RF01: criação da conta ====================
+    [Fact]                                              // [Fact] marca um teste simples
+    public void Criar_TitularComTresLetras_Aceita()
+    {
+        var conta = new Conta("Ana", TipoConta.Corrente); // ARRANGE+ACT: cria a conta com nome de 3 letras (mínimo permitido)
+        Assert.Equal("Ana", conta.Titular);             // ASSERT: o titular foi guardado
+        Assert.Equal(0m, conta.Saldo);                  // 0m = decimal zero: conta nova começa sem saldo
+    }
+
+    [Theory]                                            // [Theory] repete o teste para cada [InlineData]
+    [InlineData("")]                                    // nome vazio
+    [InlineData("   ")]                                 // só espaços
+    [InlineData("Al")]                                  // 2 letras: abaixo do mínimo
+    public void Criar_TitularInvalido_LancaExcecao(string titular)
+    {
+        Assert.Throws&lt;ArgumentException&gt;(               // espera que a exceção ocorra...
+            () =&gt; new Conta(titular, TipoConta.Corrente)); // ...ao executar esta função
+    }
+
+    // ==================== RF02: depósito ====================
+    [Fact]
+    public void Depositar_ValorPositivo_AumentaSaldo()
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Corrente); // ARRANGE
+        conta.Depositar(100);                           // ACT
+        Assert.Equal(100m, conta.Saldo);                // ASSERT
+    }
+
+    [Theory]
+    [InlineData(0)]                                     // zero não é um depósito válido
+    [InlineData(-10)]                                   // negativo também não
+    public void Depositar_ValorZeroOuNegativo_LancaExcecao(int valor)
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Corrente);
+        Assert.Throws&lt;ArgumentException&gt;(() =&gt; conta.Depositar(valor));
+    }
+
+    // ==================== RF03 e RF04: saque e limite ====================
+    [Fact]
+    public void Sacar_DentroDoSaldo_ReduzSaldo()
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Poupanca);
+        conta.Depositar(100);
+        conta.Sacar(40);
+        Assert.Equal(60m, conta.Saldo);                 // 100 - 40
+    }
+
+    [Fact]
+    public void Sacar_ExatamenteSaldoMaisLimite_Permite()
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Corrente); // corrente: limite de 500
+        conta.Depositar(100);                           // disponível = 100 + 500 = 600
+        conta.Sacar(600);                               // sacar exatamente o disponível deve ser permitido
+        Assert.Equal(-500m, conta.Saldo);               // saldo fica negativo, usando o cheque especial
+    }
+
+    [Fact]
+    public void Sacar_AcimaDoDisponivel_LancaExcecao()
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Corrente);
+        conta.Depositar(100);                           // disponível = 600
+        Assert.Throws&lt;InvalidOperationException&gt;(() =&gt; conta.Sacar(601)); // 1 centavo acima do disponível não pode
+    }
+
+    [Fact]
+    public void Poupanca_SacarTodoSaldo_Permite()
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Poupanca); // poupança: sem limite
+        conta.Depositar(100);
+        conta.Sacar(100);                               // sacar exatamente o saldo deve ser permitido
+        Assert.Equal(0m, conta.Saldo);
+    }
+
+    [Fact]
+    public void Poupanca_NaoUsaLimite()
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Poupanca);
+        conta.Depositar(100);
+        Assert.Throws&lt;InvalidOperationException&gt;(() =&gt; conta.Sacar(101)); // acima do saldo, sem limite
+    }
+
+    // ==================== RF05: transferência ====================
+    [Fact]
+    public void Transferir_ComSaldo_DebitaOrigemECreditaDestino()
+    {
+        var origem = new Conta("Ana Souza", TipoConta.Poupanca);
+        var destino = new Conta("Bruno Lima", TipoConta.Corrente);
+        origem.Depositar(200);
+        origem.Transferir(destino, 50);
+        Assert.Equal(150m, origem.Saldo);               // 200 - 50
+        Assert.Equal(50m, destino.Saldo);               // 0 + 50
+    }
+
+    [Fact]
+    public void Transferir_SaldoInsuficiente_NaoAlteraNenhumaConta()
+    {
+        var origem = new Conta("Ana Souza", TipoConta.Poupanca);
+        var destino = new Conta("Bruno Lima", TipoConta.Corrente);
+        origem.Depositar(50);                           // origem só tem 50 e não tem limite
+        Assert.Throws&lt;InvalidOperationException&gt;(() =&gt; origem.Transferir(destino, 100)); // falha esperada
+        Assert.Equal(50m, origem.Saldo);                // origem intacta
+        Assert.Equal(0m, destino.Saldo);                // destino NÃO pode ter recebido nada
+    }
+
+    // ==================== RF06: extrato ====================
+    [Fact]
+    public void Extrato_AposDeposito_RegistraSaldoApos()
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Corrente);
+        conta.Depositar(100);
+        Assert.Equal(100m, conta.Movimentacoes[0].SaldoApos); // o saldo registrado é o de DEPOIS da operação
+    }
+
+    [Fact]
+    public void Extrato_VariasOperacoes_MantemOrdemCronologica()
+    {
+        var conta = new Conta("Ana Souza", TipoConta.Corrente);
+        conta.Depositar(100);
+        conta.Sacar(30);
+        Assert.Equal("Depósito", conta.Movimentacoes[0].Tipo); // primeira operação feita = primeira do extrato
+        Assert.Equal("Saque", conta.Movimentacoes[1].Tipo);    // segunda operação = segunda do extrato
+        Assert.Equal(70m, conta.Movimentacoes[1].SaldoApos);   // 100 - 30
+    }
+}</code></pre></div><div class="step"><h3>Rode os testes e registre o resultado</h3><p>Menu <b>Teste → Gerenciador de Testes</b> (Ctrl+E, T) → <b>Executar Tudo</b>. Esperado: vários testes <b>vermelhos</b> (falhando) e outros verdes. Clique em cada teste vermelho e leia a mensagem (<i>Expected</i> = esperado, <i>Actual</i> = obtido). Preencha a matriz abaixo:</p><table><tr><th>Requisito</th><th>Teste</th><th>Situação inicial</th></tr><tr><td>RF01</td><td><code>Criar_TitularComTresLetras_Aceita</code></td><td>❌ / ✅ (você preenche)</td></tr><tr><td>RF02</td><td><code>Depositar_ValorZeroOuNegativo_LancaExcecao</code></td><td></td></tr><tr><td>RF03/RF04</td><td><code>Sacar_ExatamenteSaldoMaisLimite_Permite</code></td><td></td></tr><tr><td>RF05</td><td><code>Transferir_SaldoInsuficiente_NaoAlteraNenhumaConta</code></td><td></td></tr><tr><td>RF06</td><td><code>Extrato_AposDeposito_RegistraSaldoApos</code></td><td></td></tr></table><p>Faça um commit com os testes: <code>git add .</code> e <code>git commit -m "test: testes de RF01 a RF06"</code>.</p></div><div class="step"><h3>Depure o primeiro defeito (passo a passo)</h3><p>Vamos depurar <code>Sacar_ExatamenteSaldoMaisLimite_Permite</code> aplicando o método da Teoria:</p><ol><li><b>Reproduzir:</b> o teste já faz isso, e ele falha com <code>InvalidOperationException: Saldo insuficiente</code>.</li><li><b>Ponto de interrupção:</b> abra <code>Conta.cs</code> e pressione <b>F9</b> na primeira linha do método <code>Sacar</code>.</li><li><b>Depurar o teste:</b> no Gerenciador de Testes, clique direito no teste → <b>Depurar</b>. A execução para no ponto.</li><li><b>Observar:</b> na janela <b>Locais</b>, veja <code>valor = 600</code>. Em <b>Inspeção</b>, digite <code>Saldo</code> (100), <code>Limite</code> (500) e <code>Saldo + Limite</code> (600).</li><li><b>Avançar:</b> pressione <b>F10</b> até a linha do segundo <code>if</code>. Observe que o programa <b>entra</b> no <code>throw</code>.</li><li><b>Hipótese:</b> “600 não deveria ser recusado, pois é exatamente o disponível”.</li><li><b>Verificar na janela Imediata</b> (Depurar → Janelas → Imediata): digite <code>valor &gt;= Saldo + Limite</code> (resultado <code>true</code>) e depois <code>valor &gt; Saldo + Limite</code> (resultado <code>false</code>). Está confirmado: o operador <code>&gt;=</code> recusa o valor exato.</li></ol><p>Veja também a <b>Pilha de Chamadas</b> (Depurar → Janelas): ela mostra que o teste chamou <code>Sacar</code>.</p><p><b>Agora você:</b> repita o processo para os outros testes vermelhos. Registre cada um no diário:</p><table><tr><th>Teste</th><th>Esperado</th><th>Obtido</th><th>Onde parei (linha)</th><th>Causa</th><th>Correção</th></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr></table><p><i>Dica:</i> em <code>Transferir</code> e <code>Registrar</code>, o problema está na <b>ordem</b> em que as linhas acontecem; use <b>F11</b> para entrar nos métodos chamados e acompanhe o valor de <code>Saldo</code> a cada linha.</p></div><div class="step"><h3>Corrija um defeito por vez e faça commits</h3><p>Corrija <b>um</b> defeito, rode <b>todos</b> os testes e faça um commit que cite o requisito. Repita para cada defeito. Isso mostra, no histórico, o que mudou e por quê.</p><pre><code>git add .                                   # inclui a correção no próximo commit
+git commit -m "RF03: permite sacar exatamente saldo + limite"        # mensagem cita o requisito (rastreabilidade)
+
+git log --oneline                           # lista o histórico resumido (um commit por linha)
+git log --oneline --grep="RF03"             # filtra só os commits que citam o RF03
+git blame Banco.Core/Conta.cs               # mostra, linha a linha, quem mudou e em qual commit</code></pre></div><div class="step"><h3>Compare com a solução e documente</h3><p>Quando todos os testes estiverem verdes, compare com a versão final abaixo. Ela traz as correções, a <b>documentação XML</b> (<code>///</code>), constantes nomeadas e o método extraído <code>ValidarValorPositivo</code>. Só abra depois de tentar sozinho.</p><details><summary>Ver os 5 defeitos e a versão final documentada</summary><table><tr><th>#</th><th>Requisito</th><th>Defeito</th></tr><tr><td>1</td><td>RF01</td><td><code>Length &lt;= 3</code> recusava nomes de 3 letras; o correto é <code>&lt; 3</code>.</td></tr><tr><td>2</td><td>RF02</td><td><code>valor &lt; 0</code> aceitava depósito de zero; o correto é <code>&lt;= 0</code>.</td></tr><tr><td>3</td><td>RF03/RF04</td><td><code>valor &gt;= Saldo + Limite</code> recusava o valor exato; o correto é <code>&gt;</code>.</td></tr><tr><td>4</td><td>RF05</td><td><code>Transferir</code> creditava o destino <b>antes</b> de debitar a origem.</td></tr><tr><td>5</td><td>RF06</td><td><code>Registrar</code> era chamado <b>antes</b> de alterar o saldo, gravando o saldo antigo.</td></tr></table><pre><code>namespace Banco.Core;
+
+/// &lt;summary&gt;Tipos de conta aceitos pelo sistema.&lt;/summary&gt;
+public enum TipoConta
+{
+    /// &lt;summary&gt;Conta corrente: possui limite de cheque especial.&lt;/summary&gt;
+    Corrente,
+    /// &lt;summary&gt;Conta poupança: não possui limite.&lt;/summary&gt;
+    Poupanca
+}
+
+/// &lt;summary&gt;Registro de uma operação realizada em uma conta (linha do extrato).&lt;/summary&gt;
+public class Movimentacao
+{
+    /// &lt;summary&gt;Data e hora em que a operação ocorreu.&lt;/summary&gt;
+    public DateTime Data { get; init; }
+    /// &lt;summary&gt;Descrição do tipo de operação (por exemplo, "Depósito" ou "Saque").&lt;/summary&gt;
+    public string Tipo { get; init; } = "";
+    /// &lt;summary&gt;Valor movimentado, sempre positivo.&lt;/summary&gt;
+    public decimal Valor { get; init; }
+    /// &lt;summary&gt;Saldo da conta imediatamente após a operação.&lt;/summary&gt;
+    public decimal SaldoApos { get; init; }
+}
+
+/// &lt;summary&gt;Representa uma conta bancária com saldo, limite e extrato.&lt;/summary&gt;
+/// &lt;remarks&gt;Implementa os requisitos RF01 a RF06 do documento de requisitos.&lt;/remarks&gt;
+public class Conta
+{
+    private const decimal LimiteContaCorrente = 500m;       // constante nomeada: o número 500 deixa de ser "mágico" (RF04)
+    private const int TamanhoMinimoTitular = 3;             // regra do RF01 em um só lugar
+
+    /// &lt;summary&gt;Nome do titular da conta, sem espaços nas extremidades.&lt;/summary&gt;
+    public string Titular { get; }
+
+    /// &lt;summary&gt;Tipo da conta (corrente ou poupança).&lt;/summary&gt;
+    public TipoConta Tipo { get; }
+
+    /// &lt;summary&gt;Saldo atual. Pode ser negativo em contas correntes (uso do limite).&lt;/summary&gt;
+    public decimal Saldo { get; private set; }
+
+    /// &lt;summary&gt;Limite de cheque especial: R$ 500 na corrente e zero na poupança (RF04).&lt;/summary&gt;
+    public decimal Limite =&gt; Tipo == TipoConta.Corrente ? LimiteContaCorrente : 0;
+
+    private readonly List&lt;Movimentacao&gt; movimentacoes = new();
+    /// &lt;summary&gt;Extrato em ordem cronológica (RF06).&lt;/summary&gt;
+    public IReadOnlyList&lt;Movimentacao&gt; Movimentacoes =&gt; movimentacoes;
+
+    /// &lt;summary&gt;Cria uma conta com saldo zero.&lt;/summary&gt;
+    /// &lt;param name="titular"&gt;Nome do titular, com no mínimo 3 caracteres.&lt;/param&gt;
+    /// &lt;param name="tipo"&gt;Tipo da conta.&lt;/param&gt;
+    /// &lt;exception cref="ArgumentException"&gt;Titular vazio ou com menos de 3 caracteres (RF01).&lt;/exception&gt;
+    public Conta(string titular, TipoConta tipo)
+    {
+        if (string.IsNullOrWhiteSpace(titular) || titular.Trim().Length &lt; TamanhoMinimoTitular) // &lt; : 3 letras é válido
+            throw new ArgumentException("O titular deve ter no mínimo 3 caracteres.", nameof(titular)); // nameof evita texto fixo
+        Titular = titular.Trim();
+        Tipo = tipo;
+        Saldo = 0;
+    }
+
+    /// &lt;summary&gt;Deposita um valor na conta (RF02).&lt;/summary&gt;
+    /// &lt;param name="valor"&gt;Valor maior que zero.&lt;/param&gt;
+    /// &lt;exception cref="ArgumentException"&gt;Valor menor ou igual a zero.&lt;/exception&gt;
+    public void Depositar(decimal valor)
+    {
+        ValidarValorPositivo(valor);                    // regra reaproveitada (DRY)
+        Saldo += valor;                                 // PRIMEIRO altera o saldo...
+        Registrar("Depósito", valor);                   // ...DEPOIS registra, para o extrato mostrar o saldo correto (RF06)
+    }
+
+    /// &lt;summary&gt;Saca um valor da conta, respeitando o limite (RF03 e RF04).&lt;/summary&gt;
+    /// &lt;param name="valor"&gt;Valor maior que zero e até o saldo somado ao limite.&lt;/param&gt;
+    /// &lt;exception cref="ArgumentException"&gt;Valor menor ou igual a zero.&lt;/exception&gt;
+    /// &lt;exception cref="InvalidOperationException"&gt;Valor acima do disponível.&lt;/exception&gt;
+    public void Sacar(decimal valor)
+    {
+        ValidarValorPositivo(valor);
+        if (valor &gt; Saldo + Limite)                     // &gt; : sacar exatamente o disponível é permitido
+            throw new InvalidOperationException("Saldo insuficiente.");
+        Saldo -= valor;
+        Registrar("Saque", valor);
+    }
+
+    /// &lt;summary&gt;Transfere um valor desta conta para outra (RF05).&lt;/summary&gt;
+    /// &lt;param name="destino"&gt;Conta que receberá o valor.&lt;/param&gt;
+    /// &lt;param name="valor"&gt;Valor a transferir.&lt;/param&gt;
+    /// &lt;remarks&gt;Se o saque falhar, nenhuma das contas é alterada.&lt;/remarks&gt;
+    public void Transferir(Conta destino, decimal valor)
+    {
+        ArgumentNullException.ThrowIfNull(destino);     // falha clara se esquecerem o destino
+        Sacar(valor);                                   // PRIMEIRO debita: se falhar, a exceção impede o crédito
+        destino.Depositar(valor);                       // só credita depois que o débito deu certo
+    }
+
+    private static void ValidarValorPositivo(decimal valor) // método extraído: antes a regra estava repetida
+    {
+        if (valor &lt;= 0)
+            throw new ArgumentException("O valor deve ser maior que zero.", nameof(valor));
+    }
+
+    private void Registrar(string tipo, decimal valor)
+    {
+        movimentacoes.Add(new Movimentacao
+        {
+            Data = DateTime.Now,
+            Tipo = tipo,
+            Valor = valor,
+            SaldoApos = Saldo
+        });
+    }
+}</code></pre></details></div><div class="step"><h3>Refatore com as ferramentas do Visual Studio</h3><p>Pratique em uma cópia do código e rode os testes <b>após cada passo</b>:</p><ol><li><b>Renomear (F2):</b> renomeie o campo <code>movimentacoes</code> para <code>_movimentacoes</code>; observe que todas as referências mudam sozinhas.</li><li><b>Extrair método (Ctrl+R, M):</b> selecione as linhas do <code>if (valor &lt;= 0) throw ...</code> e extraia para <code>ValidarValorPositivo</code>.</li><li><b>Introduzir constante (Ctrl+.):</b> selecione o <code>500</code> e escolha “Introduzir constante”.</li><li><b>Formatar (Ctrl+K, Ctrl+D):</b> deixe o arquivo todo com indentação padrão.</li><li><b>Remover usos desnecessários (Ctrl+.):</b> apague <code>using</code> não utilizados.</li></ol><p>Se um teste ficar vermelho após um passo, desfaça (<b>Ctrl+Z</b>) e investigue: a refatoração mudou o comportamento.</p></div><div class="step"><h3>Trace requisitos, código e testes</h3><p>Use as ferramentas de rastreabilidade:</p><ol><li>Em <code>Sacar</code>, pressione <b>Shift+F12</b> (Localizar Todas as Referências) e veja quem usa o método: <code>Transferir</code> e os testes. Isso mostra o <b>impacto</b> de mudá-lo.</li><li>Pressione <b>Ctrl+K, Ctrl+T</b> (Hierarquia de Chamadas) em <code>Registrar</code> para ver a árvore de quem o chama.</li><li>Pressione <b>F12</b> sobre <code>TipoConta</code> para ir à definição.</li><li>Abra <b>Git → Exibir Histórico</b> e confira os commits com os IDs de requisito.</li></ol><p>Complete a matriz de rastreabilidade final:</p><table><tr><th>Requisito</th><th>Código</th><th>Teste(s)</th><th>Commit</th><th>Situação</th></tr><tr><td>RF01</td><td><code>Conta(...)</code></td><td></td><td></td><td></td></tr><tr><td>RF02</td><td><code>Conta.Depositar</code></td><td></td><td></td><td></td></tr><tr><td>RF03/RF04</td><td><code>Conta.Sacar</code>, <code>Conta.Limite</code></td><td></td><td></td><td></td></tr><tr><td>RF05</td><td><code>Conta.Transferir</code></td><td></td><td></td><td></td></tr><tr><td>RF06</td><td><code>Conta.Registrar</code></td><td></td><td></td><td></td></tr></table></div><div class="step"><h3>Meça e otimize</h3><p>No projeto <code>Banco.Console</code>, substitua o conteúdo de <code>Program.cs</code> pelo código abaixo. Rode em modo <b>Release</b> (selecione “Release” na barra superior e use <b>Ctrl+F5</b>) e anote os tempos. Os valores variam de computador para computador; o importante é a <b>diferença</b> entre as técnicas.</p><pre><code>using System.Diagnostics;                                // traz o Stopwatch (cronômetro)
+using System.Text;                                       // traz o StringBuilder
+
+const int N = 20000;                                     // quantidade de repetições do teste
+
+// ---------- TESTE 1: montar um texto grande ----------
+var cronometro = Stopwatch.StartNew();                   // cria e já liga o cronômetro
+string extratoLento = "";                                // texto começa vazio
+for (int i = 0; i &lt; N; i++)                              // repete N vezes
+{
+    extratoLento += $"Movimentação {i}\n";               // += cria uma NOVA string copiando a anterior a cada volta
+}
+cronometro.Stop();                                       // para o cronômetro
+Console.WriteLine($"Concatenação com +: {cronometro.ElapsedMilliseconds} ms"); // ElapsedMilliseconds: tempo decorrido
+
+cronometro.Restart();                                    // zera e liga de novo
+var sb = new StringBuilder();                            // StringBuilder acumula o texto em um buffer interno
+for (int i = 0; i &lt; N; i++)
+{
+    sb.AppendLine($"Movimentação {i}");                  // acrescenta sem recriar o texto inteiro
+}
+string extratoRapido = sb.ToString();                    // só no final gera a string completa
+cronometro.Stop();
+Console.WriteLine($"StringBuilder:       {cronometro.ElapsedMilliseconds} ms");
+
+// ---------- TESTE 2: buscar um item ----------
+var lista = new List&lt;(int Numero, string Nome)&gt;();       // lista de pares (número, nome)
+var dicionario = new Dictionary&lt;int, string&gt;();          // dicionário: chave = número, valor = nome
+for (int i = 0; i &lt; 50000; i++)                          // 50 mil cadastros
+{
+    lista.Add((i, "Cliente " + i));                      // adiciona nas duas estruturas
+    dicionario[i] = "Cliente " + i;
+}
+
+cronometro.Restart();
+for (int k = 0; k &lt; 1000; k++)                           // faz 1000 buscas
+{
+    var achado = lista.Find(x =&gt; x.Numero == 49999);     // List: confere item por item até achar (busca linear)
+}
+cronometro.Stop();
+Console.WriteLine($"Busca em List:       {cronometro.ElapsedMilliseconds} ms");
+
+cronometro.Restart();
+for (int k = 0; k &lt; 1000; k++)
+{
+    var achado = dicionario[49999];                      // Dictionary: vai direto ao item pela chave (tabela hash)
+}
+cronometro.Stop();
+Console.WriteLine($"Busca em Dictionary: {cronometro.ElapsedMilliseconds} ms");</code></pre></div><div class="step"><h3>Analise os resultados</h3><p>Responda no relatório: (1) qual técnica foi mais rápida em cada teste? (2) Por que a concatenação com <code>+</code> piora quando <code>N</code> aumenta? (3) Por que o <code>Dictionary</code> não é afetado pelo tamanho da coleção? (4) Em que situações o ganho <b>não</b> vale a pena (dica: poucos itens, código executado uma vez)?</p></div></div><div class="common-error"><span class="callout-title">🐞 Antes de pedir ajuda</span>Confira o nome do arquivo, o namespace, o <code>Name</code> dos controles, referências do projeto, pacotes NuGet e a mensagem completa do erro. Use <code>Ctrl+Shift+B</code> para compilar e identifique a primeira mensagem de erro da lista.</div><div class="pager"><a href="teoria.html">← Teoria</a><a href="avaliacao.html">Avaliação →</a></div></main><footer>Módulo 6 · Qualidade do Código em C# · Programação de Aplicativos</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>

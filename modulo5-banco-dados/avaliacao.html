@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Avaliação · Módulo 5 · Banco de Dados</title><link href="../assets/css/style.css" rel="stylesheet"/><meta content="Material autoinstrucional da UC Programação de Aplicativos em C#." name="description"/></head><body data-module="5" data-page="avaliacao"><header><nav><a class="logo" href="index.html">🎓 Módulo 5 · Banco de Dados</a><a href="../index.html">⌂ Portal da UC</a></nav></header><main><div class="breadcrumb"><a href="../index.html">Curso</a><span>›</span><a href="index.html">Módulo 5</a><span>›</span><strong>Avaliação</strong></div><h1>Avaliação e verificação</h1><div class="assessment-contract"><span class="callout-title">🧠 Como usar esta avaliação</span>Faça primeiro sem consultar a teoria. Marque as questões em que teve dúvida, volte ao conteúdo apenas depois da primeira tentativa e corrija suas respostas explicando <i>por que</i> a solução correta funciona. A rubrica serve para autoavaliação e para feedback do professor.</div><div class="uc-box assessment-note"><span class="callout-title">✅ Evidência de aprendizagem</span>Resolva sem copiar a resposta dos exemplos. Quando houver código, execute e teste. O objetivo é demonstrar que você consegue explicar, aplicar e diagnosticar os conceitos deste módulo.</div>
+<h2>1. Casos de teste</h2><p>Execute cada caso e marque o resultado. Em caso de falha, registre o erro e corrija.</p>
+<table><tr><th>#</th><th>Caso</th><th>Passos</th><th>Resultado esperado</th><th>OK?</th></tr>
+<tr><td>CT01</td><td>Conexão</td><td>Abrir o sistema com o MySQL ligado</td><td>Tela abre e mostra “Pronto.”</td><td></td></tr>
+<tr><td>CT02</td><td>Conexão falha</td><td>Parar o MySQL e abrir o sistema</td><td>Mensagem clara e tela desabilitada</td><td></td></tr>
+<tr><td>CT03</td><td>Cadastrar</td><td>Preencher os dados corretos e salvar</td><td>Produto na grade e no HeidiSQL</td><td></td></tr>
+<tr><td>CT04</td><td>Validação</td><td>Salvar com nome vazio</td><td>Aviso e foco no nome; nada gravado</td><td></td></tr>
+<tr><td>CT05</td><td>Duplicado</td><td>Cadastrar nome já existente</td><td>Mensagem “Já existe um registro…”</td><td></td></tr>
+<tr><td>CT06</td><td>Buscar</td><td>Digitar “arr” na busca</td><td>Só produtos que contêm “arr”</td><td></td></tr>
+<tr><td>CT07</td><td>Editar</td><td>Clicar na linha, mudar o preço e salvar</td><td>Preço atualizado no banco</td><td></td></tr>
+<tr><td>CT08</td><td>Excluir</td><td>Excluir confirmando</td><td>Produto some da grade e do banco</td><td></td></tr>
+<tr><td>CT09</td><td>Cancelar exclusão</td><td>Excluir e escolher “Não”</td><td>Nada é apagado</td><td></td></tr>
+<tr><td>CT10</td><td>Injeção de SQL</td><td>Digitar <code>' OR '1'='1</code> na busca</td><td>Nenhum registro estranho; sem erro</td><td></td></tr></table>
+<h2>2. Exercícios de SQL</h2><p>Escreva e teste no HeidiSQL a consulta que responde:</p><ol>
+<li>Quais produtos custam mais de R$ 5,00? (apenas nome e preço)</li>
+<li>Quantos produtos existem em cada categoria? (use <code>GROUP BY</code> e <code>JOIN</code>)</li>
+<li>Qual o produto de maior preço? (use <code>ORDER BY</code> e <code>LIMIT 1</code>)</li>
+<li>Qual o valor total em estoque por categoria?</li>
+<li>Quais categorias <b>não têm</b> produtos? (dica: <code>LEFT JOIN</code> e <code>IS NULL</code>)</li>
+<li>Aumente em 10% o preço de todos os produtos da categoria “Limpeza”. (cuidado com o <code>WHERE</code>)</li></ol>
+<h2>3. Solução de problemas</h2><table><tr><th>Sintoma</th><th>Causa provável</th><th>O que fazer</th></tr>
+<tr><td>“Unable to connect to any of the specified MySQL hosts”</td><td>MySQL parado ou porta errada</td><td>Iniciar o MySQL no Laragon; conferir porta 3306</td></tr>
+<tr><td>“Access denied for user”</td><td>Usuário ou senha incorretos</td><td>Revisar a connection string</td></tr>
+<tr><td>“Unknown database 'estoque'”</td><td>Script não executado</td><td>Rodar o <code>estoque.sql</code> no HeidiSQL</td></tr>
+<tr><td>“Table 'estoque.produtos' doesn't exist”</td><td>Tabela não criada ou banco errado</td><td>Conferir o <code>USE estoque;</code> e o script</td></tr>
+<tr><td>Janela de licença do Laragon</td><td>Versão que solicita licença</td><td>Ler os termos no site oficial; confirmar com o professor; alternativa: outro MySQL/MariaDB local</td></tr><tr><td>Erro de SSL ao conectar</td><td>Servidor local sem SSL</td><td>Acrescentar <code>;SslMode=None</code> à string (só em estudo)</td></tr>
+<tr><td>“The type or namespace 'MySqlConnector' could not be found”</td><td>Pacote não instalado ou falta <code>using</code></td><td>Instalar pelo NuGet e adicionar <code>using MySqlConnector;</code></td></tr>
+<tr><td>Grade vazia, sem erro</td><td>Tabelas sem dados ou JOIN sem correspondência</td><td>Testar o SELECT direto no HeidiSQL</td></tr>
+<tr><td><code>NullReferenceException</code> em <code>SelectedValue</code></td><td>ComboBox sem categorias</td><td>Verificar se <code>CarregarCategorias</code> rodou e se o banco tem dados</td></tr></table>
+<div class="tip">💡 <b>Dica de depuração:</b> coloque um ponto de interrupção (F9) dentro do DAO, rode, e veja no <b>Inspetor</b> o conteúdo de <code>cmd.CommandText</code> e dos parâmetros. Copie o SQL e teste no HeidiSQL.</div>
+<h2>4. Desafios</h2><ol><li><b>Nível 1:</b> mostre na barra de status o total de produtos listados (“12 produtos encontrados”).</li><li><b>Nível 2:</b> crie um método <code>ValorTotalEstoque()</code> no <code>ProdutoDAO</code> usando <code>ExecuteScalar()</code> e <code>SUM</code>, e exiba o resultado na tela.</li><li><b>Nível 3:</b> crie uma tela de <b>Categorias</b> com CRUD completo, reutilizando o padrão DAO e tratando o erro 1451 ao excluir.</li><li><b>Nível 4:</b> adicione a coluna <code>ativo</code> (BOOLEAN) e, em vez de excluir, implemente a <b>exclusão lógica</b> (<code>UPDATE ... SET ativo = 0</code>), listando só os ativos.</li><li><b>Nível 5:</b> registre cada movimentação (entrada e saída) em uma tabela <code>movimentacoes</code> ligada a <code>produtos</code> e mostre o histórico de um produto.</li></ol>
+<h2>5. Rubrica de avaliação</h2><table><tr><th>Critério</th><th>Insuficiente</th><th>Adequado</th><th>Excelente</th></tr>
+<tr><td>Modelagem do banco</td><td>Tabela única, sem chaves</td><td>Tabelas com PK e FK</td><td>Tipos, restrições e dados de teste adequados</td></tr>
+<tr><td>SQL</td><td>Comandos com erro</td><td>CRUD e JOIN corretos</td><td>Agregações e consultas otimizadas</td></tr>
+<tr><td>Segurança</td><td>SQL concatenado</td><td>Parâmetros em todo o código</td><td>Parâmetros e usuário com permissão mínima</td></tr>
+<tr><td>Organização do código</td><td>SQL dentro do formulário</td><td>Modelo, DAO e formulário separados</td><td>Camadas claras, reuso e comentários didáticos</td></tr>
+<tr><td>Tratamento de erros</td><td>Programa fecha com erro</td><td>try/catch com mensagem</td><td>Mensagens amigáveis por tipo de erro</td></tr>
+<tr><td>Testes</td><td>Não realizados</td><td>Casos de teste executados</td><td>Casos executados, falhas registradas e corrigidas</td></tr></table>
+<h2>6. Glossário</h2><table><tr><th>Termo</th><th>Significado</th></tr>
+<tr><td>SGBD</td><td>Sistema que gerencia bancos de dados (MySQL, MariaDB, SQL Server...)</td></tr>
+<tr><td>CRUD</td><td>Create, Read, Update, Delete: as quatro operações básicas com dados</td></tr>
+<tr><td>DAO</td><td>Classe que isola o acesso ao banco para uma entidade</td></tr>
+<tr><td>Connection string</td><td>Texto com os dados de conexão ao banco</td></tr>
+<tr><td>Parâmetro</td><td>Valor enviado separado do SQL (evita injeção)</td></tr>
+<tr><td>SQL Injection</td><td>Ataque que altera o SQL ao inserir comandos em campos de texto</td></tr>
+<tr><td>Chave primária / estrangeira</td><td>Identificador único / ligação para outra tabela</td></tr>
+<tr><td>JOIN</td><td>Junção de dados de tabelas relacionadas em uma consulta</td></tr>
+<tr><td>Exclusão lógica</td><td>Marcar o registro como inativo em vez de apagá-lo</td></tr></table><div class="pager"><a href="pratica.html">← Prática</a><a href="index.html">Início ↑</a></div></main><footer>Módulo 5 · Banco de Dados com C# e Laragon · Programação de Aplicativos</footer><script defer="defer" src="../assets/js/app.js"></script></body></html>
